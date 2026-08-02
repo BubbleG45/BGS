@@ -1,0 +1,26 @@
+name: bgs_web
+description: BGS public site — server-rendered org homepages, event links, and search.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dependencies:
+  bgs_client:
+    path: ../bgs_client
+  jaspr: ^0.23.2
+  jaspr_router: ^0.8.3
+
+dev_dependencies:
+  build_runner: ^2.10.0
+  build_web_compilers: ^4.8.0
+  jaspr_builder: ^0.23.2
+  lints: ^5.0.0
+
+jaspr:
+  mode: server
+  # Default (8080) collides with another local project's Serverpod server.
+  port: 18180

@@ -1,0 +1,12 @@
+# Workspace-level analyzer config. Dart pub workspaces require analyzer
+# *plugins* to be declared here (not in member packages' own
+# analysis_options.yaml). Lint rule sets themselves are still configured
+# per-package.
+
+plugins:
+  jaspr_lints:
+    version: ^0.7.2
+    diagnostics:
+      prefer_html_components: true
+      sort_children_last: true
+      styles_ordering: true

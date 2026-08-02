@@ -1,0 +1,12 @@
+name: bgs_workspace
+publish_to: none
+
+environment:
+  sdk: '^3.10.0'
+
+workspace:
+  - bgs_client
+  - bgs_server
+  - bgs_flutter
+  - bgs_web
+

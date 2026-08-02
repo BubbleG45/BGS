@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "bgs_flutter",
+            "cwd": "${workspaceFolder}/bgs_flutter",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "bgs_server",
+            "cwd": "${workspaceFolder}/bgs_server",
+            "request": "launch",
+            "type": "dart",
+            "preLaunchTask": "docker_compose_up",
+            "program": "bin/main.dart",
+            "env": {
+                "SERVERPOD_PASSWORD_database": "N-0xeFsFISYKzi7wOvkdJR3HvhepmGju"
+            },
+            "args": [
+                "--apply-migrations"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "bgs (full stack)",
+            "configurations": [
+                "bgs_server",
+                "bgs_flutter"
+            ],
+            "presentation": {
+                "order": 1
+            }
+        }
+    ]
+}
