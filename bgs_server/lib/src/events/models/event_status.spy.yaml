@@ -1,0 +1,6 @@
+enum: EventStatus
+serialized: byName
+values:
+  - draft
+  - published
+  - cancelled

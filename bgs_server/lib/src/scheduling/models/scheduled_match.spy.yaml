@@ -1,0 +1,27 @@
+### A single scheduled game between two teams within a [League]. Manual
+### scheduling only for Phase 1 -- no auto-scheduling algorithm yet.
+class: ScheduledMatch
+table: bgs_scheduled_match
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  league: League?, relation(onDelete=Cascade)
+
+  homeTeam: Team?, relation(name=scheduled_match_home_team, onDelete=Cascade)
+
+  awayTeam: Team?, relation(name=scheduled_match_away_team, onDelete=Cascade)
+
+  scheduledAt: DateTime
+
+  location: String?
+
+  status: MatchStatus, defaultModel=scheduled
+
+  ### Single running score. Sport-specific scoring structures (sets,
+  ### innings, periods) are a later phase (see BUILD_PLAN.md Phase 2) --
+  ### this is enough for basic win/loss standings in Phase 1.
+  homeScore: int?
+
+  awayScore: int?
+
+  createdAt: DateTime, defaultModel=now

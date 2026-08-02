@@ -76,6 +76,9 @@ Registration ties a Player to a Team (League) or to an Event directly. Team fee 
 - Hosting environment stood up (Serverpod Cloud + Railway)
 
 ### Phase 1 — Core broad-but-shallow slice
+
+**Resume point (as of 2026-08-02):** the domain model/database schema is built and migrated locally — `Organization`, `OrganizationMember`, `League`, `Team`, `TeamMembership`, `Event`, `EventRegistration`, `ScheduledMatch`, `Standing`, plus supporting enums, all in `bgs_server/lib/src/{sports,organizations,leagues,teams,events,scheduling,standings}/models/`. Built on top of the auth module's `AuthUser`/`UserProfile` rather than custom user tables — see [CHANGELOG.md](CHANGELOG.md) for the full list. **No endpoints or business logic exist yet** — that's the next thing to build. Suggested order: an `OrganizationEndpoint` (create/get/list, gated to authenticated users, auto-creates the creator as `owner` `OrganizationMember`) is the natural first slice, since League/Team/Event all hang off an Organization. After that, decide the authorization pattern once (e.g. a shared helper that checks "is this AuthUser an OrganizationMember with sufficient role for this org") rather than re-deriving it per endpoint.
+
 Each area shipped at a genuinely minimal but real depth:
 - Organization creation + basic org homepage (public, lists leagues/events)
 - League creation + basic management (edit details, activate)

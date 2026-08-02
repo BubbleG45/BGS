@@ -1,0 +1,8 @@
+enum: TeamMemberRole
+serialized: byName
+values:
+  ### Manages the team roster/invites -- this is what makes someone a
+  ### "Manager" for the Manager Dashboard; there's no separate role flag.
+  - manager
+
+  - player

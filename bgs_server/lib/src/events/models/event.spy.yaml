@@ -1,0 +1,44 @@
+### A one-off event (tournament or single-day activity). May belong to an
+### [Organization], or be "orgless" -- organization is nullable by design.
+class: Event
+table: bgs_event
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  organization: Organization?, relation(onDelete=Cascade)
+
+  createdByAuthUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  name: String
+
+  ### URL-safe identifier, unique across the platform since orgless events
+  ### still need a global shareable link, e.g. /e/<slug>.
+  slug: String
+
+  sport: Sport
+
+  skillLevel: SkillLevel?
+
+  description: String?
+
+  location: String?
+
+  startAt: DateTime
+
+  ### Whether this event runs as a bracket tournament. Bracket generation
+  ### itself is a later phase (see BUILD_PLAN.md Phase 2) -- this just
+  ### records intent at creation time.
+  isTournament: bool, defaultModel=false
+
+  status: EventStatus, defaultModel=draft
+
+  ### Team registration fee, in cents. Same rationale as
+  ### League.teamFeeCents -- see League_Platform_Pricing_Model.md.
+  teamFeeCents: int
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_event_slug_unique:
+    fields: slug
+    unique: true

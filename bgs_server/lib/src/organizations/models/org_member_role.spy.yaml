@@ -1,0 +1,8 @@
+enum: OrgMemberRole
+serialized: byName
+values:
+  ### Full control, including removing the organization itself.
+  - owner
+
+  ### Can manage leagues/events but cannot remove the organization or its owner.
+  - admin

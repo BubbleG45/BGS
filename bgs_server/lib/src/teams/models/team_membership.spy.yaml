@@ -1,0 +1,24 @@
+### Links an [AuthUser] to a [Team]. This is how the "Player" and "Manager"
+### roles/dashboards are determined -- there is no standalone role flag on
+### the user, it's derived from having a row here.
+class: TeamMembership
+table: bgs_team_membership
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  team: Team?, relation(onDelete=Cascade)
+
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  role: TeamMemberRole, defaultModel=player
+
+  status: MembershipStatus, defaultModel=invited
+
+  invitedAt: DateTime, defaultModel=now
+
+  joinedAt: DateTime?
+
+indexes:
+  bgs_team_membership_unique:
+    fields: teamId, authUserId
+    unique: true

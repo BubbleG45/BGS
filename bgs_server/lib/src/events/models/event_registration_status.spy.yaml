@@ -1,0 +1,5 @@
+enum: EventRegistrationStatus
+serialized: byName
+values:
+  - registered
+  - cancelled

@@ -1,0 +1,46 @@
+### The sport a league, event, team, or match is played in.
+###
+### The full long-term list is tracked in SPORTS_ROADMAP.md at the repo
+### root. Not every value here has scoring/standings logic behind it yet --
+### see BUILD_PLAN.md for which sports are actually live at a given phase.
+enum: Sport
+serialized: byName
+values:
+  # Core team sports
+  - basketball
+  - softball
+  - baseball
+  - soccer
+  - flagFootball
+  - football
+  - ultimate
+  - lacrosse
+  - fieldHockey
+  - iceHockey
+  - floorHockey
+  - dekHockey
+  - broomball
+  - bubbleSoccer
+
+  # Volleyball variants
+  - volleyballIndoor
+  - volleyballSand
+  - volleyballGrass
+
+  # "Social sports" staples
+  - kickball
+  - dodgeball
+  - cornhole
+  - bocce
+  - bowling
+  - wiffleBall
+  - skeeball
+  - spikeball
+  - tBall
+
+  # Racquet/precision sports
+  - pickleball
+  - tennis
+  - golf
+  - darts
+  - curling

@@ -1,0 +1,8 @@
+### Roughly how competitive a league or event is. Used for display and
+### search/filtering (see BUILD_PLAN.md Phase 1 basic search).
+enum: SkillLevel
+serialized: byName
+values:
+  - beginner
+  - intermediate
+  - competitive

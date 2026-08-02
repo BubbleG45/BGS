@@ -1,0 +1,6 @@
+enum: MatchStatus
+serialized: byName
+values:
+  - scheduled
+  - completed
+  - cancelled

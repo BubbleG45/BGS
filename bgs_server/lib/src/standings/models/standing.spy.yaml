@@ -1,0 +1,26 @@
+### A team's basic win/loss record within a [League]. Recomputed/updated as
+### [ScheduledMatch] results come in -- not itself the source of truth for
+### match results, just the aggregate.
+class: Standing
+table: bgs_standing
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  league: League?, relation(onDelete=Cascade)
+
+  team: Team?, relation(onDelete=Cascade)
+
+  wins: int, defaultModel=0
+
+  losses: int, defaultModel=0
+
+  ties: int, defaultModel=0
+
+  pointsFor: int, defaultModel=0
+
+  pointsAgainst: int, defaultModel=0
+
+indexes:
+  bgs_standing_league_team_unique:
+    fields: leagueId, teamId
+    unique: true

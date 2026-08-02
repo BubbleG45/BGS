@@ -1,0 +1,38 @@
+### A full season run by an [Organization] for a single sport.
+class: League
+table: bgs_league
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  organization: Organization?, relation(onDelete=Cascade)
+
+  name: String
+
+  ### URL-safe identifier, unique within the organization (not globally).
+  slug: String
+
+  sport: Sport
+
+  skillLevel: SkillLevel?
+
+  description: String?
+
+  ### Free-text venue/area, e.g. "Riverside Park Courts 1-3". Structured
+  ### location management is a later phase (see BUILD_PLAN.md Phase 4);
+  ### this is enough for Phase 1 display and basic search.
+  location: String?
+
+  status: LeagueStatus, defaultModel=draft
+
+  ### Team registration fee, in cents. Required at creation regardless of
+  ### how the organizer actually collects payment -- see
+  ### League_Platform_Pricing_Model.md. The platform charge itself is
+  ### computed from this in the payments phase; this field just captures it.
+  teamFeeCents: int
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_league_org_slug_unique:
+    fields: organizationId, slug
+    unique: true

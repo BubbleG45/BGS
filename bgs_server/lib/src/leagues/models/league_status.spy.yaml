@@ -1,0 +1,13 @@
+enum: LeagueStatus
+serialized: byName
+values:
+  ### Being set up by the organizer, not visible to players yet.
+  - draft
+
+  ### Live -- visible publicly, teams can register/be invited.
+  - active
+
+  ### Season has finished.
+  - completed
+
+  - cancelled

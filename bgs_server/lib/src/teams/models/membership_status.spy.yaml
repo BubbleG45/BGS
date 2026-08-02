@@ -1,0 +1,9 @@
+enum: MembershipStatus
+serialized: byName
+values:
+  ### Invited but hasn't accepted yet.
+  - invited
+
+  - active
+
+  - declined

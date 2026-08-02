@@ -1,0 +1,24 @@
+### A single registration for an [Event] by the [AuthUser] who signed up.
+###
+### Kept minimal for Phase 1 -- no persistent Team link, since events
+### aren't necessarily tied to a league [Team].
+class: EventRegistration
+table: bgs_event_registration
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  event: Event?, relation(onDelete=Cascade)
+
+  registeredByAuthUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  ### Free-text team/group name for this registration, if applicable.
+  teamName: String?
+
+  status: EventRegistrationStatus, defaultModel=registered
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_event_registration_unique:
+    fields: eventId, registeredByAuthUserId
+    unique: true

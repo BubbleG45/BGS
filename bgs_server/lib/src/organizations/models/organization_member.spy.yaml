@@ -1,0 +1,21 @@
+### Links an [AuthUser] to an [Organization] with an organizer-side role.
+###
+### This is how the "Organizer" role/dashboard is determined -- there is no
+### standalone role flag on the user, it's derived from having a row here.
+class: OrganizationMember
+table: bgs_organization_member
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  organization: Organization?, relation(onDelete=Cascade)
+
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  role: OrgMemberRole
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_organization_member_unique:
+    fields: organizationId, authUserId
+    unique: true

@@ -1,0 +1,20 @@
+### A team competing within a single [League]. Scoped to one league/season
+### for Phase 1 -- persistent clubs spanning multiple seasons are a later
+### enhancement, not needed for the initial broad-but-shallow slice.
+class: Team
+table: bgs_team
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  league: League?, relation(onDelete=Cascade)
+
+  name: String
+
+  createdAt: DateTime, defaultModel=now
+
+  ### Reverse sides of [ScheduledMatch]'s named home/away relations -- not
+  ### used directly for queries (those filter ScheduledMatch by FK), but
+  ### required by Serverpod to disambiguate the two FKs to this table.
+  homeMatches: List<ScheduledMatch>?, relation(name=scheduled_match_home_team)
+
+  awayMatches: List<ScheduledMatch>?, relation(name=scheduled_match_away_team)

@@ -1,0 +1,21 @@
+### A group that runs leagues and/or events on BGS (a league operator).
+class: Organization
+table: bgs_organization
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  ### Display name.
+  name: String
+
+  ### URL-safe identifier, unique across the platform. Used for the public
+  ### org homepage, e.g. /org/<slug>.
+  slug: String
+
+  description: String?
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_organization_slug_idx:
+    fields: slug
+    unique: true
