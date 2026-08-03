@@ -1,0 +1,5 @@
+### Thrown when the current user isn't an [OrganizationMember] with
+### sufficient role to perform the requested action.
+exception: OrganizationAccessDeniedException
+fields:
+  organizationId: UuidValue

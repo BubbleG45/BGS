@@ -1,0 +1,5 @@
+### Thrown when creating or renaming an [Organization] to a slug that's
+### already taken.
+exception: OrganizationSlugTakenException
+fields:
+  slug: String

@@ -1,0 +1,8 @@
+### An [Organization] paired with the calling user's role in it.
+###
+### Transient DTO (no `table:`) -- return shape for
+### [OrganizationEndpoint.listMine], which backs the Organizer Dashboard.
+class: OrganizationMembership
+fields:
+  organization: Organization
+  role: OrgMemberRole

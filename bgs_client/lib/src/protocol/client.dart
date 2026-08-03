@@ -17,7 +17,11 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:bgs_client/src/protocol/greetings/greeting.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
+    as _i6;
+import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
+    as _i7;
+import 'protocol.dart' as _i8;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -258,6 +262,59 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Organizations are the top-level entity organizers create leagues and
+/// events under. See BUILD_PLAN.md for the domain model.
+/// {@category Endpoint}
+class EndpointOrganization extends _i2.EndpointRef {
+  EndpointOrganization(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'organization';
+
+  /// Creates a new organization and makes the calling user its owner.
+  _i3.Future<_i6.Organization> create({
+    required String name,
+    required String slug,
+    String? description,
+  }) => caller.callServerEndpoint<_i6.Organization>(
+    'organization',
+    'create',
+    {
+      'name': name,
+      'slug': slug,
+      'description': description,
+    },
+  );
+
+  /// Returns a single organization by id.
+  ///
+  /// Organizations are public (an org homepage is a public page), so no
+  /// membership check is required to read one.
+  _i3.Future<_i6.Organization?> getById(_i2.UuidValue organizationId) =>
+      caller.callServerEndpoint<_i6.Organization?>(
+        'organization',
+        'getById',
+        {'organizationId': organizationId},
+      );
+
+  /// Returns a single organization by its public URL slug.
+  _i3.Future<_i6.Organization?> getBySlug(String slug) =>
+      caller.callServerEndpoint<_i6.Organization?>(
+        'organization',
+        'getBySlug',
+        {'slug': slug},
+      );
+
+  /// Returns the organizations the calling user is a member of, paired with
+  /// their role in each. Backs the Organizer Dashboard.
+  _i3.Future<List<_i7.OrganizationMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i7.OrganizationMembership>>(
+        'organization',
+        'listMine',
+        {},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     auth = _i4.Caller(client);
@@ -289,7 +346,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i6.Protocol(),
+         _i8.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -301,6 +358,7 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    organization = EndpointOrganization(this);
     modules = Modules(this);
   }
 
@@ -310,6 +368,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointOrganization organization;
+
   late final Modules modules;
 
   @override
@@ -317,6 +377,7 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'organization': organization,
   };
 
   @override

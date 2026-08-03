@@ -14,10 +14,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
+import '../organizations/organization_endpoint.dart' as _i5;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i5;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i6;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i7;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -39,6 +40,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'greeting',
+          null,
+        ),
+      'organization': _i5.OrganizationEndpoint()
+        ..initialize(
+          server,
+          'organization',
           null,
         ),
     };
@@ -270,9 +277,94 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i5.Endpoints()
+    connectors['organization'] = _i1.EndpointConnector(
+      name: 'organization',
+      endpoint: endpoints['organization']!,
+      methodConnectors: {
+        'create': _i1.MethodConnector(
+          name: 'create',
+          params: {
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'description': _i1.ParameterDescription(
+              name: 'description',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+                  .create(
+                    session,
+                    name: params['name'],
+                    slug: params['slug'],
+                    description: params['description'],
+                  ),
+        ),
+        'getById': _i1.MethodConnector(
+          name: 'getById',
+          params: {
+            'organizationId': _i1.ParameterDescription(
+              name: 'organizationId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+                  .getById(
+                    session,
+                    params['organizationId'],
+                  ),
+        ),
+        'getBySlug': _i1.MethodConnector(
+          name: 'getBySlug',
+          params: {
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+                  .getBySlug(
+                    session,
+                    params['slug'],
+                  ),
+        ),
+        'listMine': _i1.MethodConnector(
+          name: 'listMine',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+                  .listMine(session),
+        ),
+      },
+    );
+    modules['serverpod_auth_core'] = _i6.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i6.Endpoints()
+    modules['serverpod_auth_idp'] = _i7.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -4,6 +4,12 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Organization endpoint — first live endpoint)
+- `OrganizationEndpoint`: `create` (creates the org and makes the caller its `owner` via `OrganizationMember`), `getById`, `getBySlug` (public — no membership required, since org homepages are public pages), `listMine` (backs the Organizer Dashboard).
+- `requireOrgRole` helper in `organization_access.dart` — the shared authorization pattern for "is this AuthUser a member of this org with sufficient role," meant to be reused by League/Team/Event endpoints rather than re-derived each time.
+- Typed exceptions `OrganizationAccessDeniedException`, `OrganizationSlugTakenException` (slug uniqueness pre-checked in `create`, with the DB unique index as the actual race-condition backstop).
+- Integration tests in `organization_endpoint_test.dart` covering ownership-on-create, slug collisions, and that org reads stay public while `listMine` stays scoped to actual membership.
+
 ### Added (Phase 1 domain model — schema only, no endpoints yet)
 - `bgs_server` now references the auth module's `AuthUser` (via `module:auth:AuthUser`) instead of a separate BGS user table. Reused the auth module's built-in `UserProfile` (name/email/image) rather than inventing a duplicate — no BGS-specific profile model exists yet.
 - Roles (Player / Organizer / Manager) are **not** stored as a field on the user — they're derived from membership rows (`OrganizationMember`, `TeamMembership`), so one person can be an organizer of their own org and a player on someone else's team.
