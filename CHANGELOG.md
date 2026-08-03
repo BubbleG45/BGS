@@ -4,6 +4,12 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (League endpoint)
+- `LeagueEndpoint`: `create` (draft status, `admin`+ on the org required, slug pre-checked unique within org), `activate` (draft → active only, typed error otherwise), `update` (partial update of basic fields), `getById`/`getByOrgAndSlug`/`listByOrganization` (all public reads — league pages are public, matching the org-read pattern).
+- Reused `requireOrgRole` from the Organization work unchanged — confirms the shared authorization helper actually generalizes across endpoints as intended.
+- Typed exceptions `LeagueSlugTakenException`, `LeagueNotFoundException`, `LeagueActivationNotAllowedException`.
+- Integration tests in `league_endpoint_test.dart`: create/draft-status, non-member denial, slug collision, activate (success + already-active rejection), partial update, and public reads by non-members.
+
 ### Added (Organization endpoint — first live endpoint)
 - `OrganizationEndpoint`: `create` (creates the org and makes the caller its `owner` via `OrganizationMember`), `getById`, `getBySlug` (public — no membership required, since org homepages are public pages), `listMine` (backs the Organizer Dashboard).
 - `requireOrgRole` helper in `organization_access.dart` — the shared authorization pattern for "is this AuthUser a member of this org with sufficient role," meant to be reused by League/Team/Event endpoints rather than re-derived each time.

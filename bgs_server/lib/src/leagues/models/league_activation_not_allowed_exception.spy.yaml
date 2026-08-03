@@ -1,0 +1,5 @@
+### Thrown when trying to activate a league that isn't currently `draft`.
+exception: LeagueActivationNotAllowedException
+fields:
+  leagueId: UuidValue
+  currentStatus: LeagueStatus

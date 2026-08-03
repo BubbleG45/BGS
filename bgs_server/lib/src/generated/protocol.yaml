@@ -11,6 +11,13 @@ jwtRefresh:
   - refreshAccessToken:
 greeting:
   - hello:
+league:
+  - create:
+  - getById:
+  - getByOrgAndSlug:
+  - listByOrganization:
+  - update:
+  - activate:
 organization:
   - create:
   - getById:

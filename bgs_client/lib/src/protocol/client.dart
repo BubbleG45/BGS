@@ -17,11 +17,14 @@ import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
 import 'package:bgs_client/src/protocol/greetings/greeting.dart' as _i5;
+import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i6;
+import 'package:bgs_client/src/protocol/sports/models/sport.dart' as _i7;
+import 'package:bgs_client/src/protocol/sports/models/skill_level.dart' as _i8;
 import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
-    as _i6;
+    as _i9;
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
-    as _i7;
-import 'protocol.dart' as _i8;
+    as _i10;
+import 'protocol.dart' as _i11;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -262,6 +265,104 @@ class EndpointGreeting extends _i2.EndpointRef {
       );
 }
 
+/// Leagues are full seasons run by an [Organization] for a single sport.
+/// See BUILD_PLAN.md for the domain model.
+/// {@category Endpoint}
+class EndpointLeague extends _i2.EndpointRef {
+  EndpointLeague(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'league';
+
+  /// Creates a new league within an organization. Requires at least `admin`
+  /// on the organization. Starts in `draft` status -- see [activate].
+  _i3.Future<_i6.League> create({
+    required _i2.UuidValue organizationId,
+    required String name,
+    required String slug,
+    required _i7.Sport sport,
+    required int teamFeeCents,
+    _i8.SkillLevel? skillLevel,
+    String? description,
+    String? location,
+  }) => caller.callServerEndpoint<_i6.League>(
+    'league',
+    'create',
+    {
+      'organizationId': organizationId,
+      'name': name,
+      'slug': slug,
+      'sport': sport,
+      'teamFeeCents': teamFeeCents,
+      'skillLevel': skillLevel,
+      'description': description,
+      'location': location,
+    },
+  );
+
+  /// Returns a single league by id. Public -- league pages are public.
+  _i3.Future<_i6.League?> getById(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<_i6.League?>(
+        'league',
+        'getById',
+        {'leagueId': leagueId},
+      );
+
+  /// Returns a single league by its org-scoped slug. Public.
+  _i3.Future<_i6.League?> getByOrgAndSlug({
+    required _i2.UuidValue organizationId,
+    required String slug,
+  }) => caller.callServerEndpoint<_i6.League?>(
+    'league',
+    'getByOrgAndSlug',
+    {
+      'organizationId': organizationId,
+      'slug': slug,
+    },
+  );
+
+  /// Returns all leagues for an organization, newest first. Public -- backs
+  /// the org homepage's "show leagues" list.
+  _i3.Future<List<_i6.League>> listByOrganization(
+    _i2.UuidValue organizationId,
+  ) => caller.callServerEndpoint<List<_i6.League>>(
+    'league',
+    'listByOrganization',
+    {'organizationId': organizationId},
+  );
+
+  /// Updates a league's basic details. Requires at least `admin` on the
+  /// league's organization.
+  _i3.Future<_i6.League> update(
+    _i2.UuidValue leagueId, {
+    String? name,
+    String? description,
+    String? location,
+    _i8.SkillLevel? skillLevel,
+    int? teamFeeCents,
+  }) => caller.callServerEndpoint<_i6.League>(
+    'league',
+    'update',
+    {
+      'leagueId': leagueId,
+      'name': name,
+      'description': description,
+      'location': location,
+      'skillLevel': skillLevel,
+      'teamFeeCents': teamFeeCents,
+    },
+  );
+
+  /// Activates a draft league, making it publicly visible for registration.
+  /// Requires at least `admin` on the league's organization.
+  _i3.Future<_i6.League> activate(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<_i6.League>(
+        'league',
+        'activate',
+        {'leagueId': leagueId},
+      );
+}
+
 /// Organizations are the top-level entity organizers create leagues and
 /// events under. See BUILD_PLAN.md for the domain model.
 /// {@category Endpoint}
@@ -272,11 +373,11 @@ class EndpointOrganization extends _i2.EndpointRef {
   String get name => 'organization';
 
   /// Creates a new organization and makes the calling user its owner.
-  _i3.Future<_i6.Organization> create({
+  _i3.Future<_i9.Organization> create({
     required String name,
     required String slug,
     String? description,
-  }) => caller.callServerEndpoint<_i6.Organization>(
+  }) => caller.callServerEndpoint<_i9.Organization>(
     'organization',
     'create',
     {
@@ -290,16 +391,16 @@ class EndpointOrganization extends _i2.EndpointRef {
   ///
   /// Organizations are public (an org homepage is a public page), so no
   /// membership check is required to read one.
-  _i3.Future<_i6.Organization?> getById(_i2.UuidValue organizationId) =>
-      caller.callServerEndpoint<_i6.Organization?>(
+  _i3.Future<_i9.Organization?> getById(_i2.UuidValue organizationId) =>
+      caller.callServerEndpoint<_i9.Organization?>(
         'organization',
         'getById',
         {'organizationId': organizationId},
       );
 
   /// Returns a single organization by its public URL slug.
-  _i3.Future<_i6.Organization?> getBySlug(String slug) =>
-      caller.callServerEndpoint<_i6.Organization?>(
+  _i3.Future<_i9.Organization?> getBySlug(String slug) =>
+      caller.callServerEndpoint<_i9.Organization?>(
         'organization',
         'getBySlug',
         {'slug': slug},
@@ -307,8 +408,8 @@ class EndpointOrganization extends _i2.EndpointRef {
 
   /// Returns the organizations the calling user is a member of, paired with
   /// their role in each. Backs the Organizer Dashboard.
-  _i3.Future<List<_i7.OrganizationMembership>> listMine() =>
-      caller.callServerEndpoint<List<_i7.OrganizationMembership>>(
+  _i3.Future<List<_i10.OrganizationMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i10.OrganizationMembership>>(
         'organization',
         'listMine',
         {},
@@ -346,7 +447,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i8.Protocol(),
+         _i11.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -358,6 +459,7 @@ class Client extends _i2.ServerpodClientShared {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     greeting = EndpointGreeting(this);
+    league = EndpointLeague(this);
     organization = EndpointOrganization(this);
     modules = Modules(this);
   }
@@ -368,6 +470,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointLeague league;
+
   late final EndpointOrganization organization;
 
   late final Modules modules;
@@ -377,6 +481,7 @@ class Client extends _i2.ServerpodClientShared {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'greeting': greeting,
+    'league': league,
     'organization': organization,
   };
 

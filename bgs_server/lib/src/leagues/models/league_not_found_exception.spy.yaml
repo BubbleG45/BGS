@@ -1,0 +1,4 @@
+### Thrown when a league id doesn't correspond to any existing league.
+exception: LeagueNotFoundException
+fields:
+  leagueId: UuidValue

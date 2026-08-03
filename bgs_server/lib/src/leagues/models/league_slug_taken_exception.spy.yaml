@@ -1,0 +1,6 @@
+### Thrown when creating a league with a slug that's already taken within
+### the same organization (league slugs are unique per-org, not globally).
+exception: LeagueSlugTakenException
+fields:
+  organizationId: UuidValue
+  slug: String

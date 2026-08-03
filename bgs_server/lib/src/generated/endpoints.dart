@@ -14,11 +14,14 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
-import '../organizations/organization_endpoint.dart' as _i5;
+import '../leagues/league_endpoint.dart' as _i5;
+import '../organizations/organization_endpoint.dart' as _i6;
+import 'package:bgs_server/src/generated/sports/models/sport.dart' as _i7;
+import 'package:bgs_server/src/generated/sports/models/skill_level.dart' as _i8;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i6;
+    as _i9;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i7;
+    as _i10;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -42,7 +45,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'organization': _i5.OrganizationEndpoint()
+      'league': _i5.LeagueEndpoint()
+        ..initialize(
+          server,
+          'league',
+          null,
+        ),
+      'organization': _i6.OrganizationEndpoint()
         ..initialize(
           server,
           'organization',
@@ -277,6 +286,200 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['league'] = _i1.EndpointConnector(
+      name: 'league',
+      endpoint: endpoints['league']!,
+      methodConnectors: {
+        'create': _i1.MethodConnector(
+          name: 'create',
+          params: {
+            'organizationId': _i1.ParameterDescription(
+              name: 'organizationId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'sport': _i1.ParameterDescription(
+              name: 'sport',
+              type: _i1.getType<_i7.Sport>(),
+              nullable: false,
+            ),
+            'teamFeeCents': _i1.ParameterDescription(
+              name: 'teamFeeCents',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'skillLevel': _i1.ParameterDescription(
+              name: 'skillLevel',
+              type: _i1.getType<_i8.SkillLevel?>(),
+              nullable: true,
+            ),
+            'description': _i1.ParameterDescription(
+              name: 'description',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['league'] as _i5.LeagueEndpoint).create(
+                session,
+                organizationId: params['organizationId'],
+                name: params['name'],
+                slug: params['slug'],
+                sport: params['sport'],
+                teamFeeCents: params['teamFeeCents'],
+                skillLevel: params['skillLevel'],
+                description: params['description'],
+                location: params['location'],
+              ),
+        ),
+        'getById': _i1.MethodConnector(
+          name: 'getById',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['league'] as _i5.LeagueEndpoint).getById(
+                session,
+                params['leagueId'],
+              ),
+        ),
+        'getByOrgAndSlug': _i1.MethodConnector(
+          name: 'getByOrgAndSlug',
+          params: {
+            'organizationId': _i1.ParameterDescription(
+              name: 'organizationId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['league'] as _i5.LeagueEndpoint).getByOrgAndSlug(
+                    session,
+                    organizationId: params['organizationId'],
+                    slug: params['slug'],
+                  ),
+        ),
+        'listByOrganization': _i1.MethodConnector(
+          name: 'listByOrganization',
+          params: {
+            'organizationId': _i1.ParameterDescription(
+              name: 'organizationId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['league'] as _i5.LeagueEndpoint)
+                  .listByOrganization(
+                    session,
+                    params['organizationId'],
+                  ),
+        ),
+        'update': _i1.MethodConnector(
+          name: 'update',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'description': _i1.ParameterDescription(
+              name: 'description',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'skillLevel': _i1.ParameterDescription(
+              name: 'skillLevel',
+              type: _i1.getType<_i8.SkillLevel?>(),
+              nullable: true,
+            ),
+            'teamFeeCents': _i1.ParameterDescription(
+              name: 'teamFeeCents',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['league'] as _i5.LeagueEndpoint).update(
+                session,
+                params['leagueId'],
+                name: params['name'],
+                description: params['description'],
+                location: params['location'],
+                skillLevel: params['skillLevel'],
+                teamFeeCents: params['teamFeeCents'],
+              ),
+        ),
+        'activate': _i1.MethodConnector(
+          name: 'activate',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['league'] as _i5.LeagueEndpoint).activate(
+                session,
+                params['leagueId'],
+              ),
+        ),
+      },
+    );
     connectors['organization'] = _i1.EndpointConnector(
       name: 'organization',
       endpoint: endpoints['organization']!,
@@ -304,7 +507,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+              ) async => (endpoints['organization'] as _i6.OrganizationEndpoint)
                   .create(
                     session,
                     name: params['name'],
@@ -325,7 +528,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+              ) async => (endpoints['organization'] as _i6.OrganizationEndpoint)
                   .getById(
                     session,
                     params['organizationId'],
@@ -344,7 +547,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+              ) async => (endpoints['organization'] as _i6.OrganizationEndpoint)
                   .getBySlug(
                     session,
                     params['slug'],
@@ -357,14 +560,14 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['organization'] as _i5.OrganizationEndpoint)
+              ) async => (endpoints['organization'] as _i6.OrganizationEndpoint)
                   .listMine(session),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i6.Endpoints()
+    modules['serverpod_auth_core'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i7.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
   }
 }
