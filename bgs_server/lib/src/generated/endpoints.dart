@@ -16,12 +16,13 @@ import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../greetings/greeting_endpoint.dart' as _i4;
 import '../leagues/league_endpoint.dart' as _i5;
 import '../organizations/organization_endpoint.dart' as _i6;
-import 'package:bgs_server/src/generated/sports/models/sport.dart' as _i7;
-import 'package:bgs_server/src/generated/sports/models/skill_level.dart' as _i8;
+import '../teams/team_endpoint.dart' as _i7;
+import 'package:bgs_server/src/generated/sports/models/sport.dart' as _i8;
+import 'package:bgs_server/src/generated/sports/models/skill_level.dart' as _i9;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i9;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i10;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -55,6 +56,12 @@ class Endpoints extends _i1.EndpointDispatch {
         ..initialize(
           server,
           'organization',
+          null,
+        ),
+      'team': _i7.TeamEndpoint()
+        ..initialize(
+          server,
+          'team',
           null,
         ),
     };
@@ -310,7 +317,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'sport': _i1.ParameterDescription(
               name: 'sport',
-              type: _i1.getType<_i7.Sport>(),
+              type: _i1.getType<_i8.Sport>(),
               nullable: false,
             ),
             'teamFeeCents': _i1.ParameterDescription(
@@ -320,7 +327,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i8.SkillLevel?>(),
+              type: _i1.getType<_i9.SkillLevel?>(),
               nullable: true,
             ),
             'description': _i1.ParameterDescription(
@@ -437,7 +444,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i8.SkillLevel?>(),
+              type: _i1.getType<_i9.SkillLevel?>(),
               nullable: true,
             ),
             'teamFeeCents': _i1.ParameterDescription(
@@ -565,9 +572,145 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i9.Endpoints()
+    connectors['team'] = _i1.EndpointConnector(
+      name: 'team',
+      endpoint: endpoints['team']!,
+      methodConnectors: {
+        'create': _i1.MethodConnector(
+          name: 'create',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).create(
+                session,
+                leagueId: params['leagueId'],
+                name: params['name'],
+              ),
+        ),
+        'getById': _i1.MethodConnector(
+          name: 'getById',
+          params: {
+            'teamId': _i1.ParameterDescription(
+              name: 'teamId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).getById(
+                session,
+                params['teamId'],
+              ),
+        ),
+        'listByLeague': _i1.MethodConnector(
+          name: 'listByLeague',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).listByLeague(
+                session,
+                params['leagueId'],
+              ),
+        ),
+        'invitePlayer': _i1.MethodConnector(
+          name: 'invitePlayer',
+          params: {
+            'teamId': _i1.ParameterDescription(
+              name: 'teamId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+            'email': _i1.ParameterDescription(
+              name: 'email',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).invitePlayer(
+                session,
+                teamId: params['teamId'],
+                email: params['email'],
+              ),
+        ),
+        'acceptInvite': _i1.MethodConnector(
+          name: 'acceptInvite',
+          params: {
+            'membershipId': _i1.ParameterDescription(
+              name: 'membershipId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).acceptInvite(
+                session,
+                params['membershipId'],
+              ),
+        ),
+        'declineInvite': _i1.MethodConnector(
+          name: 'declineInvite',
+          params: {
+            'membershipId': _i1.ParameterDescription(
+              name: 'membershipId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['team'] as _i7.TeamEndpoint).declineInvite(
+                session,
+                params['membershipId'],
+              ),
+        ),
+        'listMine': _i1.MethodConnector(
+          name: 'listMine',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['team'] as _i7.TeamEndpoint).listMine(session),
+        ),
+      },
+    );
+    modules['serverpod_auth_core'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i10.Endpoints()
+    modules['serverpod_auth_idp'] = _i11.Endpoints()
       ..initializeEndpoints(server);
   }
 }

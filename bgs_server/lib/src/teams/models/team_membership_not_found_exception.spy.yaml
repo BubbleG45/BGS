@@ -1,0 +1,5 @@
+### Thrown when a team membership id doesn't correspond to any existing
+### membership.
+exception: TeamMembershipNotFoundException
+fields:
+  membershipId: UuidValue

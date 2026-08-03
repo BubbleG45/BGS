@@ -1,0 +1,7 @@
+### Thrown when inviting a player by email that doesn't match any existing
+### user profile. Phase 1 requires the invited player to already have a BGS
+### account -- invite-by-email-for-a-not-yet-registered-user is a later
+### enhancement.
+exception: PlayerNotFoundException
+fields:
+  email: String

@@ -4,6 +4,12 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Team endpoint + player-invite flow)
+- `TeamEndpoint`: `create` (`admin`+ on the team's league's org), `getById`/`listByLeague` (public reads), `invitePlayer` (looks the invitee up by verified email via `UserProfile`, `admin`+ required, creates a `TeamMembership` with `status: invited`), `acceptInvite`/`declineInvite`, `listMine` (backs the Player Dashboard's "my teams").
+- New authorization pattern for `acceptInvite`/`declineInvite`: not an org-role check like every other write so far -- just "is the calling `AuthUser` the one on this membership row." First player-side write in the app; deliberately kept separate from `requireOrgRole` since the player usually isn't an org member at all.
+- Typed exceptions `TeamNotFoundException`, `TeamMembershipNotFoundException`, `PlayerNotFoundException` (invited email has no BGS account yet -- invite-before-signup is a later enhancement), `TeamMembershipAlreadyExistsException`, `TeamMembershipAccessDeniedException` (wrong user resolving someone else's invite), `TeamMembershipActionNotAllowedException` (resolving an already-resolved invite).
+- Integration tests in `team_endpoint_test.dart` (11 cases): create + org-gating, invite-by-email success/unknown-email/duplicate, accept/decline success, wrong-user denial, double-resolve rejection, `listMine`, and public reads by non-members.
+
 ### Added (League endpoint)
 - `LeagueEndpoint`: `create` (draft status, `admin`+ on the org required, slug pre-checked unique within org), `activate` (draft → active only, typed error otherwise), `update` (partial update of basic fields), `getById`/`getByOrgAndSlug`/`listByOrganization` (all public reads — league pages are public, matching the org-read pattern).
 - Reused `requireOrgRole` from the Organization work unchanged — confirms the shared authorization helper actually generalizes across endpoints as intended.

@@ -1,0 +1,6 @@
+### Thrown when inviting a player who already has a membership row (any
+### status) for the target team.
+exception: TeamMembershipAlreadyExistsException
+fields:
+  teamId: UuidValue
+  email: String

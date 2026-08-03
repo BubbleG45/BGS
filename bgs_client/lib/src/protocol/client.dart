@@ -24,7 +24,10 @@ import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
     as _i9;
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
     as _i10;
-import 'protocol.dart' as _i11;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i11;
+import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
+    as _i12;
+import 'protocol.dart' as _i13;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -416,6 +419,97 @@ class EndpointOrganization extends _i2.EndpointRef {
       );
 }
 
+/// Teams compete within a single [League]. See BUILD_PLAN.md for the domain
+/// model.
+///
+/// Two authorization patterns live side by side here: [create] and
+/// [invitePlayer] use [requireOrgRole] (same pattern as League), while
+/// [acceptInvite]/[declineInvite] use a simpler check -- is the calling user
+/// the [AuthUser] on the membership row being acted on. That second pattern
+/// is new to the app: it's the first player-side write, and there's no org
+/// role to check because the player usually isn't an org member at all.
+/// {@category Endpoint}
+class EndpointTeam extends _i2.EndpointRef {
+  EndpointTeam(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'team';
+
+  /// Creates a new team within a league. Requires at least `admin` on the
+  /// league's organization.
+  _i3.Future<_i11.Team> create({
+    required _i2.UuidValue leagueId,
+    required String name,
+  }) => caller.callServerEndpoint<_i11.Team>(
+    'team',
+    'create',
+    {
+      'leagueId': leagueId,
+      'name': name,
+    },
+  );
+
+  /// Returns a single team by id. Public -- team pages are public.
+  _i3.Future<_i11.Team?> getById(_i2.UuidValue teamId) =>
+      caller.callServerEndpoint<_i11.Team?>(
+        'team',
+        'getById',
+        {'teamId': teamId},
+      );
+
+  /// Returns all teams for a league. Public.
+  _i3.Future<List<_i11.Team>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i11.Team>>(
+        'team',
+        'listByLeague',
+        {'leagueId': leagueId},
+      );
+
+  /// Invites an existing BGS user (by their verified email) to join a team.
+  /// Requires at least `admin` on the team's league's organization.
+  ///
+  /// The invited player must already have a BGS account -- inviting someone
+  /// who hasn't signed up yet is a later enhancement.
+  _i3.Future<_i12.TeamMembership> invitePlayer({
+    required _i2.UuidValue teamId,
+    required String email,
+  }) => caller.callServerEndpoint<_i12.TeamMembership>(
+    'team',
+    'invitePlayer',
+    {
+      'teamId': teamId,
+      'email': email,
+    },
+  );
+
+  /// Accepts a pending invite. Callable only by the invited player
+  /// themselves -- see the class doc for why this isn't an org-role check.
+  _i3.Future<_i12.TeamMembership> acceptInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i12.TeamMembership>(
+        'team',
+        'acceptInvite',
+        {'membershipId': membershipId},
+      );
+
+  /// Declines a pending invite. Callable only by the invited player
+  /// themselves.
+  _i3.Future<_i12.TeamMembership> declineInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i12.TeamMembership>(
+        'team',
+        'declineInvite',
+        {'membershipId': membershipId},
+      );
+
+  /// Returns the calling user's own team memberships, across all teams.
+  /// Backs the Player Dashboard ("my teams").
+  _i3.Future<List<_i12.TeamMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i12.TeamMembership>>(
+        'team',
+        'listMine',
+        {},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     auth = _i4.Caller(client);
@@ -447,7 +541,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i11.Protocol(),
+         _i13.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -461,6 +555,7 @@ class Client extends _i2.ServerpodClientShared {
     greeting = EndpointGreeting(this);
     league = EndpointLeague(this);
     organization = EndpointOrganization(this);
+    team = EndpointTeam(this);
     modules = Modules(this);
   }
 
@@ -474,6 +569,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointOrganization organization;
 
+  late final EndpointTeam team;
+
   late final Modules modules;
 
   @override
@@ -483,6 +580,7 @@ class Client extends _i2.ServerpodClientShared {
     'greeting': greeting,
     'league': league,
     'organization': organization,
+    'team': team,
   };
 
   @override

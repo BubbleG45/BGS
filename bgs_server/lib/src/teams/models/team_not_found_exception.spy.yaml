@@ -1,0 +1,4 @@
+### Thrown when a team id doesn't correspond to any existing team.
+exception: TeamNotFoundException
+fields:
+  teamId: UuidValue

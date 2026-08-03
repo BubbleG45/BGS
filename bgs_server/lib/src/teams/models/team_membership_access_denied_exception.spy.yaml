@@ -1,0 +1,7 @@
+### Thrown when the calling user tries to accept/decline a team invite that
+### isn't theirs. Authorization here is "is this the AuthUser on the
+### membership row" -- deliberately not an org-role check, since this is a
+### player-side action.
+exception: TeamMembershipAccessDeniedException
+fields:
+  membershipId: UuidValue

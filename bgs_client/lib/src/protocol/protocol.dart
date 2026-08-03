@@ -33,16 +33,25 @@ import 'sports/models/skill_level.dart' as _i20;
 import 'sports/models/sport.dart' as _i21;
 import 'standings/models/standing.dart' as _i22;
 import 'teams/models/membership_status.dart' as _i23;
-import 'teams/models/team.dart' as _i24;
-import 'teams/models/team_member_role.dart' as _i25;
-import 'teams/models/team_membership.dart' as _i26;
-import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i27;
+import 'teams/models/player_not_found_exception.dart' as _i24;
+import 'teams/models/team.dart' as _i25;
+import 'teams/models/team_member_role.dart' as _i26;
+import 'teams/models/team_membership.dart' as _i27;
+import 'teams/models/team_membership_access_denied_exception.dart' as _i28;
+import 'teams/models/team_membership_action_not_allowed_exception.dart' as _i29;
+import 'teams/models/team_membership_already_exists_exception.dart' as _i30;
+import 'teams/models/team_membership_not_found_exception.dart' as _i31;
+import 'teams/models/team_not_found_exception.dart' as _i32;
+import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i33;
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
-    as _i28;
+    as _i34;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i35;
+import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
+    as _i36;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i29;
+    as _i37;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i30;
+    as _i38;
 export 'events/models/event.dart';
 export 'events/models/event_registration.dart';
 export 'events/models/event_registration_status.dart';
@@ -65,9 +74,15 @@ export 'sports/models/skill_level.dart';
 export 'sports/models/sport.dart';
 export 'standings/models/standing.dart';
 export 'teams/models/membership_status.dart';
+export 'teams/models/player_not_found_exception.dart';
 export 'teams/models/team.dart';
 export 'teams/models/team_member_role.dart';
 export 'teams/models/team_membership.dart';
+export 'teams/models/team_membership_access_denied_exception.dart';
+export 'teams/models/team_membership_action_not_allowed_exception.dart';
+export 'teams/models/team_membership_already_exists_exception.dart';
+export 'teams/models/team_membership_not_found_exception.dart';
+export 'teams/models/team_not_found_exception.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -170,14 +185,32 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i23.MembershipStatus) {
       return _i23.MembershipStatus.fromJson(data) as T;
     }
-    if (t == _i24.Team) {
-      return _i24.Team.fromJson(data) as T;
+    if (t == _i24.PlayerNotFoundException) {
+      return _i24.PlayerNotFoundException.fromJson(data) as T;
     }
-    if (t == _i25.TeamMemberRole) {
-      return _i25.TeamMemberRole.fromJson(data) as T;
+    if (t == _i25.Team) {
+      return _i25.Team.fromJson(data) as T;
     }
-    if (t == _i26.TeamMembership) {
-      return _i26.TeamMembership.fromJson(data) as T;
+    if (t == _i26.TeamMemberRole) {
+      return _i26.TeamMemberRole.fromJson(data) as T;
+    }
+    if (t == _i27.TeamMembership) {
+      return _i27.TeamMembership.fromJson(data) as T;
+    }
+    if (t == _i28.TeamMembershipAccessDeniedException) {
+      return _i28.TeamMembershipAccessDeniedException.fromJson(data) as T;
+    }
+    if (t == _i29.TeamMembershipActionNotAllowedException) {
+      return _i29.TeamMembershipActionNotAllowedException.fromJson(data) as T;
+    }
+    if (t == _i30.TeamMembershipAlreadyExistsException) {
+      return _i30.TeamMembershipAlreadyExistsException.fromJson(data) as T;
+    }
+    if (t == _i31.TeamMembershipNotFoundException) {
+      return _i31.TeamMembershipNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i32.TeamNotFoundException) {
+      return _i32.TeamNotFoundException.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Event?>()) {
       return (data != null ? _i2.Event.fromJson(data) : null) as T;
@@ -261,14 +294,46 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i23.MembershipStatus?>()) {
       return (data != null ? _i23.MembershipStatus.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.Team?>()) {
-      return (data != null ? _i24.Team.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.PlayerNotFoundException?>()) {
+      return (data != null ? _i24.PlayerNotFoundException.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i25.TeamMemberRole?>()) {
-      return (data != null ? _i25.TeamMemberRole.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i25.Team?>()) {
+      return (data != null ? _i25.Team.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.TeamMembership?>()) {
-      return (data != null ? _i26.TeamMembership.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.TeamMemberRole?>()) {
+      return (data != null ? _i26.TeamMemberRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.TeamMembership?>()) {
+      return (data != null ? _i27.TeamMembership.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.TeamMembershipAccessDeniedException?>()) {
+      return (data != null
+              ? _i28.TeamMembershipAccessDeniedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i29.TeamMembershipActionNotAllowedException?>()) {
+      return (data != null
+              ? _i29.TeamMembershipActionNotAllowedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i30.TeamMembershipAlreadyExistsException?>()) {
+      return (data != null
+              ? _i30.TeamMembershipAlreadyExistsException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i31.TeamMembershipNotFoundException?>()) {
+      return (data != null
+              ? _i31.TeamMembershipNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i32.TeamNotFoundException?>()) {
+      return (data != null ? _i32.TeamNotFoundException.fromJson(data) : null)
+          as T;
     }
     if (t == List<_i19.ScheduledMatch>) {
       return (data as List)
@@ -284,21 +349,30 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i27.League>) {
-      return (data as List).map((e) => deserialize<_i27.League>(e)).toList()
+    if (t == List<_i33.League>) {
+      return (data as List).map((e) => deserialize<_i33.League>(e)).toList()
           as T;
     }
-    if (t == List<_i28.OrganizationMembership>) {
+    if (t == List<_i34.OrganizationMembership>) {
       return (data as List)
-              .map((e) => deserialize<_i28.OrganizationMembership>(e))
+              .map((e) => deserialize<_i34.OrganizationMembership>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i35.Team>) {
+      return (data as List).map((e) => deserialize<_i35.Team>(e)).toList() as T;
+    }
+    if (t == List<_i36.TeamMembership>) {
+      return (data as List)
+              .map((e) => deserialize<_i36.TeamMembership>(e))
               .toList()
           as T;
     }
     try {
-      return _i29.Protocol().deserialize<T>(data, t);
+      return _i37.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i30.Protocol().deserialize<T>(data, t);
+      return _i38.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -329,9 +403,18 @@ class Protocol extends _i1.SerializationManager {
       _i21.Sport => 'Sport',
       _i22.Standing => 'Standing',
       _i23.MembershipStatus => 'MembershipStatus',
-      _i24.Team => 'Team',
-      _i25.TeamMemberRole => 'TeamMemberRole',
-      _i26.TeamMembership => 'TeamMembership',
+      _i24.PlayerNotFoundException => 'PlayerNotFoundException',
+      _i25.Team => 'Team',
+      _i26.TeamMemberRole => 'TeamMemberRole',
+      _i27.TeamMembership => 'TeamMembership',
+      _i28.TeamMembershipAccessDeniedException =>
+        'TeamMembershipAccessDeniedException',
+      _i29.TeamMembershipActionNotAllowedException =>
+        'TeamMembershipActionNotAllowedException',
+      _i30.TeamMembershipAlreadyExistsException =>
+        'TeamMembershipAlreadyExistsException',
+      _i31.TeamMembershipNotFoundException => 'TeamMembershipNotFoundException',
+      _i32.TeamNotFoundException => 'TeamNotFoundException',
       _ => null,
     };
   }
@@ -390,18 +473,30 @@ class Protocol extends _i1.SerializationManager {
         return 'Standing';
       case _i23.MembershipStatus():
         return 'MembershipStatus';
-      case _i24.Team():
+      case _i24.PlayerNotFoundException():
+        return 'PlayerNotFoundException';
+      case _i25.Team():
         return 'Team';
-      case _i25.TeamMemberRole():
+      case _i26.TeamMemberRole():
         return 'TeamMemberRole';
-      case _i26.TeamMembership():
+      case _i27.TeamMembership():
         return 'TeamMembership';
+      case _i28.TeamMembershipAccessDeniedException():
+        return 'TeamMembershipAccessDeniedException';
+      case _i29.TeamMembershipActionNotAllowedException():
+        return 'TeamMembershipActionNotAllowedException';
+      case _i30.TeamMembershipAlreadyExistsException():
+        return 'TeamMembershipAlreadyExistsException';
+      case _i31.TeamMembershipNotFoundException():
+        return 'TeamMembershipNotFoundException';
+      case _i32.TeamNotFoundException():
+        return 'TeamNotFoundException';
     }
-    className = _i29.Protocol().getClassNameForObject(data);
+    className = _i37.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i30.Protocol().getClassNameForObject(data);
+    className = _i38.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -480,22 +575,46 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'MembershipStatus') {
       return deserialize<_i23.MembershipStatus>(data['data']);
     }
+    if (dataClassName == 'PlayerNotFoundException') {
+      return deserialize<_i24.PlayerNotFoundException>(data['data']);
+    }
     if (dataClassName == 'Team') {
-      return deserialize<_i24.Team>(data['data']);
+      return deserialize<_i25.Team>(data['data']);
     }
     if (dataClassName == 'TeamMemberRole') {
-      return deserialize<_i25.TeamMemberRole>(data['data']);
+      return deserialize<_i26.TeamMemberRole>(data['data']);
     }
     if (dataClassName == 'TeamMembership') {
-      return deserialize<_i26.TeamMembership>(data['data']);
+      return deserialize<_i27.TeamMembership>(data['data']);
+    }
+    if (dataClassName == 'TeamMembershipAccessDeniedException') {
+      return deserialize<_i28.TeamMembershipAccessDeniedException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'TeamMembershipActionNotAllowedException') {
+      return deserialize<_i29.TeamMembershipActionNotAllowedException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'TeamMembershipAlreadyExistsException') {
+      return deserialize<_i30.TeamMembershipAlreadyExistsException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'TeamMembershipNotFoundException') {
+      return deserialize<_i31.TeamMembershipNotFoundException>(data['data']);
+    }
+    if (dataClassName == 'TeamNotFoundException') {
+      return deserialize<_i32.TeamNotFoundException>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i29.Protocol().deserializeByClassName(data);
+      return _i37.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i30.Protocol().deserializeByClassName(data);
+      return _i38.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -510,10 +629,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i29.Protocol().mapRecordToJson(record);
+      return _i37.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i30.Protocol().mapRecordToJson(record);
+      return _i38.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

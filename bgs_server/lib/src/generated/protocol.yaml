@@ -23,3 +23,11 @@ organization:
   - getById:
   - getBySlug:
   - listMine:
+team:
+  - create:
+  - getById:
+  - listByLeague:
+  - invitePlayer:
+  - acceptInvite:
+  - declineInvite:
+  - listMine:

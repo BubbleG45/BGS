@@ -1,0 +1,6 @@
+### Thrown when accepting/declining a membership that isn't currently
+### `invited` (e.g. already accepted or declined).
+exception: TeamMembershipActionNotAllowedException
+fields:
+  membershipId: UuidValue
+  currentStatus: MembershipStatus
