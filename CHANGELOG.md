@@ -4,6 +4,17 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Flutter login screen -- first real UI, first consumer of the backend)
+- `bgs_flutter/lib/theme/app_theme.dart`: the theming system promised since day one, actually stood up. `ColorScheme.fromSeed`-based light/dark `ThemeData` with a neutral placeholder seed color, plus themed `AppBarTheme`/`InputDecorationTheme`/`ElevatedButtonTheme`/`CardTheme` so screens never reach for a raw `Color`. Colocated in `bgs_flutter` for now -- BUILD_PLAN's cross-platform shared design-token package (also consumed by the Jaspr public site) is future work, once Jaspr actually has UI to share tokens with.
+- Restyled `sign_in_screen.dart`: BGS name/tagline wrapped around the auth module's pre-built `SignInWidget` (unchanged auth logic, just branding + theme + a max-width-constrained, centered layout that works on both mobile and web/desktop).
+- New `home_screen.dart` replacing the demo `greetings_screen.dart` (deleted, no longer referenced): minimal post-sign-in landing that calls the real `ProfileEndpoint.get()` and displays the signed-in user's name/email, with a sign-out action. Proves the auth + profile loop works end to end without building out the actual dashboards yet (separate, larger piece of work).
+- `main.dart` now actually wires `SignInScreen` → `HomeScreen` (previously commented out, showing the raw demo `GreetingsScreen` unauthenticated) and sets real app branding (`MaterialApp.title`, theme, darkTheme).
+- Verified the full flow in-browser against a real local server: sign-up → email verification code (read from the server's dev-mode console log, per the existing `_sendRegistrationCode` in `server.dart`) → password → signed in, profile displayed correctly → sign-out → sign back in with the same credentials. No console errors.
+
+### Fixed
+- `bgs_flutter/assets/config.json` had `apiUrl: http://localhost:8080` -- the Serverpod default, never updated after `bgs_server`'s dev ports were remapped to 18080+ (see the port-remap fix earlier in this log). The Flutter app would have silently connected to the wrong local server. Fixed to `http://localhost:18080`. This had gone unnoticed until now because nothing had actually run the Flutter app against a real local server before.
+- Added `serverpod_auth_core_flutter` as a direct dependency of `bgs_flutter` -- needed `UserProfileModel` for the home screen and it wasn't reachable through `bgs_client` alone.
+
 ### Added (Search endpoint -- closes out Phase 1's backend checklist)
 - `SearchEndpoint`: `search(query, sport)` across organizations, leagues, and events. Name matching is a case-insensitive `ILIKE` substring search with LIKE wildcard characters (`%`, `_`) escaped, so a literal search for e.g. `50%` doesn't get interpreted as a wildcard. Both `query` and `sport` are optional and combine with AND; calling with neither is a valid "browse" request, not an error.
 - Only *discoverable* rows are searchable: leagues must be `active` and events must be `published` -- a draft an organizer hasn't published yet won't show up just because its name matches. Organizations have no such status. A sport-only search (no name query) skips organizations entirely, since sport doesn't mean anything for them.
