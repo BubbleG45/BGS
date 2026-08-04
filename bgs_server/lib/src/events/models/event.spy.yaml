@@ -5,7 +5,7 @@ table: bgs_event
 fields:
   id: UuidValue?, defaultPersist=random_v7
 
-  organization: Organization?, relation(onDelete=Cascade)
+  organization: Organization?, relation(optional, onDelete=Cascade)
 
   createdByAuthUser: module:auth:AuthUser?, relation(onDelete=Cascade)
 

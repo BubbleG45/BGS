@@ -1,0 +1,5 @@
+### Thrown when trying to publish an event that isn't currently `draft`.
+exception: EventPublishNotAllowedException
+fields:
+  eventId: UuidValue
+  currentStatus: EventStatus

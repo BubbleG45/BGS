@@ -1,0 +1,6 @@
+### Thrown when trying to cancel a registration that isn't currently
+### `registered` (e.g. already cancelled).
+exception: EventRegistrationActionNotAllowedException
+fields:
+  registrationId: UuidValue
+  currentStatus: EventRegistrationStatus

@@ -1,0 +1,4 @@
+### Thrown when an event id doesn't correspond to any existing event.
+exception: EventNotFoundException
+fields:
+  eventId: UuidValue

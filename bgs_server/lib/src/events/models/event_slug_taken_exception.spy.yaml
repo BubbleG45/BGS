@@ -1,0 +1,6 @@
+### Thrown when creating an event with a slug that's already taken.
+### Event slugs are unique platform-wide (not per-org) -- even orgless
+### events need a globally shareable link, e.g. /e/<slug>.
+exception: EventSlugTakenException
+fields:
+  slug: String

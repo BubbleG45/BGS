@@ -1,0 +1,6 @@
+### Thrown when the calling user tries to cancel a registration that isn't
+### theirs -- same "is this your own row" pattern as
+### TeamMembershipAccessDeniedException.
+exception: EventRegistrationAccessDeniedException
+fields:
+  registrationId: UuidValue

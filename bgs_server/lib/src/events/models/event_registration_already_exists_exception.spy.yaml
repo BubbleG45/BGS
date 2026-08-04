@@ -1,0 +1,6 @@
+### Thrown when the calling user already has a registration row (any
+### status) for this event -- register/cancel reuses the same row rather
+### than allowing duplicates, same pattern as TeamMembership.
+exception: EventRegistrationAlreadyExistsException
+fields:
+  eventId: UuidValue

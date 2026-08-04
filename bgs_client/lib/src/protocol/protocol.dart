@@ -12,49 +12,71 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'events/models/event.dart' as _i2;
-import 'events/models/event_registration.dart' as _i3;
-import 'events/models/event_registration_status.dart' as _i4;
-import 'events/models/event_status.dart' as _i5;
-import 'greetings/greeting.dart' as _i6;
-import 'leagues/models/league.dart' as _i7;
-import 'leagues/models/league_activation_not_allowed_exception.dart' as _i8;
-import 'leagues/models/league_not_found_exception.dart' as _i9;
-import 'leagues/models/league_slug_taken_exception.dart' as _i10;
-import 'leagues/models/league_status.dart' as _i11;
-import 'organizations/models/org_member_role.dart' as _i12;
-import 'organizations/models/organization.dart' as _i13;
-import 'organizations/models/organization_access_denied_exception.dart' as _i14;
-import 'organizations/models/organization_member.dart' as _i15;
-import 'organizations/models/organization_membership.dart' as _i16;
-import 'organizations/models/organization_slug_taken_exception.dart' as _i17;
-import 'scheduling/models/match_status.dart' as _i18;
-import 'scheduling/models/scheduled_match.dart' as _i19;
-import 'sports/models/skill_level.dart' as _i20;
-import 'sports/models/sport.dart' as _i21;
-import 'standings/models/standing.dart' as _i22;
-import 'teams/models/membership_status.dart' as _i23;
-import 'teams/models/player_not_found_exception.dart' as _i24;
-import 'teams/models/team.dart' as _i25;
-import 'teams/models/team_member_role.dart' as _i26;
-import 'teams/models/team_membership.dart' as _i27;
-import 'teams/models/team_membership_access_denied_exception.dart' as _i28;
-import 'teams/models/team_membership_action_not_allowed_exception.dart' as _i29;
-import 'teams/models/team_membership_already_exists_exception.dart' as _i30;
-import 'teams/models/team_membership_not_found_exception.dart' as _i31;
-import 'teams/models/team_not_found_exception.dart' as _i32;
-import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i33;
+import 'events/models/event_access_denied_exception.dart' as _i3;
+import 'events/models/event_not_found_exception.dart' as _i4;
+import 'events/models/event_not_open_for_registration_exception.dart' as _i5;
+import 'events/models/event_publish_not_allowed_exception.dart' as _i6;
+import 'events/models/event_registration.dart' as _i7;
+import 'events/models/event_registration_access_denied_exception.dart' as _i8;
+import 'events/models/event_registration_action_not_allowed_exception.dart'
+    as _i9;
+import 'events/models/event_registration_already_exists_exception.dart' as _i10;
+import 'events/models/event_registration_not_found_exception.dart' as _i11;
+import 'events/models/event_registration_status.dart' as _i12;
+import 'events/models/event_slug_taken_exception.dart' as _i13;
+import 'events/models/event_status.dart' as _i14;
+import 'greetings/greeting.dart' as _i15;
+import 'leagues/models/league.dart' as _i16;
+import 'leagues/models/league_activation_not_allowed_exception.dart' as _i17;
+import 'leagues/models/league_not_found_exception.dart' as _i18;
+import 'leagues/models/league_slug_taken_exception.dart' as _i19;
+import 'leagues/models/league_status.dart' as _i20;
+import 'organizations/models/org_member_role.dart' as _i21;
+import 'organizations/models/organization.dart' as _i22;
+import 'organizations/models/organization_access_denied_exception.dart' as _i23;
+import 'organizations/models/organization_member.dart' as _i24;
+import 'organizations/models/organization_membership.dart' as _i25;
+import 'organizations/models/organization_slug_taken_exception.dart' as _i26;
+import 'scheduling/models/match_status.dart' as _i27;
+import 'scheduling/models/scheduled_match.dart' as _i28;
+import 'sports/models/skill_level.dart' as _i29;
+import 'sports/models/sport.dart' as _i30;
+import 'standings/models/standing.dart' as _i31;
+import 'teams/models/membership_status.dart' as _i32;
+import 'teams/models/player_not_found_exception.dart' as _i33;
+import 'teams/models/team.dart' as _i34;
+import 'teams/models/team_member_role.dart' as _i35;
+import 'teams/models/team_membership.dart' as _i36;
+import 'teams/models/team_membership_access_denied_exception.dart' as _i37;
+import 'teams/models/team_membership_action_not_allowed_exception.dart' as _i38;
+import 'teams/models/team_membership_already_exists_exception.dart' as _i39;
+import 'teams/models/team_membership_not_found_exception.dart' as _i40;
+import 'teams/models/team_not_found_exception.dart' as _i41;
+import 'package:bgs_client/src/protocol/events/models/event.dart' as _i42;
+import 'package:bgs_client/src/protocol/events/models/event_registration.dart'
+    as _i43;
+import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i44;
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
-    as _i34;
-import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i35;
+    as _i45;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i46;
 import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
-    as _i36;
+    as _i47;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i37;
+    as _i48;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i38;
+    as _i49;
 export 'events/models/event.dart';
+export 'events/models/event_access_denied_exception.dart';
+export 'events/models/event_not_found_exception.dart';
+export 'events/models/event_not_open_for_registration_exception.dart';
+export 'events/models/event_publish_not_allowed_exception.dart';
 export 'events/models/event_registration.dart';
+export 'events/models/event_registration_access_denied_exception.dart';
+export 'events/models/event_registration_action_not_allowed_exception.dart';
+export 'events/models/event_registration_already_exists_exception.dart';
+export 'events/models/event_registration_not_found_exception.dart';
 export 'events/models/event_registration_status.dart';
+export 'events/models/event_slug_taken_exception.dart';
 export 'events/models/event_status.dart';
 export 'greetings/greeting.dart';
 export 'leagues/models/league.dart';
@@ -122,257 +144,344 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i2.Event) {
       return _i2.Event.fromJson(data) as T;
     }
-    if (t == _i3.EventRegistration) {
-      return _i3.EventRegistration.fromJson(data) as T;
+    if (t == _i3.EventAccessDeniedException) {
+      return _i3.EventAccessDeniedException.fromJson(data) as T;
     }
-    if (t == _i4.EventRegistrationStatus) {
-      return _i4.EventRegistrationStatus.fromJson(data) as T;
+    if (t == _i4.EventNotFoundException) {
+      return _i4.EventNotFoundException.fromJson(data) as T;
     }
-    if (t == _i5.EventStatus) {
-      return _i5.EventStatus.fromJson(data) as T;
+    if (t == _i5.EventNotOpenForRegistrationException) {
+      return _i5.EventNotOpenForRegistrationException.fromJson(data) as T;
     }
-    if (t == _i6.Greeting) {
-      return _i6.Greeting.fromJson(data) as T;
+    if (t == _i6.EventPublishNotAllowedException) {
+      return _i6.EventPublishNotAllowedException.fromJson(data) as T;
     }
-    if (t == _i7.League) {
-      return _i7.League.fromJson(data) as T;
+    if (t == _i7.EventRegistration) {
+      return _i7.EventRegistration.fromJson(data) as T;
     }
-    if (t == _i8.LeagueActivationNotAllowedException) {
-      return _i8.LeagueActivationNotAllowedException.fromJson(data) as T;
+    if (t == _i8.EventRegistrationAccessDeniedException) {
+      return _i8.EventRegistrationAccessDeniedException.fromJson(data) as T;
     }
-    if (t == _i9.LeagueNotFoundException) {
-      return _i9.LeagueNotFoundException.fromJson(data) as T;
+    if (t == _i9.EventRegistrationActionNotAllowedException) {
+      return _i9.EventRegistrationActionNotAllowedException.fromJson(data) as T;
     }
-    if (t == _i10.LeagueSlugTakenException) {
-      return _i10.LeagueSlugTakenException.fromJson(data) as T;
+    if (t == _i10.EventRegistrationAlreadyExistsException) {
+      return _i10.EventRegistrationAlreadyExistsException.fromJson(data) as T;
     }
-    if (t == _i11.LeagueStatus) {
-      return _i11.LeagueStatus.fromJson(data) as T;
+    if (t == _i11.EventRegistrationNotFoundException) {
+      return _i11.EventRegistrationNotFoundException.fromJson(data) as T;
     }
-    if (t == _i12.OrgMemberRole) {
-      return _i12.OrgMemberRole.fromJson(data) as T;
+    if (t == _i12.EventRegistrationStatus) {
+      return _i12.EventRegistrationStatus.fromJson(data) as T;
     }
-    if (t == _i13.Organization) {
-      return _i13.Organization.fromJson(data) as T;
+    if (t == _i13.EventSlugTakenException) {
+      return _i13.EventSlugTakenException.fromJson(data) as T;
     }
-    if (t == _i14.OrganizationAccessDeniedException) {
-      return _i14.OrganizationAccessDeniedException.fromJson(data) as T;
+    if (t == _i14.EventStatus) {
+      return _i14.EventStatus.fromJson(data) as T;
     }
-    if (t == _i15.OrganizationMember) {
-      return _i15.OrganizationMember.fromJson(data) as T;
+    if (t == _i15.Greeting) {
+      return _i15.Greeting.fromJson(data) as T;
     }
-    if (t == _i16.OrganizationMembership) {
-      return _i16.OrganizationMembership.fromJson(data) as T;
+    if (t == _i16.League) {
+      return _i16.League.fromJson(data) as T;
     }
-    if (t == _i17.OrganizationSlugTakenException) {
-      return _i17.OrganizationSlugTakenException.fromJson(data) as T;
+    if (t == _i17.LeagueActivationNotAllowedException) {
+      return _i17.LeagueActivationNotAllowedException.fromJson(data) as T;
     }
-    if (t == _i18.MatchStatus) {
-      return _i18.MatchStatus.fromJson(data) as T;
+    if (t == _i18.LeagueNotFoundException) {
+      return _i18.LeagueNotFoundException.fromJson(data) as T;
     }
-    if (t == _i19.ScheduledMatch) {
-      return _i19.ScheduledMatch.fromJson(data) as T;
+    if (t == _i19.LeagueSlugTakenException) {
+      return _i19.LeagueSlugTakenException.fromJson(data) as T;
     }
-    if (t == _i20.SkillLevel) {
-      return _i20.SkillLevel.fromJson(data) as T;
+    if (t == _i20.LeagueStatus) {
+      return _i20.LeagueStatus.fromJson(data) as T;
     }
-    if (t == _i21.Sport) {
-      return _i21.Sport.fromJson(data) as T;
+    if (t == _i21.OrgMemberRole) {
+      return _i21.OrgMemberRole.fromJson(data) as T;
     }
-    if (t == _i22.Standing) {
-      return _i22.Standing.fromJson(data) as T;
+    if (t == _i22.Organization) {
+      return _i22.Organization.fromJson(data) as T;
     }
-    if (t == _i23.MembershipStatus) {
-      return _i23.MembershipStatus.fromJson(data) as T;
+    if (t == _i23.OrganizationAccessDeniedException) {
+      return _i23.OrganizationAccessDeniedException.fromJson(data) as T;
     }
-    if (t == _i24.PlayerNotFoundException) {
-      return _i24.PlayerNotFoundException.fromJson(data) as T;
+    if (t == _i24.OrganizationMember) {
+      return _i24.OrganizationMember.fromJson(data) as T;
     }
-    if (t == _i25.Team) {
-      return _i25.Team.fromJson(data) as T;
+    if (t == _i25.OrganizationMembership) {
+      return _i25.OrganizationMembership.fromJson(data) as T;
     }
-    if (t == _i26.TeamMemberRole) {
-      return _i26.TeamMemberRole.fromJson(data) as T;
+    if (t == _i26.OrganizationSlugTakenException) {
+      return _i26.OrganizationSlugTakenException.fromJson(data) as T;
     }
-    if (t == _i27.TeamMembership) {
-      return _i27.TeamMembership.fromJson(data) as T;
+    if (t == _i27.MatchStatus) {
+      return _i27.MatchStatus.fromJson(data) as T;
     }
-    if (t == _i28.TeamMembershipAccessDeniedException) {
-      return _i28.TeamMembershipAccessDeniedException.fromJson(data) as T;
+    if (t == _i28.ScheduledMatch) {
+      return _i28.ScheduledMatch.fromJson(data) as T;
     }
-    if (t == _i29.TeamMembershipActionNotAllowedException) {
-      return _i29.TeamMembershipActionNotAllowedException.fromJson(data) as T;
+    if (t == _i29.SkillLevel) {
+      return _i29.SkillLevel.fromJson(data) as T;
     }
-    if (t == _i30.TeamMembershipAlreadyExistsException) {
-      return _i30.TeamMembershipAlreadyExistsException.fromJson(data) as T;
+    if (t == _i30.Sport) {
+      return _i30.Sport.fromJson(data) as T;
     }
-    if (t == _i31.TeamMembershipNotFoundException) {
-      return _i31.TeamMembershipNotFoundException.fromJson(data) as T;
+    if (t == _i31.Standing) {
+      return _i31.Standing.fromJson(data) as T;
     }
-    if (t == _i32.TeamNotFoundException) {
-      return _i32.TeamNotFoundException.fromJson(data) as T;
+    if (t == _i32.MembershipStatus) {
+      return _i32.MembershipStatus.fromJson(data) as T;
+    }
+    if (t == _i33.PlayerNotFoundException) {
+      return _i33.PlayerNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i34.Team) {
+      return _i34.Team.fromJson(data) as T;
+    }
+    if (t == _i35.TeamMemberRole) {
+      return _i35.TeamMemberRole.fromJson(data) as T;
+    }
+    if (t == _i36.TeamMembership) {
+      return _i36.TeamMembership.fromJson(data) as T;
+    }
+    if (t == _i37.TeamMembershipAccessDeniedException) {
+      return _i37.TeamMembershipAccessDeniedException.fromJson(data) as T;
+    }
+    if (t == _i38.TeamMembershipActionNotAllowedException) {
+      return _i38.TeamMembershipActionNotAllowedException.fromJson(data) as T;
+    }
+    if (t == _i39.TeamMembershipAlreadyExistsException) {
+      return _i39.TeamMembershipAlreadyExistsException.fromJson(data) as T;
+    }
+    if (t == _i40.TeamMembershipNotFoundException) {
+      return _i40.TeamMembershipNotFoundException.fromJson(data) as T;
+    }
+    if (t == _i41.TeamNotFoundException) {
+      return _i41.TeamNotFoundException.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Event?>()) {
       return (data != null ? _i2.Event.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i3.EventRegistration?>()) {
-      return (data != null ? _i3.EventRegistration.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i4.EventRegistrationStatus?>()) {
-      return (data != null ? _i4.EventRegistrationStatus.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i5.EventStatus?>()) {
-      return (data != null ? _i5.EventStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.Greeting?>()) {
-      return (data != null ? _i6.Greeting.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i7.League?>()) {
-      return (data != null ? _i7.League.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i8.LeagueActivationNotAllowedException?>()) {
+    if (t == _i1.getType<_i3.EventAccessDeniedException?>()) {
       return (data != null
-              ? _i8.LeagueActivationNotAllowedException.fromJson(data)
+              ? _i3.EventAccessDeniedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i9.LeagueNotFoundException?>()) {
-      return (data != null ? _i9.LeagueNotFoundException.fromJson(data) : null)
+    if (t == _i1.getType<_i4.EventNotFoundException?>()) {
+      return (data != null ? _i4.EventNotFoundException.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i10.LeagueSlugTakenException?>()) {
+    if (t == _i1.getType<_i5.EventNotOpenForRegistrationException?>()) {
       return (data != null
-              ? _i10.LeagueSlugTakenException.fromJson(data)
+              ? _i5.EventNotOpenForRegistrationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i11.LeagueStatus?>()) {
-      return (data != null ? _i11.LeagueStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.OrgMemberRole?>()) {
-      return (data != null ? _i12.OrgMemberRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i13.Organization?>()) {
-      return (data != null ? _i13.Organization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.OrganizationAccessDeniedException?>()) {
+    if (t == _i1.getType<_i6.EventPublishNotAllowedException?>()) {
       return (data != null
-              ? _i14.OrganizationAccessDeniedException.fromJson(data)
+              ? _i6.EventPublishNotAllowedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.OrganizationMember?>()) {
-      return (data != null ? _i15.OrganizationMember.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i7.EventRegistration?>()) {
+      return (data != null ? _i7.EventRegistration.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.OrganizationMembership?>()) {
-      return (data != null ? _i16.OrganizationMembership.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i17.OrganizationSlugTakenException?>()) {
+    if (t == _i1.getType<_i8.EventRegistrationAccessDeniedException?>()) {
       return (data != null
-              ? _i17.OrganizationSlugTakenException.fromJson(data)
+              ? _i8.EventRegistrationAccessDeniedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i18.MatchStatus?>()) {
-      return (data != null ? _i18.MatchStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.ScheduledMatch?>()) {
-      return (data != null ? _i19.ScheduledMatch.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.SkillLevel?>()) {
-      return (data != null ? _i20.SkillLevel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.Sport?>()) {
-      return (data != null ? _i21.Sport.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.Standing?>()) {
-      return (data != null ? _i22.Standing.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i23.MembershipStatus?>()) {
-      return (data != null ? _i23.MembershipStatus.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i24.PlayerNotFoundException?>()) {
-      return (data != null ? _i24.PlayerNotFoundException.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i25.Team?>()) {
-      return (data != null ? _i25.Team.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.TeamMemberRole?>()) {
-      return (data != null ? _i26.TeamMemberRole.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i27.TeamMembership?>()) {
-      return (data != null ? _i27.TeamMembership.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i28.TeamMembershipAccessDeniedException?>()) {
+    if (t == _i1.getType<_i9.EventRegistrationActionNotAllowedException?>()) {
       return (data != null
-              ? _i28.TeamMembershipAccessDeniedException.fromJson(data)
+              ? _i9.EventRegistrationActionNotAllowedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i29.TeamMembershipActionNotAllowedException?>()) {
+    if (t == _i1.getType<_i10.EventRegistrationAlreadyExistsException?>()) {
       return (data != null
-              ? _i29.TeamMembershipActionNotAllowedException.fromJson(data)
+              ? _i10.EventRegistrationAlreadyExistsException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i30.TeamMembershipAlreadyExistsException?>()) {
+    if (t == _i1.getType<_i11.EventRegistrationNotFoundException?>()) {
       return (data != null
-              ? _i30.TeamMembershipAlreadyExistsException.fromJson(data)
+              ? _i11.EventRegistrationNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i31.TeamMembershipNotFoundException?>()) {
+    if (t == _i1.getType<_i12.EventRegistrationStatus?>()) {
+      return (data != null ? _i12.EventRegistrationStatus.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i13.EventSlugTakenException?>()) {
+      return (data != null ? _i13.EventSlugTakenException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i14.EventStatus?>()) {
+      return (data != null ? _i14.EventStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.Greeting?>()) {
+      return (data != null ? _i15.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i16.League?>()) {
+      return (data != null ? _i16.League.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i17.LeagueActivationNotAllowedException?>()) {
       return (data != null
-              ? _i31.TeamMembershipNotFoundException.fromJson(data)
+              ? _i17.LeagueActivationNotAllowedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i32.TeamNotFoundException?>()) {
-      return (data != null ? _i32.TeamNotFoundException.fromJson(data) : null)
+    if (t == _i1.getType<_i18.LeagueNotFoundException?>()) {
+      return (data != null ? _i18.LeagueNotFoundException.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i19.ScheduledMatch>) {
+    if (t == _i1.getType<_i19.LeagueSlugTakenException?>()) {
+      return (data != null
+              ? _i19.LeagueSlugTakenException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i20.LeagueStatus?>()) {
+      return (data != null ? _i20.LeagueStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.OrgMemberRole?>()) {
+      return (data != null ? _i21.OrgMemberRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.Organization?>()) {
+      return (data != null ? _i22.Organization.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i23.OrganizationAccessDeniedException?>()) {
+      return (data != null
+              ? _i23.OrganizationAccessDeniedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i24.OrganizationMember?>()) {
+      return (data != null ? _i24.OrganizationMember.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i25.OrganizationMembership?>()) {
+      return (data != null ? _i25.OrganizationMembership.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i26.OrganizationSlugTakenException?>()) {
+      return (data != null
+              ? _i26.OrganizationSlugTakenException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i27.MatchStatus?>()) {
+      return (data != null ? _i27.MatchStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.ScheduledMatch?>()) {
+      return (data != null ? _i28.ScheduledMatch.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i29.SkillLevel?>()) {
+      return (data != null ? _i29.SkillLevel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i30.Sport?>()) {
+      return (data != null ? _i30.Sport.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i31.Standing?>()) {
+      return (data != null ? _i31.Standing.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.MembershipStatus?>()) {
+      return (data != null ? _i32.MembershipStatus.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.PlayerNotFoundException?>()) {
+      return (data != null ? _i33.PlayerNotFoundException.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i34.Team?>()) {
+      return (data != null ? _i34.Team.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i35.TeamMemberRole?>()) {
+      return (data != null ? _i35.TeamMemberRole.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i36.TeamMembership?>()) {
+      return (data != null ? _i36.TeamMembership.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i37.TeamMembershipAccessDeniedException?>()) {
+      return (data != null
+              ? _i37.TeamMembershipAccessDeniedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i38.TeamMembershipActionNotAllowedException?>()) {
+      return (data != null
+              ? _i38.TeamMembershipActionNotAllowedException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i39.TeamMembershipAlreadyExistsException?>()) {
+      return (data != null
+              ? _i39.TeamMembershipAlreadyExistsException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i40.TeamMembershipNotFoundException?>()) {
+      return (data != null
+              ? _i40.TeamMembershipNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i41.TeamNotFoundException?>()) {
+      return (data != null ? _i41.TeamNotFoundException.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i28.ScheduledMatch>) {
       return (data as List)
-              .map((e) => deserialize<_i19.ScheduledMatch>(e))
+              .map((e) => deserialize<_i28.ScheduledMatch>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i19.ScheduledMatch>?>()) {
+    if (t == _i1.getType<List<_i28.ScheduledMatch>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i19.ScheduledMatch>(e))
+                    .map((e) => deserialize<_i28.ScheduledMatch>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i33.League>) {
-      return (data as List).map((e) => deserialize<_i33.League>(e)).toList()
+    if (t == List<_i42.Event>) {
+      return (data as List).map((e) => deserialize<_i42.Event>(e)).toList()
           as T;
     }
-    if (t == List<_i34.OrganizationMembership>) {
+    if (t == List<_i43.EventRegistration>) {
       return (data as List)
-              .map((e) => deserialize<_i34.OrganizationMembership>(e))
+              .map((e) => deserialize<_i43.EventRegistration>(e))
               .toList()
           as T;
     }
-    if (t == List<_i35.Team>) {
-      return (data as List).map((e) => deserialize<_i35.Team>(e)).toList() as T;
+    if (t == List<_i44.League>) {
+      return (data as List).map((e) => deserialize<_i44.League>(e)).toList()
+          as T;
     }
-    if (t == List<_i36.TeamMembership>) {
+    if (t == List<_i45.OrganizationMembership>) {
       return (data as List)
-              .map((e) => deserialize<_i36.TeamMembership>(e))
+              .map((e) => deserialize<_i45.OrganizationMembership>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i46.Team>) {
+      return (data as List).map((e) => deserialize<_i46.Team>(e)).toList() as T;
+    }
+    if (t == List<_i47.TeamMembership>) {
+      return (data as List)
+              .map((e) => deserialize<_i47.TeamMembership>(e))
               .toList()
           as T;
     }
     try {
-      return _i37.Protocol().deserialize<T>(data, t);
+      return _i48.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i38.Protocol().deserialize<T>(data, t);
+      return _i49.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -380,41 +489,55 @@ class Protocol extends _i1.SerializationManager {
   static String? getClassNameForType(Type type) {
     return switch (type) {
       _i2.Event => 'Event',
-      _i3.EventRegistration => 'EventRegistration',
-      _i4.EventRegistrationStatus => 'EventRegistrationStatus',
-      _i5.EventStatus => 'EventStatus',
-      _i6.Greeting => 'Greeting',
-      _i7.League => 'League',
-      _i8.LeagueActivationNotAllowedException =>
+      _i3.EventAccessDeniedException => 'EventAccessDeniedException',
+      _i4.EventNotFoundException => 'EventNotFoundException',
+      _i5.EventNotOpenForRegistrationException =>
+        'EventNotOpenForRegistrationException',
+      _i6.EventPublishNotAllowedException => 'EventPublishNotAllowedException',
+      _i7.EventRegistration => 'EventRegistration',
+      _i8.EventRegistrationAccessDeniedException =>
+        'EventRegistrationAccessDeniedException',
+      _i9.EventRegistrationActionNotAllowedException =>
+        'EventRegistrationActionNotAllowedException',
+      _i10.EventRegistrationAlreadyExistsException =>
+        'EventRegistrationAlreadyExistsException',
+      _i11.EventRegistrationNotFoundException =>
+        'EventRegistrationNotFoundException',
+      _i12.EventRegistrationStatus => 'EventRegistrationStatus',
+      _i13.EventSlugTakenException => 'EventSlugTakenException',
+      _i14.EventStatus => 'EventStatus',
+      _i15.Greeting => 'Greeting',
+      _i16.League => 'League',
+      _i17.LeagueActivationNotAllowedException =>
         'LeagueActivationNotAllowedException',
-      _i9.LeagueNotFoundException => 'LeagueNotFoundException',
-      _i10.LeagueSlugTakenException => 'LeagueSlugTakenException',
-      _i11.LeagueStatus => 'LeagueStatus',
-      _i12.OrgMemberRole => 'OrgMemberRole',
-      _i13.Organization => 'Organization',
-      _i14.OrganizationAccessDeniedException =>
+      _i18.LeagueNotFoundException => 'LeagueNotFoundException',
+      _i19.LeagueSlugTakenException => 'LeagueSlugTakenException',
+      _i20.LeagueStatus => 'LeagueStatus',
+      _i21.OrgMemberRole => 'OrgMemberRole',
+      _i22.Organization => 'Organization',
+      _i23.OrganizationAccessDeniedException =>
         'OrganizationAccessDeniedException',
-      _i15.OrganizationMember => 'OrganizationMember',
-      _i16.OrganizationMembership => 'OrganizationMembership',
-      _i17.OrganizationSlugTakenException => 'OrganizationSlugTakenException',
-      _i18.MatchStatus => 'MatchStatus',
-      _i19.ScheduledMatch => 'ScheduledMatch',
-      _i20.SkillLevel => 'SkillLevel',
-      _i21.Sport => 'Sport',
-      _i22.Standing => 'Standing',
-      _i23.MembershipStatus => 'MembershipStatus',
-      _i24.PlayerNotFoundException => 'PlayerNotFoundException',
-      _i25.Team => 'Team',
-      _i26.TeamMemberRole => 'TeamMemberRole',
-      _i27.TeamMembership => 'TeamMembership',
-      _i28.TeamMembershipAccessDeniedException =>
+      _i24.OrganizationMember => 'OrganizationMember',
+      _i25.OrganizationMembership => 'OrganizationMembership',
+      _i26.OrganizationSlugTakenException => 'OrganizationSlugTakenException',
+      _i27.MatchStatus => 'MatchStatus',
+      _i28.ScheduledMatch => 'ScheduledMatch',
+      _i29.SkillLevel => 'SkillLevel',
+      _i30.Sport => 'Sport',
+      _i31.Standing => 'Standing',
+      _i32.MembershipStatus => 'MembershipStatus',
+      _i33.PlayerNotFoundException => 'PlayerNotFoundException',
+      _i34.Team => 'Team',
+      _i35.TeamMemberRole => 'TeamMemberRole',
+      _i36.TeamMembership => 'TeamMembership',
+      _i37.TeamMembershipAccessDeniedException =>
         'TeamMembershipAccessDeniedException',
-      _i29.TeamMembershipActionNotAllowedException =>
+      _i38.TeamMembershipActionNotAllowedException =>
         'TeamMembershipActionNotAllowedException',
-      _i30.TeamMembershipAlreadyExistsException =>
+      _i39.TeamMembershipAlreadyExistsException =>
         'TeamMembershipAlreadyExistsException',
-      _i31.TeamMembershipNotFoundException => 'TeamMembershipNotFoundException',
-      _i32.TeamNotFoundException => 'TeamNotFoundException',
+      _i40.TeamMembershipNotFoundException => 'TeamMembershipNotFoundException',
+      _i41.TeamNotFoundException => 'TeamNotFoundException',
       _ => null,
     };
   }
@@ -431,72 +554,90 @@ class Protocol extends _i1.SerializationManager {
     switch (data) {
       case _i2.Event():
         return 'Event';
-      case _i3.EventRegistration():
+      case _i3.EventAccessDeniedException():
+        return 'EventAccessDeniedException';
+      case _i4.EventNotFoundException():
+        return 'EventNotFoundException';
+      case _i5.EventNotOpenForRegistrationException():
+        return 'EventNotOpenForRegistrationException';
+      case _i6.EventPublishNotAllowedException():
+        return 'EventPublishNotAllowedException';
+      case _i7.EventRegistration():
         return 'EventRegistration';
-      case _i4.EventRegistrationStatus():
+      case _i8.EventRegistrationAccessDeniedException():
+        return 'EventRegistrationAccessDeniedException';
+      case _i9.EventRegistrationActionNotAllowedException():
+        return 'EventRegistrationActionNotAllowedException';
+      case _i10.EventRegistrationAlreadyExistsException():
+        return 'EventRegistrationAlreadyExistsException';
+      case _i11.EventRegistrationNotFoundException():
+        return 'EventRegistrationNotFoundException';
+      case _i12.EventRegistrationStatus():
         return 'EventRegistrationStatus';
-      case _i5.EventStatus():
+      case _i13.EventSlugTakenException():
+        return 'EventSlugTakenException';
+      case _i14.EventStatus():
         return 'EventStatus';
-      case _i6.Greeting():
+      case _i15.Greeting():
         return 'Greeting';
-      case _i7.League():
+      case _i16.League():
         return 'League';
-      case _i8.LeagueActivationNotAllowedException():
+      case _i17.LeagueActivationNotAllowedException():
         return 'LeagueActivationNotAllowedException';
-      case _i9.LeagueNotFoundException():
+      case _i18.LeagueNotFoundException():
         return 'LeagueNotFoundException';
-      case _i10.LeagueSlugTakenException():
+      case _i19.LeagueSlugTakenException():
         return 'LeagueSlugTakenException';
-      case _i11.LeagueStatus():
+      case _i20.LeagueStatus():
         return 'LeagueStatus';
-      case _i12.OrgMemberRole():
+      case _i21.OrgMemberRole():
         return 'OrgMemberRole';
-      case _i13.Organization():
+      case _i22.Organization():
         return 'Organization';
-      case _i14.OrganizationAccessDeniedException():
+      case _i23.OrganizationAccessDeniedException():
         return 'OrganizationAccessDeniedException';
-      case _i15.OrganizationMember():
+      case _i24.OrganizationMember():
         return 'OrganizationMember';
-      case _i16.OrganizationMembership():
+      case _i25.OrganizationMembership():
         return 'OrganizationMembership';
-      case _i17.OrganizationSlugTakenException():
+      case _i26.OrganizationSlugTakenException():
         return 'OrganizationSlugTakenException';
-      case _i18.MatchStatus():
+      case _i27.MatchStatus():
         return 'MatchStatus';
-      case _i19.ScheduledMatch():
+      case _i28.ScheduledMatch():
         return 'ScheduledMatch';
-      case _i20.SkillLevel():
+      case _i29.SkillLevel():
         return 'SkillLevel';
-      case _i21.Sport():
+      case _i30.Sport():
         return 'Sport';
-      case _i22.Standing():
+      case _i31.Standing():
         return 'Standing';
-      case _i23.MembershipStatus():
+      case _i32.MembershipStatus():
         return 'MembershipStatus';
-      case _i24.PlayerNotFoundException():
+      case _i33.PlayerNotFoundException():
         return 'PlayerNotFoundException';
-      case _i25.Team():
+      case _i34.Team():
         return 'Team';
-      case _i26.TeamMemberRole():
+      case _i35.TeamMemberRole():
         return 'TeamMemberRole';
-      case _i27.TeamMembership():
+      case _i36.TeamMembership():
         return 'TeamMembership';
-      case _i28.TeamMembershipAccessDeniedException():
+      case _i37.TeamMembershipAccessDeniedException():
         return 'TeamMembershipAccessDeniedException';
-      case _i29.TeamMembershipActionNotAllowedException():
+      case _i38.TeamMembershipActionNotAllowedException():
         return 'TeamMembershipActionNotAllowedException';
-      case _i30.TeamMembershipAlreadyExistsException():
+      case _i39.TeamMembershipAlreadyExistsException():
         return 'TeamMembershipAlreadyExistsException';
-      case _i31.TeamMembershipNotFoundException():
+      case _i40.TeamMembershipNotFoundException():
         return 'TeamMembershipNotFoundException';
-      case _i32.TeamNotFoundException():
+      case _i41.TeamNotFoundException():
         return 'TeamNotFoundException';
     }
-    className = _i37.Protocol().getClassNameForObject(data);
+    className = _i48.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
-    className = _i38.Protocol().getClassNameForObject(data);
+    className = _i49.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
@@ -512,109 +653,146 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Event') {
       return deserialize<_i2.Event>(data['data']);
     }
+    if (dataClassName == 'EventAccessDeniedException') {
+      return deserialize<_i3.EventAccessDeniedException>(data['data']);
+    }
+    if (dataClassName == 'EventNotFoundException') {
+      return deserialize<_i4.EventNotFoundException>(data['data']);
+    }
+    if (dataClassName == 'EventNotOpenForRegistrationException') {
+      return deserialize<_i5.EventNotOpenForRegistrationException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EventPublishNotAllowedException') {
+      return deserialize<_i6.EventPublishNotAllowedException>(data['data']);
+    }
     if (dataClassName == 'EventRegistration') {
-      return deserialize<_i3.EventRegistration>(data['data']);
+      return deserialize<_i7.EventRegistration>(data['data']);
+    }
+    if (dataClassName == 'EventRegistrationAccessDeniedException') {
+      return deserialize<_i8.EventRegistrationAccessDeniedException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EventRegistrationActionNotAllowedException') {
+      return deserialize<_i9.EventRegistrationActionNotAllowedException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EventRegistrationAlreadyExistsException') {
+      return deserialize<_i10.EventRegistrationAlreadyExistsException>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'EventRegistrationNotFoundException') {
+      return deserialize<_i11.EventRegistrationNotFoundException>(data['data']);
     }
     if (dataClassName == 'EventRegistrationStatus') {
-      return deserialize<_i4.EventRegistrationStatus>(data['data']);
+      return deserialize<_i12.EventRegistrationStatus>(data['data']);
+    }
+    if (dataClassName == 'EventSlugTakenException') {
+      return deserialize<_i13.EventSlugTakenException>(data['data']);
     }
     if (dataClassName == 'EventStatus') {
-      return deserialize<_i5.EventStatus>(data['data']);
+      return deserialize<_i14.EventStatus>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i6.Greeting>(data['data']);
+      return deserialize<_i15.Greeting>(data['data']);
     }
     if (dataClassName == 'League') {
-      return deserialize<_i7.League>(data['data']);
+      return deserialize<_i16.League>(data['data']);
     }
     if (dataClassName == 'LeagueActivationNotAllowedException') {
-      return deserialize<_i8.LeagueActivationNotAllowedException>(data['data']);
+      return deserialize<_i17.LeagueActivationNotAllowedException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'LeagueNotFoundException') {
-      return deserialize<_i9.LeagueNotFoundException>(data['data']);
+      return deserialize<_i18.LeagueNotFoundException>(data['data']);
     }
     if (dataClassName == 'LeagueSlugTakenException') {
-      return deserialize<_i10.LeagueSlugTakenException>(data['data']);
+      return deserialize<_i19.LeagueSlugTakenException>(data['data']);
     }
     if (dataClassName == 'LeagueStatus') {
-      return deserialize<_i11.LeagueStatus>(data['data']);
+      return deserialize<_i20.LeagueStatus>(data['data']);
     }
     if (dataClassName == 'OrgMemberRole') {
-      return deserialize<_i12.OrgMemberRole>(data['data']);
+      return deserialize<_i21.OrgMemberRole>(data['data']);
     }
     if (dataClassName == 'Organization') {
-      return deserialize<_i13.Organization>(data['data']);
+      return deserialize<_i22.Organization>(data['data']);
     }
     if (dataClassName == 'OrganizationAccessDeniedException') {
-      return deserialize<_i14.OrganizationAccessDeniedException>(data['data']);
+      return deserialize<_i23.OrganizationAccessDeniedException>(data['data']);
     }
     if (dataClassName == 'OrganizationMember') {
-      return deserialize<_i15.OrganizationMember>(data['data']);
+      return deserialize<_i24.OrganizationMember>(data['data']);
     }
     if (dataClassName == 'OrganizationMembership') {
-      return deserialize<_i16.OrganizationMembership>(data['data']);
+      return deserialize<_i25.OrganizationMembership>(data['data']);
     }
     if (dataClassName == 'OrganizationSlugTakenException') {
-      return deserialize<_i17.OrganizationSlugTakenException>(data['data']);
+      return deserialize<_i26.OrganizationSlugTakenException>(data['data']);
     }
     if (dataClassName == 'MatchStatus') {
-      return deserialize<_i18.MatchStatus>(data['data']);
+      return deserialize<_i27.MatchStatus>(data['data']);
     }
     if (dataClassName == 'ScheduledMatch') {
-      return deserialize<_i19.ScheduledMatch>(data['data']);
+      return deserialize<_i28.ScheduledMatch>(data['data']);
     }
     if (dataClassName == 'SkillLevel') {
-      return deserialize<_i20.SkillLevel>(data['data']);
+      return deserialize<_i29.SkillLevel>(data['data']);
     }
     if (dataClassName == 'Sport') {
-      return deserialize<_i21.Sport>(data['data']);
+      return deserialize<_i30.Sport>(data['data']);
     }
     if (dataClassName == 'Standing') {
-      return deserialize<_i22.Standing>(data['data']);
+      return deserialize<_i31.Standing>(data['data']);
     }
     if (dataClassName == 'MembershipStatus') {
-      return deserialize<_i23.MembershipStatus>(data['data']);
+      return deserialize<_i32.MembershipStatus>(data['data']);
     }
     if (dataClassName == 'PlayerNotFoundException') {
-      return deserialize<_i24.PlayerNotFoundException>(data['data']);
+      return deserialize<_i33.PlayerNotFoundException>(data['data']);
     }
     if (dataClassName == 'Team') {
-      return deserialize<_i25.Team>(data['data']);
+      return deserialize<_i34.Team>(data['data']);
     }
     if (dataClassName == 'TeamMemberRole') {
-      return deserialize<_i26.TeamMemberRole>(data['data']);
+      return deserialize<_i35.TeamMemberRole>(data['data']);
     }
     if (dataClassName == 'TeamMembership') {
-      return deserialize<_i27.TeamMembership>(data['data']);
+      return deserialize<_i36.TeamMembership>(data['data']);
     }
     if (dataClassName == 'TeamMembershipAccessDeniedException') {
-      return deserialize<_i28.TeamMembershipAccessDeniedException>(
+      return deserialize<_i37.TeamMembershipAccessDeniedException>(
         data['data'],
       );
     }
     if (dataClassName == 'TeamMembershipActionNotAllowedException') {
-      return deserialize<_i29.TeamMembershipActionNotAllowedException>(
+      return deserialize<_i38.TeamMembershipActionNotAllowedException>(
         data['data'],
       );
     }
     if (dataClassName == 'TeamMembershipAlreadyExistsException') {
-      return deserialize<_i30.TeamMembershipAlreadyExistsException>(
+      return deserialize<_i39.TeamMembershipAlreadyExistsException>(
         data['data'],
       );
     }
     if (dataClassName == 'TeamMembershipNotFoundException') {
-      return deserialize<_i31.TeamMembershipNotFoundException>(data['data']);
+      return deserialize<_i40.TeamMembershipNotFoundException>(data['data']);
     }
     if (dataClassName == 'TeamNotFoundException') {
-      return deserialize<_i32.TeamNotFoundException>(data['data']);
+      return deserialize<_i41.TeamNotFoundException>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i37.Protocol().deserializeByClassName(data);
+      return _i48.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i38.Protocol().deserializeByClassName(data);
+      return _i49.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -629,10 +807,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i37.Protocol().mapRecordToJson(record);
+      return _i48.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i38.Protocol().mapRecordToJson(record);
+      return _i49.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

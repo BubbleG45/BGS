@@ -1,0 +1,7 @@
+### Thrown when the calling user can't manage an event: not an `admin`+ on
+### the event's organization (org-scoped events), or not the event's
+### creator (orgless events, which have no organization to check a role
+### against).
+exception: EventAccessDeniedException
+fields:
+  eventId: UuidValue

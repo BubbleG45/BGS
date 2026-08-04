@@ -1,0 +1,5 @@
+### Thrown when a registration id doesn't correspond to any existing
+### registration.
+exception: EventRegistrationNotFoundException
+fields:
+  registrationId: UuidValue

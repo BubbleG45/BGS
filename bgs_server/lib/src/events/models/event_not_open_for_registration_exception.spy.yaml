@@ -1,0 +1,5 @@
+### Thrown when trying to register for an event that isn't `published`.
+exception: EventNotOpenForRegistrationException
+fields:
+  eventId: UuidValue
+  currentStatus: EventStatus

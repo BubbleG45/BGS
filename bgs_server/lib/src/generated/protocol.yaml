@@ -9,6 +9,16 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+event:
+  - create:
+  - getById:
+  - getBySlug:
+  - listByOrganization:
+  - update:
+  - publish:
+  - register:
+  - cancelRegistration:
+  - listMyRegistrations:
 greeting:
   - hello:
 league:

@@ -4,6 +4,16 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Event endpoint + registration flow)
+- `EventEndpoint`: `create` (org-scoped or "orgless" -- `organizationId` is optional; org-scoped events require `admin`+ on the org, orgless events just require login), `getById`/`getBySlug`/`listByOrganization` (public reads -- `getBySlug` backs the shareable `/e/<slug>` link), `update`, `publish` (draft → published only), `register`/`cancelRegistration` (event registration, independent of any league team), `listMyRegistrations` (Player Dashboard).
+- New permission pattern for `update`/`publish`: org-scoped events check `requireOrgRole` like everything else, but orgless events have no organization to check a role against, so management permission falls to whoever created the event instead. Centralized in a private `_requireManagePermission` helper so the branching lives in one place.
+- `cancelRegistration` reuses the "is this your own row" pattern from `TeamEndpoint.acceptInvite`/`declineInvite`, this time for event registrations.
+- Typed exceptions: `EventNotFoundException`, `EventSlugTakenException` (slugs are unique platform-wide, not per-org, since orgless events still need a global shareable link), `EventAccessDeniedException`, `EventPublishNotAllowedException`, `EventNotOpenForRegistrationException`, `EventRegistrationAlreadyExistsException`, `EventRegistrationNotFoundException`, `EventRegistrationAccessDeniedException`, `EventRegistrationActionNotAllowedException`.
+- Integration tests in `event_endpoint_test.dart` (17 cases) covering org-scoped vs. orgless create/permission branching, slug collisions, publish (org admin, orgless creator, non-creator denial, already-published rejection), partial update, registration (success, unpublished-event rejection, duplicate rejection), cancellation (success, wrong-user denial, double-cancel rejection), `listMyRegistrations`, and public reads by non-members.
+
+### Fixed
+- `Event.organizationId` was missing `relation(optional)` in the original domain-model pass, so it generated as a *required* foreign key -- silently breaking the documented "orgless events" design before any endpoint used it. Added `relation(optional)` and applied a migration (`20260803235219982`) to make the column nullable; no data existed yet, so no backfill was needed.
+
 ### Added (Team endpoint + player-invite flow)
 - `TeamEndpoint`: `create` (`admin`+ on the team's league's org), `getById`/`listByLeague` (public reads), `invitePlayer` (looks the invitee up by verified email via `UserProfile`, `admin`+ required, creates a `TeamMembership` with `status: invited`), `acceptInvite`/`declineInvite`, `listMine` (backs the Player Dashboard's "my teams").
 - New authorization pattern for `acceptInvite`/`declineInvite`: not an org-role check like every other write so far -- just "is the calling `AuthUser` the one on this membership row." First player-side write in the app; deliberately kept separate from `requireOrgRole` since the player usually isn't an org member at all.

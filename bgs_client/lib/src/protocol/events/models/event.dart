@@ -24,7 +24,7 @@ import 'package:bgs_client/src/protocol/protocol.dart' as _i7;
 abstract class Event implements _i1.SerializableModel {
   Event._({
     this.id,
-    required this.organizationId,
+    this.organizationId,
     this.organization,
     required this.createdByAuthUserId,
     this.createdByAuthUser,
@@ -45,7 +45,7 @@ abstract class Event implements _i1.SerializableModel {
 
   factory Event({
     _i1.UuidValue? id,
-    required _i1.UuidValue organizationId,
+    _i1.UuidValue? organizationId,
     _i3.Organization? organization,
     required _i1.UuidValue createdByAuthUserId,
     _i4.AuthUser? createdByAuthUser,
@@ -67,9 +67,11 @@ abstract class Event implements _i1.SerializableModel {
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      organizationId: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['organizationId'],
-      ),
+      organizationId: jsonSerialization['organizationId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['organizationId'],
+            ),
       organization: jsonSerialization['organization'] == null
           ? null
           : _i7.Protocol().deserialize<_i3.Organization>(
@@ -112,7 +114,7 @@ abstract class Event implements _i1.SerializableModel {
   /// the id will be null.
   _i1.UuidValue? id;
 
-  _i1.UuidValue organizationId;
+  _i1.UuidValue? organizationId;
 
   _i3.Organization? organization;
 
@@ -175,7 +177,7 @@ abstract class Event implements _i1.SerializableModel {
     return {
       '__className__': 'Event',
       if (id != null) 'id': id?.toJson(),
-      'organizationId': organizationId.toJson(),
+      if (organizationId != null) 'organizationId': organizationId?.toJson(),
       if (organization != null) 'organization': organization?.toJson(),
       'createdByAuthUserId': createdByAuthUserId.toJson(),
       if (createdByAuthUser != null)
@@ -205,7 +207,7 @@ class _Undefined {}
 class _EventImpl extends Event {
   _EventImpl({
     _i1.UuidValue? id,
-    required _i1.UuidValue organizationId,
+    _i1.UuidValue? organizationId,
     _i3.Organization? organization,
     required _i1.UuidValue createdByAuthUserId,
     _i4.AuthUser? createdByAuthUser,
@@ -245,7 +247,7 @@ class _EventImpl extends Event {
   @override
   Event copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? organizationId,
+    Object? organizationId = _Undefined,
     Object? organization = _Undefined,
     _i1.UuidValue? createdByAuthUserId,
     Object? createdByAuthUser = _Undefined,
@@ -263,7 +265,9 @@ class _EventImpl extends Event {
   }) {
     return Event(
       id: id is _i1.UuidValue? ? id : this.id,
-      organizationId: organizationId ?? this.organizationId,
+      organizationId: organizationId is _i1.UuidValue?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i3.Organization?
           ? organization
           : this.organization?.copyWith(),

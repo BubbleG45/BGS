@@ -26,7 +26,7 @@ abstract class Event
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
   Event._({
     this.id,
-    required this.organizationId,
+    this.organizationId,
     this.organization,
     required this.createdByAuthUserId,
     this.createdByAuthUser,
@@ -47,7 +47,7 @@ abstract class Event
 
   factory Event({
     _i1.UuidValue? id,
-    required _i1.UuidValue organizationId,
+    _i1.UuidValue? organizationId,
     _i3.Organization? organization,
     required _i1.UuidValue createdByAuthUserId,
     _i4.AuthUser? createdByAuthUser,
@@ -69,9 +69,11 @@ abstract class Event
       id: jsonSerialization['id'] == null
           ? null
           : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      organizationId: _i1.UuidValueJsonExtension.fromJson(
-        jsonSerialization['organizationId'],
-      ),
+      organizationId: jsonSerialization['organizationId'] == null
+          ? null
+          : _i1.UuidValueJsonExtension.fromJson(
+              jsonSerialization['organizationId'],
+            ),
       organization: jsonSerialization['organization'] == null
           ? null
           : _i7.Protocol().deserialize<_i3.Organization>(
@@ -116,7 +118,7 @@ abstract class Event
   @override
   _i1.UuidValue? id;
 
-  _i1.UuidValue organizationId;
+  _i1.UuidValue? organizationId;
 
   _i3.Organization? organization;
 
@@ -182,7 +184,7 @@ abstract class Event
     return {
       '__className__': 'Event',
       if (id != null) 'id': id?.toJson(),
-      'organizationId': organizationId.toJson(),
+      if (organizationId != null) 'organizationId': organizationId?.toJson(),
       if (organization != null) 'organization': organization?.toJson(),
       'createdByAuthUserId': createdByAuthUserId.toJson(),
       if (createdByAuthUser != null)
@@ -206,7 +208,7 @@ abstract class Event
     return {
       '__className__': 'Event',
       if (id != null) 'id': id?.toJson(),
-      'organizationId': organizationId.toJson(),
+      if (organizationId != null) 'organizationId': organizationId?.toJson(),
       if (organization != null)
         'organization': organization?.toJsonForProtocol(),
       'createdByAuthUserId': createdByAuthUserId.toJson(),
@@ -267,7 +269,7 @@ class _Undefined {}
 class _EventImpl extends Event {
   _EventImpl({
     _i1.UuidValue? id,
-    required _i1.UuidValue organizationId,
+    _i1.UuidValue? organizationId,
     _i3.Organization? organization,
     required _i1.UuidValue createdByAuthUserId,
     _i4.AuthUser? createdByAuthUser,
@@ -307,7 +309,7 @@ class _EventImpl extends Event {
   @override
   Event copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? organizationId,
+    Object? organizationId = _Undefined,
     Object? organization = _Undefined,
     _i1.UuidValue? createdByAuthUserId,
     Object? createdByAuthUser = _Undefined,
@@ -325,7 +327,9 @@ class _EventImpl extends Event {
   }) {
     return Event(
       id: id is _i1.UuidValue? ? id : this.id,
-      organizationId: organizationId ?? this.organizationId,
+      organizationId: organizationId is _i1.UuidValue?
+          ? organizationId
+          : this.organizationId,
       organization: organization is _i3.Organization?
           ? organization
           : this.organization?.copyWith(),
@@ -352,7 +356,7 @@ class EventUpdateTable extends _i1.UpdateTable<EventTable> {
   EventUpdateTable(super.table);
 
   _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> organizationId(
-    _i1.UuidValue value,
+    _i1.UuidValue? value,
   ) => _i1.ColumnValue(
     table.organizationId,
     value,
@@ -630,6 +634,8 @@ class EventRepository {
   const EventRepository._();
 
   final attachRow = const EventAttachRowRepository._();
+
+  final detachRow = const EventDetachRowRepository._();
 
   /// Returns a list of [Event]s matching the given query parameters.
   ///
@@ -966,6 +972,32 @@ class EventAttachRowRepository {
     await session.db.updateRow<Event>(
       $event,
       columns: [Event.t.createdByAuthUserId],
+      transaction: transaction,
+    );
+  }
+}
+
+class EventDetachRowRepository {
+  const EventDetachRowRepository._();
+
+  /// Detaches the relation between this [Event] and the [Organization] set in `organization`
+  /// by setting the [Event]'s foreign key `organizationId` to `null`.
+  ///
+  /// This removes the association between the two models without deleting
+  /// the related record.
+  Future<void> organization(
+    _i1.DatabaseSession session,
+    Event event, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (event.id == null) {
+      throw ArgumentError.notNull('event.id');
+    }
+
+    var $event = event.copyWith(organizationId: null);
+    await session.db.updateRow<Event>(
+      $event,
+      columns: [Event.t.organizationId],
       transaction: transaction,
     );
   }
