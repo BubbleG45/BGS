@@ -4,6 +4,13 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Search endpoint -- closes out Phase 1's backend checklist)
+- `SearchEndpoint`: `search(query, sport)` across organizations, leagues, and events. Name matching is a case-insensitive `ILIKE` substring search with LIKE wildcard characters (`%`, `_`) escaped, so a literal search for e.g. `50%` doesn't get interpreted as a wildcard. Both `query` and `sport` are optional and combine with AND; calling with neither is a valid "browse" request, not an error.
+- Only *discoverable* rows are searchable: leagues must be `active` and events must be `published` -- a draft an organizer hasn't published yet won't show up just because its name matches. Organizations have no such status. A sport-only search (no name query) skips organizations entirely, since sport doesn't mean anything for them.
+- Results are capped at 20 per category, ordered by name (events by `startAt`) -- no ranking or pagination yet.
+- New transient DTO `SearchResults`. No writes, no new typed exceptions.
+- Integration tests in `search_endpoint_test.dart` (6 cases): name substring match across all three categories, draft/unpublished exclusion, sport-only filtering excluding organizations, name+sport combined filtering, LIKE-wildcard-escaping, and the no-filter browse case.
+
 ### Added (Dashboard endpoint)
 - `DashboardEndpoint`: `player` (team memberships, event registrations, and upcoming `scheduled` matches for teams the player is *actively* on), `organizer` (org memberships with role, leagues, and events -- org-scoped across those orgs plus any orgless events the caller created), `manager` (only active `manager`-role team memberships). All server-side composition over tables that already exist -- deliberately server-side rather than assembled client-side, to keep the Flutter app thin and avoid N+1-style chains of calls for what's fundamentally one screen's worth of data.
 - New transient DTOs `PlayerDashboard`, `OrganizerDashboard`, `ManagerDashboard`. No new writes, no new typed exceptions -- everything here is a read scoped to the calling user.

@@ -50,6 +50,8 @@ scheduledMatch:
   - update:
   - cancel:
   - recordResult:
+search:
+  - search:
 standing:
   - listByLeague:
 team:

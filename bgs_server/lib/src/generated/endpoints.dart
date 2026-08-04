@@ -20,18 +20,19 @@ import '../leagues/league_endpoint.dart' as _i7;
 import '../organizations/organization_endpoint.dart' as _i8;
 import '../profiles/profile_endpoint.dart' as _i9;
 import '../scheduling/scheduled_match_endpoint.dart' as _i10;
-import '../standings/standing_endpoint.dart' as _i11;
-import '../teams/team_endpoint.dart' as _i12;
-import 'package:bgs_server/src/generated/sports/models/sport.dart' as _i13;
+import '../search/search_endpoint.dart' as _i11;
+import '../standings/standing_endpoint.dart' as _i12;
+import '../teams/team_endpoint.dart' as _i13;
+import 'package:bgs_server/src/generated/sports/models/sport.dart' as _i14;
 import 'package:bgs_server/src/generated/sports/models/skill_level.dart'
-    as _i14;
-import 'dart:typed_data' as _i15;
+    as _i15;
+import 'dart:typed_data' as _i16;
 import 'package:bgs_server/src/generated/teams/models/team_member_role.dart'
-    as _i16;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i17;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i18;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _i19;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -91,13 +92,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'scheduledMatch',
           null,
         ),
-      'standing': _i11.StandingEndpoint()
+      'search': _i11.SearchEndpoint()
+        ..initialize(
+          server,
+          'search',
+          null,
+        ),
+      'standing': _i12.StandingEndpoint()
         ..initialize(
           server,
           'standing',
           null,
         ),
-      'team': _i12.TeamEndpoint()
+      'team': _i13.TeamEndpoint()
         ..initialize(
           server,
           'team',
@@ -368,7 +375,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'sport': _i1.ParameterDescription(
               name: 'sport',
-              type: _i1.getType<_i13.Sport>(),
+              type: _i1.getType<_i14.Sport>(),
               nullable: false,
             ),
             'startAt': _i1.ParameterDescription(
@@ -383,7 +390,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i14.SkillLevel?>(),
+              type: _i1.getType<_i15.SkillLevel?>(),
               nullable: true,
             ),
             'description': _i1.ParameterDescription(
@@ -500,7 +507,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i14.SkillLevel?>(),
+              type: _i1.getType<_i15.SkillLevel?>(),
               nullable: true,
             ),
             'startAt': _i1.ParameterDescription(
@@ -650,7 +657,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'sport': _i1.ParameterDescription(
               name: 'sport',
-              type: _i1.getType<_i13.Sport>(),
+              type: _i1.getType<_i14.Sport>(),
               nullable: false,
             ),
             'teamFeeCents': _i1.ParameterDescription(
@@ -660,7 +667,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i14.SkillLevel?>(),
+              type: _i1.getType<_i15.SkillLevel?>(),
               nullable: true,
             ),
             'description': _i1.ParameterDescription(
@@ -777,7 +784,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'skillLevel': _i1.ParameterDescription(
               name: 'skillLevel',
-              type: _i1.getType<_i14.SkillLevel?>(),
+              type: _i1.getType<_i15.SkillLevel?>(),
               nullable: true,
             ),
             'teamFeeCents': _i1.ParameterDescription(
@@ -924,7 +931,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'image': _i1.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i15.ByteData>(),
+              type: _i1.getType<_i16.ByteData>(),
               nullable: false,
             ),
           },
@@ -1162,6 +1169,36 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['search'] = _i1.EndpointConnector(
+      name: 'search',
+      endpoint: endpoints['search']!,
+      methodConnectors: {
+        'search': _i1.MethodConnector(
+          name: 'search',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'sport': _i1.ParameterDescription(
+              name: 'sport',
+              type: _i1.getType<_i14.Sport?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['search'] as _i11.SearchEndpoint).search(
+                session,
+                query: params['query'],
+                sport: params['sport'],
+              ),
+        ),
+      },
+    );
     connectors['standing'] = _i1.EndpointConnector(
       name: 'standing',
       endpoint: endpoints['standing']!,
@@ -1180,7 +1217,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['standing'] as _i11.StandingEndpoint).listByLeague(
+                  (endpoints['standing'] as _i12.StandingEndpoint).listByLeague(
                     session,
                     params['leagueId'],
                   ),
@@ -1209,7 +1246,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).create(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).create(
                 session,
                 leagueId: params['leagueId'],
                 name: params['name'],
@@ -1228,7 +1265,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).getById(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).getById(
                 session,
                 params['teamId'],
               ),
@@ -1246,7 +1283,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).listByLeague(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).listByLeague(
                 session,
                 params['leagueId'],
               ),
@@ -1264,7 +1301,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).listMembers(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).listMembers(
                 session,
                 params['teamId'],
               ),
@@ -1284,7 +1321,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'role': _i1.ParameterDescription(
               name: 'role',
-              type: _i1.getType<_i16.TeamMemberRole?>(),
+              type: _i1.getType<_i17.TeamMemberRole?>(),
               nullable: true,
             ),
           },
@@ -1292,7 +1329,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).invitePlayer(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).invitePlayer(
                 session,
                 teamId: params['teamId'],
                 email: params['email'],
@@ -1312,7 +1349,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).acceptInvite(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).acceptInvite(
                 session,
                 params['membershipId'],
               ),
@@ -1330,7 +1367,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['team'] as _i12.TeamEndpoint).declineInvite(
+              ) async => (endpoints['team'] as _i13.TeamEndpoint).declineInvite(
                 session,
                 params['membershipId'],
               ),
@@ -1343,13 +1380,13 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['team'] as _i12.TeamEndpoint).listMine(session),
+                  (endpoints['team'] as _i13.TeamEndpoint).listMine(session),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i17.Endpoints()
+    modules['serverpod_auth_core'] = _i18.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i18.Endpoints()
+    modules['serverpod_auth_idp'] = _i19.Endpoints()
       ..initializeEndpoints(server);
   }
 }

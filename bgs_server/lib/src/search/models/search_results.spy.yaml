@@ -1,0 +1,7 @@
+### Combined results for a basic search across organizations, leagues, and
+### events. Transient (no `table:`).
+class: SearchResults
+fields:
+  organizations: List<Organization>
+  leagues: List<League>
+  events: List<Event>
