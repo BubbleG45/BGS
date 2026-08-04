@@ -16,25 +16,33 @@ import 'package:serverpod_client/serverpod_client.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
-import 'package:bgs_client/src/protocol/events/models/event.dart' as _i5;
-import 'package:bgs_client/src/protocol/sports/models/sport.dart' as _i6;
-import 'package:bgs_client/src/protocol/sports/models/skill_level.dart' as _i7;
+import 'package:bgs_client/src/protocol/dashboards/models/player_dashboard.dart'
+    as _i5;
+import 'package:bgs_client/src/protocol/dashboards/models/organizer_dashboard.dart'
+    as _i6;
+import 'package:bgs_client/src/protocol/dashboards/models/manager_dashboard.dart'
+    as _i7;
+import 'package:bgs_client/src/protocol/events/models/event.dart' as _i8;
+import 'package:bgs_client/src/protocol/sports/models/sport.dart' as _i9;
+import 'package:bgs_client/src/protocol/sports/models/skill_level.dart' as _i10;
 import 'package:bgs_client/src/protocol/events/models/event_registration.dart'
-    as _i8;
-import 'package:bgs_client/src/protocol/greetings/greeting.dart' as _i9;
-import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i10;
-import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
     as _i11;
-import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
-    as _i12;
-import 'dart:typed_data' as _i13;
-import 'package:bgs_client/src/protocol/scheduling/models/scheduled_match.dart'
+import 'package:bgs_client/src/protocol/greetings/greeting.dart' as _i12;
+import 'package:bgs_client/src/protocol/leagues/models/league.dart' as _i13;
+import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
     as _i14;
-import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i15;
-import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i16;
-import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
+import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
+    as _i15;
+import 'dart:typed_data' as _i16;
+import 'package:bgs_client/src/protocol/scheduling/models/scheduled_match.dart'
     as _i17;
-import 'protocol.dart' as _i18;
+import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i18;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i19;
+import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
+    as _i20;
+import 'package:bgs_client/src/protocol/teams/models/team_member_role.dart'
+    as _i21;
+import 'protocol.dart' as _i22;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -257,6 +265,51 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
   );
 }
 
+/// Composed, self-scoped reads backing the three dashboards from
+/// BUILD_PLAN.md §6. Deliberately server-side rather than assembled
+/// client-side, to keep the Flutter app thin and avoid N+1-style chains of
+/// calls from the client for what's fundamentally one screen's worth of
+/// data.
+///
+/// No writes and no new typed exceptions here -- everything is a read
+/// scoped to the calling user via `session.authenticated`, composed from
+/// tables that already exist.
+/// {@category Endpoint}
+class EndpointDashboard extends _i2.EndpointRef {
+  EndpointDashboard(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'dashboard';
+
+  /// "My teams/events" -- team memberships (any status, so pending invites
+  /// show up too), event registrations, and upcoming matches for teams the
+  /// player is actively on.
+  _i3.Future<_i5.PlayerDashboard> player() =>
+      caller.callServerEndpoint<_i5.PlayerDashboard>(
+        'dashboard',
+        'player',
+        {},
+      );
+
+  /// "My orgs/leagues/events" -- organizations the caller is a member of
+  /// (with their role), leagues across those orgs, and events (org-scoped
+  /// across those orgs, plus any orgless events the caller created).
+  _i3.Future<_i6.OrganizerDashboard> organizer() =>
+      caller.callServerEndpoint<_i6.OrganizerDashboard>(
+        'dashboard',
+        'organizer',
+        {},
+      );
+
+  /// "My team(s)" -- the teams the caller actively manages.
+  _i3.Future<_i7.ManagerDashboard> manager() =>
+      caller.callServerEndpoint<_i7.ManagerDashboard>(
+        'dashboard',
+        'manager',
+        {},
+      );
+}
+
 /// One-off events -- may belong to an [Organization], or be "orgless"
 /// (`organizationId == null`). See BUILD_PLAN.md for the domain model.
 ///
@@ -273,18 +326,18 @@ class EndpointEvent extends _i2.EndpointRef {
 
   /// Creates a new event, either within an organization or "orgless".
   /// Starts in `draft` status -- see [publish].
-  _i3.Future<_i5.Event> create({
+  _i3.Future<_i8.Event> create({
     _i2.UuidValue? organizationId,
     required String name,
     required String slug,
-    required _i6.Sport sport,
+    required _i9.Sport sport,
     required DateTime startAt,
     required int teamFeeCents,
-    _i7.SkillLevel? skillLevel,
+    _i10.SkillLevel? skillLevel,
     String? description,
     String? location,
     bool? isTournament,
-  }) => caller.callServerEndpoint<_i5.Event>(
+  }) => caller.callServerEndpoint<_i8.Event>(
     'event',
     'create',
     {
@@ -302,8 +355,8 @@ class EndpointEvent extends _i2.EndpointRef {
   );
 
   /// Returns a single event by id. Public -- event pages are public.
-  _i3.Future<_i5.Event?> getById(_i2.UuidValue eventId) =>
-      caller.callServerEndpoint<_i5.Event?>(
+  _i3.Future<_i8.Event?> getById(_i2.UuidValue eventId) =>
+      caller.callServerEndpoint<_i8.Event?>(
         'event',
         'getById',
         {'eventId': eventId},
@@ -311,8 +364,8 @@ class EndpointEvent extends _i2.EndpointRef {
 
   /// Returns a single event by its globally-unique slug. Public -- this is
   /// what backs the shareable event link, e.g. `/e/<slug>`.
-  _i3.Future<_i5.Event?> getBySlug(String slug) =>
-      caller.callServerEndpoint<_i5.Event?>(
+  _i3.Future<_i8.Event?> getBySlug(String slug) =>
+      caller.callServerEndpoint<_i8.Event?>(
         'event',
         'getBySlug',
         {'slug': slug},
@@ -321,9 +374,9 @@ class EndpointEvent extends _i2.EndpointRef {
   /// Returns all events for an organization, newest first. Public -- backs
   /// the org homepage's "show events" list. Orgless events aren't returned
   /// here since they have no organization to list them under.
-  _i3.Future<List<_i5.Event>> listByOrganization(
+  _i3.Future<List<_i8.Event>> listByOrganization(
     _i2.UuidValue organizationId,
-  ) => caller.callServerEndpoint<List<_i5.Event>>(
+  ) => caller.callServerEndpoint<List<_i8.Event>>(
     'event',
     'listByOrganization',
     {'organizationId': organizationId},
@@ -331,15 +384,15 @@ class EndpointEvent extends _i2.EndpointRef {
 
   /// Updates an event's basic details. Requires manage permission -- see
   /// [_requireManagePermission].
-  _i3.Future<_i5.Event> update(
+  _i3.Future<_i8.Event> update(
     _i2.UuidValue eventId, {
     String? name,
     String? description,
     String? location,
-    _i7.SkillLevel? skillLevel,
+    _i10.SkillLevel? skillLevel,
     DateTime? startAt,
     int? teamFeeCents,
-  }) => caller.callServerEndpoint<_i5.Event>(
+  }) => caller.callServerEndpoint<_i8.Event>(
     'event',
     'update',
     {
@@ -355,18 +408,18 @@ class EndpointEvent extends _i2.EndpointRef {
 
   /// Publishes a draft event, making it publicly visible for registration.
   /// Requires manage permission -- see [_requireManagePermission].
-  _i3.Future<_i5.Event> publish(_i2.UuidValue eventId) =>
-      caller.callServerEndpoint<_i5.Event>(
+  _i3.Future<_i8.Event> publish(_i2.UuidValue eventId) =>
+      caller.callServerEndpoint<_i8.Event>(
         'event',
         'publish',
         {'eventId': eventId},
       );
 
   /// Registers the calling user for a published event.
-  _i3.Future<_i8.EventRegistration> register({
+  _i3.Future<_i11.EventRegistration> register({
     required _i2.UuidValue eventId,
     String? teamName,
-  }) => caller.callServerEndpoint<_i8.EventRegistration>(
+  }) => caller.callServerEndpoint<_i11.EventRegistration>(
     'event',
     'register',
     {
@@ -376,9 +429,9 @@ class EndpointEvent extends _i2.EndpointRef {
   );
 
   /// Cancels a registration. Callable only by the registrant themselves.
-  _i3.Future<_i8.EventRegistration> cancelRegistration(
+  _i3.Future<_i11.EventRegistration> cancelRegistration(
     _i2.UuidValue registrationId,
-  ) => caller.callServerEndpoint<_i8.EventRegistration>(
+  ) => caller.callServerEndpoint<_i11.EventRegistration>(
     'event',
     'cancelRegistration',
     {'registrationId': registrationId},
@@ -386,8 +439,8 @@ class EndpointEvent extends _i2.EndpointRef {
 
   /// Returns the calling user's own event registrations. Backs the Player
   /// Dashboard ("my events").
-  _i3.Future<List<_i8.EventRegistration>> listMyRegistrations() =>
-      caller.callServerEndpoint<List<_i8.EventRegistration>>(
+  _i3.Future<List<_i11.EventRegistration>> listMyRegistrations() =>
+      caller.callServerEndpoint<List<_i11.EventRegistration>>(
         'event',
         'listMyRegistrations',
         {},
@@ -404,8 +457,8 @@ class EndpointGreeting extends _i2.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i9.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i9.Greeting>(
+  _i3.Future<_i12.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i12.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -423,16 +476,16 @@ class EndpointLeague extends _i2.EndpointRef {
 
   /// Creates a new league within an organization. Requires at least `admin`
   /// on the organization. Starts in `draft` status -- see [activate].
-  _i3.Future<_i10.League> create({
+  _i3.Future<_i13.League> create({
     required _i2.UuidValue organizationId,
     required String name,
     required String slug,
-    required _i6.Sport sport,
+    required _i9.Sport sport,
     required int teamFeeCents,
-    _i7.SkillLevel? skillLevel,
+    _i10.SkillLevel? skillLevel,
     String? description,
     String? location,
-  }) => caller.callServerEndpoint<_i10.League>(
+  }) => caller.callServerEndpoint<_i13.League>(
     'league',
     'create',
     {
@@ -448,18 +501,18 @@ class EndpointLeague extends _i2.EndpointRef {
   );
 
   /// Returns a single league by id. Public -- league pages are public.
-  _i3.Future<_i10.League?> getById(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<_i10.League?>(
+  _i3.Future<_i13.League?> getById(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<_i13.League?>(
         'league',
         'getById',
         {'leagueId': leagueId},
       );
 
   /// Returns a single league by its org-scoped slug. Public.
-  _i3.Future<_i10.League?> getByOrgAndSlug({
+  _i3.Future<_i13.League?> getByOrgAndSlug({
     required _i2.UuidValue organizationId,
     required String slug,
-  }) => caller.callServerEndpoint<_i10.League?>(
+  }) => caller.callServerEndpoint<_i13.League?>(
     'league',
     'getByOrgAndSlug',
     {
@@ -470,9 +523,9 @@ class EndpointLeague extends _i2.EndpointRef {
 
   /// Returns all leagues for an organization, newest first. Public -- backs
   /// the org homepage's "show leagues" list.
-  _i3.Future<List<_i10.League>> listByOrganization(
+  _i3.Future<List<_i13.League>> listByOrganization(
     _i2.UuidValue organizationId,
-  ) => caller.callServerEndpoint<List<_i10.League>>(
+  ) => caller.callServerEndpoint<List<_i13.League>>(
     'league',
     'listByOrganization',
     {'organizationId': organizationId},
@@ -480,14 +533,14 @@ class EndpointLeague extends _i2.EndpointRef {
 
   /// Updates a league's basic details. Requires at least `admin` on the
   /// league's organization.
-  _i3.Future<_i10.League> update(
+  _i3.Future<_i13.League> update(
     _i2.UuidValue leagueId, {
     String? name,
     String? description,
     String? location,
-    _i7.SkillLevel? skillLevel,
+    _i10.SkillLevel? skillLevel,
     int? teamFeeCents,
-  }) => caller.callServerEndpoint<_i10.League>(
+  }) => caller.callServerEndpoint<_i13.League>(
     'league',
     'update',
     {
@@ -502,8 +555,8 @@ class EndpointLeague extends _i2.EndpointRef {
 
   /// Activates a draft league, making it publicly visible for registration.
   /// Requires at least `admin` on the league's organization.
-  _i3.Future<_i10.League> activate(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<_i10.League>(
+  _i3.Future<_i13.League> activate(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<_i13.League>(
         'league',
         'activate',
         {'leagueId': leagueId},
@@ -520,11 +573,11 @@ class EndpointOrganization extends _i2.EndpointRef {
   String get name => 'organization';
 
   /// Creates a new organization and makes the calling user its owner.
-  _i3.Future<_i11.Organization> create({
+  _i3.Future<_i14.Organization> create({
     required String name,
     required String slug,
     String? description,
-  }) => caller.callServerEndpoint<_i11.Organization>(
+  }) => caller.callServerEndpoint<_i14.Organization>(
     'organization',
     'create',
     {
@@ -538,16 +591,16 @@ class EndpointOrganization extends _i2.EndpointRef {
   ///
   /// Organizations are public (an org homepage is a public page), so no
   /// membership check is required to read one.
-  _i3.Future<_i11.Organization?> getById(_i2.UuidValue organizationId) =>
-      caller.callServerEndpoint<_i11.Organization?>(
+  _i3.Future<_i14.Organization?> getById(_i2.UuidValue organizationId) =>
+      caller.callServerEndpoint<_i14.Organization?>(
         'organization',
         'getById',
         {'organizationId': organizationId},
       );
 
   /// Returns a single organization by its public URL slug.
-  _i3.Future<_i11.Organization?> getBySlug(String slug) =>
-      caller.callServerEndpoint<_i11.Organization?>(
+  _i3.Future<_i14.Organization?> getBySlug(String slug) =>
+      caller.callServerEndpoint<_i14.Organization?>(
         'organization',
         'getBySlug',
         {'slug': slug},
@@ -555,8 +608,8 @@ class EndpointOrganization extends _i2.EndpointRef {
 
   /// Returns the organizations the calling user is a member of, paired with
   /// their role in each. Backs the Organizer Dashboard.
-  _i3.Future<List<_i12.OrganizationMembership>> listMine() =>
-      caller.callServerEndpoint<List<_i12.OrganizationMembership>>(
+  _i3.Future<List<_i15.OrganizationMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i15.OrganizationMembership>>(
         'organization',
         'listMine',
         {},
@@ -593,7 +646,7 @@ class EndpointProfile extends _i4.EndpointUserProfileEditBase {
 
   /// Sets a new user image for the signed in user.
   @override
-  _i3.Future<_i4.UserProfileModel> setUserImage(_i13.ByteData image) =>
+  _i3.Future<_i4.UserProfileModel> setUserImage(_i16.ByteData image) =>
       caller.callServerEndpoint<_i4.UserProfileModel>(
         'profile',
         'setUserImage',
@@ -645,13 +698,13 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// Schedules a match between two teams within a league. Requires at
   /// least `admin` on the league's organization. Both teams must already
   /// belong to the league.
-  _i3.Future<_i14.ScheduledMatch> create({
+  _i3.Future<_i17.ScheduledMatch> create({
     required _i2.UuidValue leagueId,
     required _i2.UuidValue homeTeamId,
     required _i2.UuidValue awayTeamId,
     required DateTime scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
     'scheduledMatch',
     'create',
     {
@@ -664,8 +717,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   );
 
   /// Returns a single match by id. Public -- schedules are public.
-  _i3.Future<_i14.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i14.ScheduledMatch?>(
+  _i3.Future<_i17.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i17.ScheduledMatch?>(
         'scheduledMatch',
         'getById',
         {'matchId': matchId},
@@ -673,8 +726,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Returns all matches for a league, soonest first. Public -- backs the
   /// league schedule page.
-  _i3.Future<List<_i14.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i14.ScheduledMatch>>(
+  _i3.Future<List<_i17.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i17.ScheduledMatch>>(
         'scheduledMatch',
         'listByLeague',
         {'leagueId': leagueId},
@@ -682,11 +735,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Reschedules a match (time and/or location). Requires at least `admin`
   /// on the league's organization.
-  _i3.Future<_i14.ScheduledMatch> update(
+  _i3.Future<_i17.ScheduledMatch> update(
     _i2.UuidValue matchId, {
     DateTime? scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
     'scheduledMatch',
     'update',
     {
@@ -698,8 +751,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Cancels a scheduled match. Requires at least `admin` on the league's
   /// organization. Only allowed while the match is still `scheduled`.
-  _i3.Future<_i14.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i14.ScheduledMatch>(
+  _i3.Future<_i17.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i17.ScheduledMatch>(
         'scheduledMatch',
         'cancel',
         {'matchId': matchId},
@@ -709,11 +762,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// both teams' [Standing] rows for the league. Requires at least `admin`
   /// on the league's organization. Only allowed while the match is still
   /// `scheduled` -- results aren't editable in Phase 1.
-  _i3.Future<_i14.ScheduledMatch> recordResult({
+  _i3.Future<_i17.ScheduledMatch> recordResult({
     required _i2.UuidValue matchId,
     required int homeScore,
     required int awayScore,
-  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
     'scheduledMatch',
     'recordResult',
     {
@@ -740,8 +793,8 @@ class EndpointStanding extends _i2.EndpointRef {
   /// Sorted by wins only for Phase 1; a smarter sort (win percentage,
   /// point differential as a tiebreaker) is a later enhancement once
   /// leagues have played enough games for it to matter.
-  _i3.Future<List<_i15.Standing>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i15.Standing>>(
+  _i3.Future<List<_i18.Standing>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i18.Standing>>(
         'standing',
         'listByLeague',
         {'leagueId': leagueId},
@@ -766,10 +819,10 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Creates a new team within a league. Requires at least `admin` on the
   /// league's organization.
-  _i3.Future<_i16.Team> create({
+  _i3.Future<_i19.Team> create({
     required _i2.UuidValue leagueId,
     required String name,
-  }) => caller.callServerEndpoint<_i16.Team>(
+  }) => caller.callServerEndpoint<_i19.Team>(
     'team',
     'create',
     {
@@ -779,42 +832,54 @@ class EndpointTeam extends _i2.EndpointRef {
   );
 
   /// Returns a single team by id. Public -- team pages are public.
-  _i3.Future<_i16.Team?> getById(_i2.UuidValue teamId) =>
-      caller.callServerEndpoint<_i16.Team?>(
+  _i3.Future<_i19.Team?> getById(_i2.UuidValue teamId) =>
+      caller.callServerEndpoint<_i19.Team?>(
         'team',
         'getById',
         {'teamId': teamId},
       );
 
   /// Returns all teams for a league. Public.
-  _i3.Future<List<_i16.Team>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i16.Team>>(
+  _i3.Future<List<_i19.Team>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i19.Team>>(
         'team',
         'listByLeague',
         {'leagueId': leagueId},
       );
 
-  /// Invites an existing BGS user (by their verified email) to join a team.
-  /// Requires at least `admin` on the team's league's organization.
+  /// Returns a team's roster (all memberships, any status). Public -- team
+  /// rosters are public, same as team/league pages.
+  _i3.Future<List<_i20.TeamMembership>> listMembers(_i2.UuidValue teamId) =>
+      caller.callServerEndpoint<List<_i20.TeamMembership>>(
+        'team',
+        'listMembers',
+        {'teamId': teamId},
+      );
+
+  /// Invites an existing BGS user (by their verified email) to join a team,
+  /// as a `player` by default or as a `manager` if [role] is given. Requires
+  /// at least `admin` on the team's league's organization.
   ///
   /// The invited player must already have a BGS account -- inviting someone
   /// who hasn't signed up yet is a later enhancement.
-  _i3.Future<_i17.TeamMembership> invitePlayer({
+  _i3.Future<_i20.TeamMembership> invitePlayer({
     required _i2.UuidValue teamId,
     required String email,
-  }) => caller.callServerEndpoint<_i17.TeamMembership>(
+    _i21.TeamMemberRole? role,
+  }) => caller.callServerEndpoint<_i20.TeamMembership>(
     'team',
     'invitePlayer',
     {
       'teamId': teamId,
       'email': email,
+      'role': role,
     },
   );
 
   /// Accepts a pending invite. Callable only by the invited player
   /// themselves -- see the class doc for why this isn't an org-role check.
-  _i3.Future<_i17.TeamMembership> acceptInvite(_i2.UuidValue membershipId) =>
-      caller.callServerEndpoint<_i17.TeamMembership>(
+  _i3.Future<_i20.TeamMembership> acceptInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i20.TeamMembership>(
         'team',
         'acceptInvite',
         {'membershipId': membershipId},
@@ -822,8 +887,8 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Declines a pending invite. Callable only by the invited player
   /// themselves.
-  _i3.Future<_i17.TeamMembership> declineInvite(_i2.UuidValue membershipId) =>
-      caller.callServerEndpoint<_i17.TeamMembership>(
+  _i3.Future<_i20.TeamMembership> declineInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i20.TeamMembership>(
         'team',
         'declineInvite',
         {'membershipId': membershipId},
@@ -831,8 +896,8 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Returns the calling user's own team memberships, across all teams.
   /// Backs the Player Dashboard ("my teams").
-  _i3.Future<List<_i17.TeamMembership>> listMine() =>
-      caller.callServerEndpoint<List<_i17.TeamMembership>>(
+  _i3.Future<List<_i20.TeamMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i20.TeamMembership>>(
         'team',
         'listMine',
         {},
@@ -870,7 +935,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i18.Protocol(),
+         _i22.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -881,6 +946,7 @@ class Client extends _i2.ServerpodClientShared {
        ) {
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    dashboard = EndpointDashboard(this);
     event = EndpointEvent(this);
     greeting = EndpointGreeting(this);
     league = EndpointLeague(this);
@@ -895,6 +961,8 @@ class Client extends _i2.ServerpodClientShared {
   late final EndpointEmailIdp emailIdp;
 
   late final EndpointJwtRefresh jwtRefresh;
+
+  late final EndpointDashboard dashboard;
 
   late final EndpointEvent event;
 
@@ -918,6 +986,7 @@ class Client extends _i2.ServerpodClientShared {
   Map<String, _i2.EndpointRef> get endpointRefLookup => {
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'dashboard': dashboard,
     'event': event,
     'greeting': greeting,
     'league': league,

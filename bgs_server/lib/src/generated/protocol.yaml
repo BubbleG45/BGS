@@ -9,6 +9,10 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+dashboard:
+  - player:
+  - organizer:
+  - manager:
 event:
   - create:
   - getById:
@@ -52,6 +56,7 @@ team:
   - create:
   - getById:
   - listByLeague:
+  - listMembers:
   - invitePlayer:
   - acceptInvite:
   - declineInvite:

@@ -1,0 +1,7 @@
+### Aggregated data for the Manager Dashboard -- "my team(s)". Only active
+### `manager`-role memberships; team rosters themselves are fetched
+### separately via TeamEndpoint.listMembers when a specific team is opened,
+### to keep this call cheap. Transient (no `table:`).
+class: ManagerDashboard
+fields:
+  managedTeams: List<TeamMembership>

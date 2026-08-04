@@ -1,0 +1,11 @@
+### Aggregated data for the Player Dashboard -- "my teams/events". Pure
+### read composition over TeamMembership/EventRegistration/ScheduledMatch;
+### no new source-of-truth data lives here. Transient (no `table:`).
+class: PlayerDashboard
+fields:
+  teamMemberships: List<TeamMembership>
+  eventRegistrations: List<EventRegistration>
+
+  ### Scheduled (not yet played) matches for teams the player is actively
+  ### on, soonest first.
+  upcomingMatches: List<ScheduledMatch>

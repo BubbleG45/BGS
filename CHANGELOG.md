@@ -4,6 +4,15 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Dashboard endpoint)
+- `DashboardEndpoint`: `player` (team memberships, event registrations, and upcoming `scheduled` matches for teams the player is *actively* on), `organizer` (org memberships with role, leagues, and events -- org-scoped across those orgs plus any orgless events the caller created), `manager` (only active `manager`-role team memberships). All server-side composition over tables that already exist -- deliberately server-side rather than assembled client-side, to keep the Flutter app thin and avoid N+1-style chains of calls for what's fundamentally one screen's worth of data.
+- New transient DTOs `PlayerDashboard`, `OrganizerDashboard`, `ManagerDashboard`. No new writes, no new typed exceptions -- everything here is a read scoped to the calling user.
+- Nested `include()` chains (e.g. `TeamMembership → Team → League → Organization`) populate related objects directly on the returned rows, so the dashboard payload carries what the UI needs without follow-up round trips.
+
+### Fixed
+- `TeamEndpoint.invitePlayer` had no way to invite someone as a `manager` -- it always defaulted to `player`, and no other write path touched `TeamMemberRole` at all. Found this while writing a Manager Dashboard test that had no way to produce a manager to test with. Added an optional `role` parameter (nullable, defaulting to `player` internally -- not a Dart default value, since those generate as client-required params, same gotcha as `Event.isTournament` earlier).
+- Added `TeamEndpoint.listMembers` (public team roster read) -- there was previously no way to list a team's members at all, which the Manager Dashboard needs to be useful.
+
 ### Added (Profile endpoint)
 - `ProfileEndpoint` extends the auth module's `UserProfileEditBaseEndpoint` directly -- same pattern as `EmailIdpEndpoint` extending `EmailIdpBaseEndpoint`. Gives `get`, `changeUserName`, `changeFullName`, `setUserImage`, `removeUserImage` for free, all self-scoped to the calling user via `session.authenticated`.
 - No BGS-specific profile model was needed -- the auth module's `UserProfile`/`UserProfileModel` (userName/fullName/email/image) already covers Phase 1's needs, consistent with the original domain-model decision not to duplicate it.

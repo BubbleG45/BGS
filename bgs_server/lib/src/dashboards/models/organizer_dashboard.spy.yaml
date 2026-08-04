@@ -1,0 +1,10 @@
+### Aggregated data for the Organizer Dashboard -- "my orgs/leagues/events".
+### Transient (no `table:`).
+class: OrganizerDashboard
+fields:
+  organizations: List<OrganizationMembership>
+  leagues: List<League>
+
+  ### Org-scoped events across the calling user's organizations, plus any
+  ### orgless events they created themselves.
+  events: List<Event>

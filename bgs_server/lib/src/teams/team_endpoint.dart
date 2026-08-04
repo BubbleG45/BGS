@@ -52,8 +52,22 @@ class TeamEndpoint extends Endpoint {
     );
   }
 
-  /// Invites an existing BGS user (by their verified email) to join a team.
-  /// Requires at least `admin` on the team's league's organization.
+  /// Returns a team's roster (all memberships, any status). Public -- team
+  /// rosters are public, same as team/league pages.
+  Future<List<TeamMembership>> listMembers(
+    Session session,
+    UuidValue teamId,
+  ) async {
+    return TeamMembership.db.find(
+      session,
+      where: (t) => t.teamId.equals(teamId),
+      orderBy: (t) => t.invitedAt,
+    );
+  }
+
+  /// Invites an existing BGS user (by their verified email) to join a team,
+  /// as a `player` by default or as a `manager` if [role] is given. Requires
+  /// at least `admin` on the team's league's organization.
   ///
   /// The invited player must already have a BGS account -- inviting someone
   /// who hasn't signed up yet is a later enhancement.
@@ -61,6 +75,7 @@ class TeamEndpoint extends Endpoint {
     Session session, {
     required UuidValue teamId,
     required String email,
+    TeamMemberRole? role,
   }) async {
     final team = await _findTeamOrThrow(session, teamId);
     final league = await _findLeagueOrThrow(session, team.leagueId);
@@ -97,7 +112,11 @@ class TeamEndpoint extends Endpoint {
 
       return TeamMembership.db.insertRow(
         session,
-        TeamMembership(teamId: teamId, authUserId: profile.authUserId),
+        TeamMembership(
+          teamId: teamId,
+          authUserId: profile.authUserId,
+          role: role ?? TeamMemberRole.player,
+        ),
         transaction: transaction,
       );
     });
