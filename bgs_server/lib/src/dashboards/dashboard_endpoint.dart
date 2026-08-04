@@ -53,6 +53,7 @@ class DashboardEndpoint extends Endpoint {
           (t.homeTeamId.inSet(activeTeamIds) |
               t.awayTeamId.inSet(activeTeamIds)) &
           t.status.equals(MatchStatus.scheduled),
+      include: ScheduledMatch.include(homeTeam: Team.include(), awayTeam: Team.include()),
       orderBy: (t) => t.scheduledAt,
       limit: 10,
     );

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-import 'screens/home_screen.dart';
+import 'screens/dashboard_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -51,7 +51,7 @@ class BgsApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       home: SignInScreen(
-        child: HomeScreen(
+        child: DashboardScreen(
           onSignOut: () async {
             await client.auth.signOutDevice();
           },
