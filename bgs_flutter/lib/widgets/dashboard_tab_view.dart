@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// tabs (Player/Organizer/Manager) follow this same fetch-and-display shape.
 class DashboardTabView<T> extends StatefulWidget {
   final Future<T> Function() fetch;
-  final Widget Function(BuildContext context, T data) builder;
+  final Widget Function(BuildContext context, T data, Future<void> Function() refresh) builder;
 
   const DashboardTabView({super.key, required this.fetch, required this.builder});
 
@@ -24,9 +24,11 @@ class _DashboardTabViewState<T> extends State<DashboardTabView<T>>
   }
 
   Future<void> _refresh() async {
-    final next = widget.fetch();
-    setState(() => _future = next);
-    await next;
+    final result = await widget.fetch();
+    if (!mounted) return;
+    setState(() {
+      _future = Future.value(result);
+    });
   }
 
   @override
@@ -61,7 +63,7 @@ class _DashboardTabViewState<T> extends State<DashboardTabView<T>>
             );
           }
 
-          return widget.builder(context, snapshot.data as T);
+          return widget.builder(context, snapshot.data as T, _refresh);
         },
       ),
     );

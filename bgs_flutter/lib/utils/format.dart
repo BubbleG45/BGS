@@ -13,6 +13,13 @@ String formatEnumLabel(String name) {
   return withSpaces[0].toUpperCase() + withSpaces.substring(1);
 }
 
+/// Turns free text into a URL-safe slug, e.g. `Riverside Rec!` -> `riverside-rec`.
+String slugify(String input) {
+  final lowered = input.trim().toLowerCase();
+  final replaced = lowered.replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+  return replaced.replaceAll(RegExp(r'^-+|-+$'), '');
+}
+
 /// Formats a [DateTime] (converted to local time) as e.g. `Aug 4, 2026, 6:30 PM`.
 String formatDateTime(DateTime dateTime) {
   final local = dateTime.toLocal();

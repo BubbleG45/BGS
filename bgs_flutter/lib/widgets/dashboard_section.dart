@@ -7,12 +7,14 @@ class DashboardSection extends StatelessWidget {
   final String title;
   final String emptyMessage;
   final List<Widget> children;
+  final Widget? trailing;
 
   const DashboardSection({
     super.key,
     required this.title,
     required this.emptyMessage,
     required this.children,
+    this.trailing,
   });
 
   @override
@@ -24,11 +26,17 @@ class DashboardSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (trailing != null) trailing!,
+            ],
           ),
           const SizedBox(height: 8),
           if (children.isEmpty)

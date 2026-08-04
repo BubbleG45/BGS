@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import 'create_league_screen.dart';
+import 'create_organization_screen.dart';
+import 'create_team_screen.dart';
 
 StatusTone _leagueTone(LeagueStatus status) => switch (status) {
       LeagueStatus.active => StatusTone.positive,
@@ -21,8 +24,17 @@ StatusTone _eventTone(EventStatus status) => switch (status) {
 /// "My orgs/leagues/events" -- backs the Organizer tab of [DashboardScreen].
 class OrganizerDashboardView extends StatelessWidget {
   final OrganizerDashboard dashboard;
+  final Future<void> Function() onRefresh;
 
-  const OrganizerDashboardView({super.key, required this.dashboard});
+  const OrganizerDashboardView({super.key, required this.dashboard, required this.onRefresh});
+
+  Future<void> _createOrganization(BuildContext context) async {
+    final created = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const CreateOrganizationScreen()),
+    );
+    if (created == true) await onRefresh();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +44,22 @@ class OrganizerDashboardView extends StatelessWidget {
         DashboardSection(
           title: 'My Organizations',
           emptyMessage: "You don't belong to any organizations yet.",
+          trailing: IconButton(
+            onPressed: () => _createOrganization(context),
+            icon: const Icon(Icons.add),
+            tooltip: 'New organization',
+          ),
           children: [
             for (final membership in dashboard.organizations)
-              _OrganizationTile(membership: membership),
+              _OrganizationTile(membership: membership, onRefresh: onRefresh),
           ],
         ),
         DashboardSection(
           title: 'Leagues',
           emptyMessage: 'No leagues yet.',
           children: [
-            for (final league in dashboard.leagues) _LeagueTile(league: league),
+            for (final league in dashboard.leagues)
+              _LeagueTile(league: league, onRefresh: onRefresh),
           ],
         ),
         DashboardSection(
@@ -58,8 +76,22 @@ class OrganizerDashboardView extends StatelessWidget {
 
 class _OrganizationTile extends StatelessWidget {
   final OrganizationMembership membership;
+  final Future<void> Function() onRefresh;
 
-  const _OrganizationTile({required this.membership});
+  const _OrganizationTile({required this.membership, required this.onRefresh});
+
+  Future<void> _createLeague(BuildContext context) async {
+    final created = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateLeagueScreen(
+          organizationId: membership.organization.id!,
+          organizationName: membership.organization.name,
+        ),
+      ),
+    );
+    if (created == true) await onRefresh();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +101,17 @@ class _OrganizationTile extends StatelessWidget {
         subtitle: membership.organization.description == null
             ? null
             : Text(membership.organization.description!),
-        trailing: StatusChip(formatEnumLabel(membership.role.name)),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StatusChip(formatEnumLabel(membership.role.name)),
+            IconButton(
+              onPressed: () => _createLeague(context),
+              icon: const Icon(Icons.add),
+              tooltip: 'New league',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -77,8 +119,19 @@ class _OrganizationTile extends StatelessWidget {
 
 class _LeagueTile extends StatelessWidget {
   final League league;
+  final Future<void> Function() onRefresh;
 
-  const _LeagueTile({required this.league});
+  const _LeagueTile({required this.league, required this.onRefresh});
+
+  Future<void> _createTeam(BuildContext context) async {
+    final created = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateTeamScreen(leagueId: league.id!, leagueName: league.name),
+      ),
+    );
+    if (created == true) await onRefresh();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +142,19 @@ class _LeagueTile extends StatelessWidget {
           formatEnumLabel(league.sport.name),
           if (league.location != null) league.location!,
         ].join(' · ')),
-        trailing: StatusChip(
-          formatEnumLabel(league.status.name),
-          tone: _leagueTone(league.status),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            StatusChip(
+              formatEnumLabel(league.status.name),
+              tone: _leagueTone(league.status),
+            ),
+            IconButton(
+              onPressed: () => _createTeam(context),
+              icon: const Icon(Icons.add),
+              tooltip: 'New team',
+            ),
+          ],
         ),
       ),
     );

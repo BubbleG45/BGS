@@ -43,15 +43,16 @@ class DashboardScreen extends StatelessWidget {
           children: [
             DashboardTabView<PlayerDashboard>(
               fetch: () => client.dashboard.player(),
-              builder: (context, data) => PlayerDashboardView(dashboard: data),
+              builder: (context, data, refresh) => PlayerDashboardView(dashboard: data),
             ),
             DashboardTabView<OrganizerDashboard>(
               fetch: () => client.dashboard.organizer(),
-              builder: (context, data) => OrganizerDashboardView(dashboard: data),
+              builder: (context, data, refresh) =>
+                  OrganizerDashboardView(dashboard: data, onRefresh: refresh),
             ),
             DashboardTabView<ManagerDashboard>(
               fetch: () => client.dashboard.manager(),
-              builder: (context, data) => ManagerDashboardView(dashboard: data),
+              builder: (context, data, refresh) => ManagerDashboardView(dashboard: data),
             ),
           ],
         ),
