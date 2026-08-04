@@ -33,6 +33,12 @@ organization:
   - getById:
   - getBySlug:
   - listMine:
+profile:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:
+  - changeFullName:
+  - get:
 scheduledMatch:
   - create:
   - getById:

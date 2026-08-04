@@ -27,13 +27,14 @@ import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
     as _i11;
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
     as _i12;
+import 'dart:typed_data' as _i13;
 import 'package:bgs_client/src/protocol/scheduling/models/scheduled_match.dart'
-    as _i13;
-import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i14;
-import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i15;
+    as _i14;
+import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i15;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i16;
 import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
-    as _i16;
-import 'protocol.dart' as _i17;
+    as _i17;
+import 'protocol.dart' as _i18;
 
 /// By extending [EmailIdpBaseEndpoint], the email identity provider endpoints
 /// are made available on the server and enable the corresponding sign-in widget
@@ -562,6 +563,71 @@ class EndpointOrganization extends _i2.EndpointRef {
       );
 }
 
+/// By extending [UserProfileEditBaseEndpoint], the profile read/edit
+/// endpoints (`get`, `changeUserName`, `changeFullName`, `setUserImage`,
+/// `removeUserImage`) are made available on the server -- same pattern as
+/// `EmailIdpEndpoint` extending `EmailIdpBaseEndpoint`. Always self-scoped
+/// to the calling user; there's no "view another user's profile" surface
+/// yet (later enhancement, once e.g. team rosters need to show names).
+///
+/// `setUserImage`/`removeUserImage` work but aren't exercised by BGS's own
+/// tests yet -- no file storage backend is configured for local dev, so
+/// they'd fail at runtime here until that's set up.
+/// {@category Endpoint}
+class EndpointProfile extends _i4.EndpointUserProfileEditBase {
+  EndpointProfile(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'profile';
+
+  /// Removes the user's uploaded image, setting it to null.
+  ///
+  /// The client should handle displaying a placeholder for users without images.
+  @override
+  _i3.Future<_i4.UserProfileModel> removeUserImage() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'profile',
+        'removeUserImage',
+        {},
+      );
+
+  /// Sets a new user image for the signed in user.
+  @override
+  _i3.Future<_i4.UserProfileModel> setUserImage(_i13.ByteData image) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'profile',
+        'setUserImage',
+        {'image': image},
+      );
+
+  /// Changes the name of a user.
+  @override
+  _i3.Future<_i4.UserProfileModel> changeUserName(String? userName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'profile',
+        'changeUserName',
+        {'userName': userName},
+      );
+
+  /// Changes the full name of a user.
+  @override
+  _i3.Future<_i4.UserProfileModel> changeFullName(String? fullName) =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'profile',
+        'changeFullName',
+        {'fullName': fullName},
+      );
+
+  /// Returns the user profile of the current user.
+  @override
+  _i3.Future<_i4.UserProfileModel> get() =>
+      caller.callServerEndpoint<_i4.UserProfileModel>(
+        'profile',
+        'get',
+        {},
+      );
+}
+
 /// A single scheduled game between two teams within a [League]. Manual
 /// scheduling only for Phase 1 -- no auto-scheduling algorithm yet. See
 /// BUILD_PLAN.md for the domain model.
@@ -579,13 +645,13 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// Schedules a match between two teams within a league. Requires at
   /// least `admin` on the league's organization. Both teams must already
   /// belong to the league.
-  _i3.Future<_i13.ScheduledMatch> create({
+  _i3.Future<_i14.ScheduledMatch> create({
     required _i2.UuidValue leagueId,
     required _i2.UuidValue homeTeamId,
     required _i2.UuidValue awayTeamId,
     required DateTime scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i13.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
     'scheduledMatch',
     'create',
     {
@@ -598,8 +664,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   );
 
   /// Returns a single match by id. Public -- schedules are public.
-  _i3.Future<_i13.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i13.ScheduledMatch?>(
+  _i3.Future<_i14.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i14.ScheduledMatch?>(
         'scheduledMatch',
         'getById',
         {'matchId': matchId},
@@ -607,8 +673,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Returns all matches for a league, soonest first. Public -- backs the
   /// league schedule page.
-  _i3.Future<List<_i13.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i13.ScheduledMatch>>(
+  _i3.Future<List<_i14.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i14.ScheduledMatch>>(
         'scheduledMatch',
         'listByLeague',
         {'leagueId': leagueId},
@@ -616,11 +682,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Reschedules a match (time and/or location). Requires at least `admin`
   /// on the league's organization.
-  _i3.Future<_i13.ScheduledMatch> update(
+  _i3.Future<_i14.ScheduledMatch> update(
     _i2.UuidValue matchId, {
     DateTime? scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i13.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
     'scheduledMatch',
     'update',
     {
@@ -632,8 +698,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Cancels a scheduled match. Requires at least `admin` on the league's
   /// organization. Only allowed while the match is still `scheduled`.
-  _i3.Future<_i13.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i13.ScheduledMatch>(
+  _i3.Future<_i14.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i14.ScheduledMatch>(
         'scheduledMatch',
         'cancel',
         {'matchId': matchId},
@@ -643,11 +709,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// both teams' [Standing] rows for the league. Requires at least `admin`
   /// on the league's organization. Only allowed while the match is still
   /// `scheduled` -- results aren't editable in Phase 1.
-  _i3.Future<_i13.ScheduledMatch> recordResult({
+  _i3.Future<_i14.ScheduledMatch> recordResult({
     required _i2.UuidValue matchId,
     required int homeScore,
     required int awayScore,
-  }) => caller.callServerEndpoint<_i13.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i14.ScheduledMatch>(
     'scheduledMatch',
     'recordResult',
     {
@@ -674,8 +740,8 @@ class EndpointStanding extends _i2.EndpointRef {
   /// Sorted by wins only for Phase 1; a smarter sort (win percentage,
   /// point differential as a tiebreaker) is a later enhancement once
   /// leagues have played enough games for it to matter.
-  _i3.Future<List<_i14.Standing>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i14.Standing>>(
+  _i3.Future<List<_i15.Standing>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i15.Standing>>(
         'standing',
         'listByLeague',
         {'leagueId': leagueId},
@@ -700,10 +766,10 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Creates a new team within a league. Requires at least `admin` on the
   /// league's organization.
-  _i3.Future<_i15.Team> create({
+  _i3.Future<_i16.Team> create({
     required _i2.UuidValue leagueId,
     required String name,
-  }) => caller.callServerEndpoint<_i15.Team>(
+  }) => caller.callServerEndpoint<_i16.Team>(
     'team',
     'create',
     {
@@ -713,16 +779,16 @@ class EndpointTeam extends _i2.EndpointRef {
   );
 
   /// Returns a single team by id. Public -- team pages are public.
-  _i3.Future<_i15.Team?> getById(_i2.UuidValue teamId) =>
-      caller.callServerEndpoint<_i15.Team?>(
+  _i3.Future<_i16.Team?> getById(_i2.UuidValue teamId) =>
+      caller.callServerEndpoint<_i16.Team?>(
         'team',
         'getById',
         {'teamId': teamId},
       );
 
   /// Returns all teams for a league. Public.
-  _i3.Future<List<_i15.Team>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i15.Team>>(
+  _i3.Future<List<_i16.Team>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i16.Team>>(
         'team',
         'listByLeague',
         {'leagueId': leagueId},
@@ -733,10 +799,10 @@ class EndpointTeam extends _i2.EndpointRef {
   ///
   /// The invited player must already have a BGS account -- inviting someone
   /// who hasn't signed up yet is a later enhancement.
-  _i3.Future<_i16.TeamMembership> invitePlayer({
+  _i3.Future<_i17.TeamMembership> invitePlayer({
     required _i2.UuidValue teamId,
     required String email,
-  }) => caller.callServerEndpoint<_i16.TeamMembership>(
+  }) => caller.callServerEndpoint<_i17.TeamMembership>(
     'team',
     'invitePlayer',
     {
@@ -747,8 +813,8 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Accepts a pending invite. Callable only by the invited player
   /// themselves -- see the class doc for why this isn't an org-role check.
-  _i3.Future<_i16.TeamMembership> acceptInvite(_i2.UuidValue membershipId) =>
-      caller.callServerEndpoint<_i16.TeamMembership>(
+  _i3.Future<_i17.TeamMembership> acceptInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i17.TeamMembership>(
         'team',
         'acceptInvite',
         {'membershipId': membershipId},
@@ -756,8 +822,8 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Declines a pending invite. Callable only by the invited player
   /// themselves.
-  _i3.Future<_i16.TeamMembership> declineInvite(_i2.UuidValue membershipId) =>
-      caller.callServerEndpoint<_i16.TeamMembership>(
+  _i3.Future<_i17.TeamMembership> declineInvite(_i2.UuidValue membershipId) =>
+      caller.callServerEndpoint<_i17.TeamMembership>(
         'team',
         'declineInvite',
         {'membershipId': membershipId},
@@ -765,8 +831,8 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Returns the calling user's own team memberships, across all teams.
   /// Backs the Player Dashboard ("my teams").
-  _i3.Future<List<_i16.TeamMembership>> listMine() =>
-      caller.callServerEndpoint<List<_i16.TeamMembership>>(
+  _i3.Future<List<_i17.TeamMembership>> listMine() =>
+      caller.callServerEndpoint<List<_i17.TeamMembership>>(
         'team',
         'listMine',
         {},
@@ -804,7 +870,7 @@ class Client extends _i2.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i17.Protocol(),
+         _i18.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -819,6 +885,7 @@ class Client extends _i2.ServerpodClientShared {
     greeting = EndpointGreeting(this);
     league = EndpointLeague(this);
     organization = EndpointOrganization(this);
+    profile = EndpointProfile(this);
     scheduledMatch = EndpointScheduledMatch(this);
     standing = EndpointStanding(this);
     team = EndpointTeam(this);
@@ -837,6 +904,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointOrganization organization;
 
+  late final EndpointProfile profile;
+
   late final EndpointScheduledMatch scheduledMatch;
 
   late final EndpointStanding standing;
@@ -853,6 +922,7 @@ class Client extends _i2.ServerpodClientShared {
     'greeting': greeting,
     'league': league,
     'organization': organization,
+    'profile': profile,
     'scheduledMatch': scheduledMatch,
     'standing': standing,
     'team': team,

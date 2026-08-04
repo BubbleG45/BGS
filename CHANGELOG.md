@@ -4,6 +4,12 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (Profile endpoint)
+- `ProfileEndpoint` extends the auth module's `UserProfileEditBaseEndpoint` directly -- same pattern as `EmailIdpEndpoint` extending `EmailIdpBaseEndpoint`. Gives `get`, `changeUserName`, `changeFullName`, `setUserImage`, `removeUserImage` for free, all self-scoped to the calling user via `session.authenticated`.
+- No BGS-specific profile model was needed -- the auth module's `UserProfile`/`UserProfileModel` (userName/fullName/email/image) already covers Phase 1's needs, consistent with the original domain-model decision not to duplicate it.
+- `setUserImage`/`removeUserImage` are exposed but not exercised by tests yet -- no file storage backend is configured for local dev, so they'd fail at runtime until that's set up (later phase).
+- Integration tests in `profile_endpoint_test.dart` (4 cases): `get` returns the caller's own profile, `changeUserName`/`changeFullName` persist, and `get` throws `UserProfileNotFoundException` for a user with no profile yet.
+
 ### Added (ScheduledMatch + Standing endpoints)
 - `ScheduledMatchEndpoint`: `create` (`admin`+ on the league's org, validates both teams belong to the league and aren't the same team), `getById`/`listByLeague` (public reads), `update` (reschedule time/location), `cancel` (`scheduled` → `cancelled` only), `recordResult` (`scheduled` → `completed` only, sets both scores and recomputes both teams' `Standing` rows in the same transaction).
 - `StandingEndpoint`: `listByLeague` only (public, sorted by wins) -- deliberately no create/update surface, since standings are a recomputed aggregate maintained entirely by `recordResult`, not a separate source of truth. Sort is wins-only for Phase 1; win percentage / point differential as tiebreakers are a later enhancement.

@@ -27,13 +27,14 @@ import 'package:bgs_server/src/generated/organizations/models/organization.dart'
     as _i11;
 import 'package:bgs_server/src/generated/organizations/models/organization_membership.dart'
     as _i12;
+import 'dart:typed_data' as _i13;
 import 'package:bgs_server/src/generated/scheduling/models/scheduled_match.dart'
-    as _i13;
-import 'package:bgs_server/src/generated/standings/models/standing.dart'
     as _i14;
-import 'package:bgs_server/src/generated/teams/models/team.dart' as _i15;
+import 'package:bgs_server/src/generated/standings/models/standing.dart'
+    as _i15;
+import 'package:bgs_server/src/generated/teams/models/team.dart' as _i16;
 import 'package:bgs_server/src/generated/teams/models/team_membership.dart'
-    as _i16;
+    as _i17;
 import 'package:bgs_server/src/generated/protocol.dart';
 import 'package:bgs_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -160,6 +161,8 @@ class TestEndpoints {
 
   late final _OrganizationEndpoint organization;
 
+  late final _ProfileEndpoint profile;
+
   late final _ScheduledMatchEndpoint scheduledMatch;
 
   late final _StandingEndpoint standing;
@@ -195,6 +198,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     organization = _OrganizationEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    profile = _ProfileEndpoint(
       endpoints,
       serializationManager,
     );
@@ -1269,6 +1276,170 @@ class _OrganizationEndpoint {
   }
 }
 
+class _ProfileEndpoint {
+  _ProfileEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i4.UserProfileModel> removeUserImage(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'profile',
+            method: 'removeUserImage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'profile',
+          methodName: 'removeUserImage',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserProfileModel> setUserImage(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i13.ByteData image,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'profile',
+            method: 'setUserImage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'profile',
+          methodName: 'setUserImage',
+          parameters: _i1.testObjectToJson({'image': image}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserProfileModel> changeUserName(
+    _i1.TestSessionBuilder sessionBuilder,
+    String? userName,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'profile',
+            method: 'changeUserName',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'profile',
+          methodName: 'changeUserName',
+          parameters: _i1.testObjectToJson({'userName': userName}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserProfileModel> changeFullName(
+    _i1.TestSessionBuilder sessionBuilder,
+    String? fullName,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'profile',
+            method: 'changeFullName',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'profile',
+          methodName: 'changeFullName',
+          parameters: _i1.testObjectToJson({'fullName': fullName}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i4.UserProfileModel> get(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'profile',
+            method: 'get',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'profile',
+          methodName: 'get',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i4.UserProfileModel>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _ScheduledMatchEndpoint {
   _ScheduledMatchEndpoint(
     this._endpointDispatch,
@@ -1279,7 +1450,7 @@ class _ScheduledMatchEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i13.ScheduledMatch> create(
+  _i3.Future<_i14.ScheduledMatch> create(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue leagueId,
     required _i2.UuidValue homeTeamId,
@@ -1312,7 +1483,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.ScheduledMatch>);
+                as _i3.Future<_i14.ScheduledMatch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1320,7 +1491,7 @@ class _ScheduledMatchEndpoint {
     });
   }
 
-  _i3.Future<_i13.ScheduledMatch?> getById(
+  _i3.Future<_i14.ScheduledMatch?> getById(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue matchId,
   ) async {
@@ -1343,7 +1514,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.ScheduledMatch?>);
+                as _i3.Future<_i14.ScheduledMatch?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1351,7 +1522,7 @@ class _ScheduledMatchEndpoint {
     });
   }
 
-  _i3.Future<List<_i13.ScheduledMatch>> listByLeague(
+  _i3.Future<List<_i14.ScheduledMatch>> listByLeague(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue leagueId,
   ) async {
@@ -1374,7 +1545,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i13.ScheduledMatch>>);
+                as _i3.Future<List<_i14.ScheduledMatch>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1382,7 +1553,7 @@ class _ScheduledMatchEndpoint {
     });
   }
 
-  _i3.Future<_i13.ScheduledMatch> update(
+  _i3.Future<_i14.ScheduledMatch> update(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue matchId, {
     DateTime? scheduledAt,
@@ -1411,7 +1582,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.ScheduledMatch>);
+                as _i3.Future<_i14.ScheduledMatch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1419,7 +1590,7 @@ class _ScheduledMatchEndpoint {
     });
   }
 
-  _i3.Future<_i13.ScheduledMatch> cancel(
+  _i3.Future<_i14.ScheduledMatch> cancel(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue matchId,
   ) async {
@@ -1442,7 +1613,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.ScheduledMatch>);
+                as _i3.Future<_i14.ScheduledMatch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1450,7 +1621,7 @@ class _ScheduledMatchEndpoint {
     });
   }
 
-  _i3.Future<_i13.ScheduledMatch> recordResult(
+  _i3.Future<_i14.ScheduledMatch> recordResult(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue matchId,
     required int homeScore,
@@ -1479,7 +1650,7 @@ class _ScheduledMatchEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i13.ScheduledMatch>);
+                as _i3.Future<_i14.ScheduledMatch>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1498,7 +1669,7 @@ class _StandingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<List<_i14.Standing>> listByLeague(
+  _i3.Future<List<_i15.Standing>> listByLeague(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue leagueId,
   ) async {
@@ -1521,7 +1692,7 @@ class _StandingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i14.Standing>>);
+                as _i3.Future<List<_i15.Standing>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1540,7 +1711,7 @@ class _TeamEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i15.Team> create(
+  _i3.Future<_i16.Team> create(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue leagueId,
     required String name,
@@ -1567,7 +1738,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.Team>);
+                as _i3.Future<_i16.Team>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1575,7 +1746,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<_i15.Team?> getById(
+  _i3.Future<_i16.Team?> getById(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue teamId,
   ) async {
@@ -1598,7 +1769,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i15.Team?>);
+                as _i3.Future<_i16.Team?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1606,7 +1777,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<List<_i15.Team>> listByLeague(
+  _i3.Future<List<_i16.Team>> listByLeague(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue leagueId,
   ) async {
@@ -1629,7 +1800,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i15.Team>>);
+                as _i3.Future<List<_i16.Team>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1637,7 +1808,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<_i16.TeamMembership> invitePlayer(
+  _i3.Future<_i17.TeamMembership> invitePlayer(
     _i1.TestSessionBuilder sessionBuilder, {
     required _i2.UuidValue teamId,
     required String email,
@@ -1664,7 +1835,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.TeamMembership>);
+                as _i3.Future<_i17.TeamMembership>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1672,7 +1843,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<_i16.TeamMembership> acceptInvite(
+  _i3.Future<_i17.TeamMembership> acceptInvite(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue membershipId,
   ) async {
@@ -1695,7 +1866,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.TeamMembership>);
+                as _i3.Future<_i17.TeamMembership>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1703,7 +1874,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<_i16.TeamMembership> declineInvite(
+  _i3.Future<_i17.TeamMembership> declineInvite(
     _i1.TestSessionBuilder sessionBuilder,
     _i2.UuidValue membershipId,
   ) async {
@@ -1726,7 +1897,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i16.TeamMembership>);
+                as _i3.Future<_i17.TeamMembership>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1734,7 +1905,7 @@ class _TeamEndpoint {
     });
   }
 
-  _i3.Future<List<_i16.TeamMembership>> listMine(
+  _i3.Future<List<_i17.TeamMembership>> listMine(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1756,7 +1927,7 @@ class _TeamEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i16.TeamMembership>>);
+                as _i3.Future<List<_i17.TeamMembership>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
