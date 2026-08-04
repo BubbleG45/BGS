@@ -1,0 +1,6 @@
+### Thrown when a team used in a match doesn't belong to the match's
+### league.
+exception: TeamNotInLeagueException
+fields:
+  leagueId: UuidValue
+  teamId: UuidValue

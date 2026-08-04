@@ -1,0 +1,4 @@
+### Thrown when creating a match with the same team as both home and away.
+exception: SameTeamMatchException
+fields:
+  teamId: UuidValue

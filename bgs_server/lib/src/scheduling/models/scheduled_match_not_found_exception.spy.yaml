@@ -1,0 +1,5 @@
+### Thrown when a scheduled match id doesn't correspond to any existing
+### match.
+exception: ScheduledMatchNotFoundException
+fields:
+  matchId: UuidValue

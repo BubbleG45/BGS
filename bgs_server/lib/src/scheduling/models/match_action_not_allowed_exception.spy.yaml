@@ -1,0 +1,6 @@
+### Thrown when trying to cancel or record a result for a match that isn't
+### currently `scheduled` (e.g. already completed or cancelled).
+exception: MatchActionNotAllowedException
+fields:
+  matchId: UuidValue
+  currentStatus: MatchStatus

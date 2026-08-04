@@ -33,6 +33,15 @@ organization:
   - getById:
   - getBySlug:
   - listMine:
+scheduledMatch:
+  - create:
+  - getById:
+  - listByLeague:
+  - update:
+  - cancel:
+  - recordResult:
+standing:
+  - listByLeague:
 team:
   - create:
   - getById:

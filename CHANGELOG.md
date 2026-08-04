@@ -4,6 +4,12 @@ All notable features and changes to BGS are logged here as they land, newest fir
 
 ## Unreleased
 
+### Added (ScheduledMatch + Standing endpoints)
+- `ScheduledMatchEndpoint`: `create` (`admin`+ on the league's org, validates both teams belong to the league and aren't the same team), `getById`/`listByLeague` (public reads), `update` (reschedule time/location), `cancel` (`scheduled` → `cancelled` only), `recordResult` (`scheduled` → `completed` only, sets both scores and recomputes both teams' `Standing` rows in the same transaction).
+- `StandingEndpoint`: `listByLeague` only (public, sorted by wins) -- deliberately no create/update surface, since standings are a recomputed aggregate maintained entirely by `recordResult`, not a separate source of truth. Sort is wins-only for Phase 1; win percentage / point differential as tiebreakers are a later enhancement.
+- Typed exceptions: `ScheduledMatchNotFoundException`, `SameTeamMatchException`, `TeamNotInLeagueException`, `MatchActionNotAllowedException` (covers both cancel and recordResult being rejected on a non-`scheduled` match).
+- Integration tests in `scheduled_match_endpoint_test.dart` (12 cases): create + org-gating, same-team validation, team-not-in-league validation, reschedule, cancel (success + already-cancelled rejection), recordResult (win/loss standings, tie standings, already-completed rejection, accumulation across two matches for the same team), and public reads.
+
 ### Added (Event endpoint + registration flow)
 - `EventEndpoint`: `create` (org-scoped or "orgless" -- `organizationId` is optional; org-scoped events require `admin`+ on the org, orgless events just require login), `getById`/`getBySlug`/`listByOrganization` (public reads -- `getBySlug` backs the shareable `/e/<slug>` link), `update`, `publish` (draft → published only), `register`/`cancelRegistration` (event registration, independent of any league team), `listMyRegistrations` (Player Dashboard).
 - New permission pattern for `update`/`publish`: org-scoped events check `requireOrgRole` like everything else, but orgless events have no organization to check a role against, so management permission falls to whoever created the event instead. Centralized in a private `_requireManagePermission` helper so the branching lives in one place.
