@@ -2,6 +2,7 @@ import 'package:bgs_client/bgs_client.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/dashboard_section.dart';
+import '../browse/league_detail_screen.dart';
 
 /// "My team(s)" -- backs the Manager tab of [DashboardScreen]. Roster
 /// detail for a specific team (via `TeamEndpoint.listMembers`) is a
@@ -47,6 +48,12 @@ class _ManagedTeamTile extends StatelessWidget {
       child: ListTile(
         title: Text(team?.name ?? 'Unknown team'),
         subtitle: subtitleParts.isEmpty ? null : Text(subtitleParts.join(' · ')),
+        onTap: league == null
+            ? null
+            : () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => LeagueDetailScreen(leagueId: league.id!)),
+                ),
       ),
     );
   }

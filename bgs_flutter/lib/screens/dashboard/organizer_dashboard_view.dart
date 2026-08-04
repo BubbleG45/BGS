@@ -5,6 +5,8 @@ import '../../main.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import '../browse/event_detail_screen.dart';
+import '../browse/org_home_screen.dart';
 import 'create_event_screen.dart';
 import 'create_league_screen.dart';
 import 'create_organization_screen.dart';
@@ -120,6 +122,12 @@ class _OrganizationTile extends StatelessWidget {
         subtitle: membership.organization.description == null
             ? null
             : Text(membership.organization.description!),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OrgHomeScreen(organizationId: membership.organization.id!),
+          ),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -242,6 +250,10 @@ class _EventTile extends StatelessWidget {
           formatEnumLabel(event.sport.name),
           formatDateTime(event.startAt),
         ].join(' · ')),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventDetailScreen(eventId: event.id!)),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

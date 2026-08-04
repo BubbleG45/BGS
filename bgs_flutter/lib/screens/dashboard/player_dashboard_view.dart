@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import '../browse/event_detail_screen.dart';
+import '../browse/league_detail_screen.dart';
 
 StatusTone _membershipTone(MembershipStatus status) => switch (status) {
       MembershipStatus.active => StatusTone.positive,
@@ -88,6 +90,12 @@ class _TeamMembershipTile extends StatelessWidget {
             ),
           ],
         ),
+        onTap: league == null
+            ? null
+            : () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => LeagueDetailScreen(leagueId: league.id!)),
+                ),
       ),
     );
   }
@@ -113,6 +121,12 @@ class _EventRegistrationTile extends StatelessWidget {
           formatEnumLabel(registration.status.name),
           tone: _registrationTone(registration.status),
         ),
+        onTap: event == null
+            ? null
+            : () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => EventDetailScreen(eventId: event.id!)),
+                ),
       ),
     );
   }

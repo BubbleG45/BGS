@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../widgets/dashboard_tab_view.dart';
+import 'browse/search_screen.dart';
 import 'dashboard/manager_dashboard_view.dart';
 import 'dashboard/organizer_dashboard_view.dart';
 import 'dashboard/player_dashboard_view.dart';
@@ -25,6 +26,14 @@ class DashboardScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Better Group Sports'),
           actions: [
+            IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchScreen()),
+              ),
+              icon: const Icon(Icons.search),
+              tooltip: 'Search',
+            ),
             IconButton(
               onPressed: onSignOut,
               icon: const Icon(Icons.logout),
