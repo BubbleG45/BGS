@@ -683,6 +683,55 @@ class EndpointProfile extends _i4.EndpointUserProfileEditBase {
       );
 }
 
+/// Anonymous-access reads for the Jaspr public site (`bgs_web`) -- the one
+/// endpoint class in the app with `requireLogin => false`. Every other
+/// endpoint requires a logged-in session even for otherwise-public reads
+/// (see BUILD_PLAN.md §7); this class exists specifically so a visitor with
+/// no BGS account can render an org homepage.
+///
+/// Deliberately narrow and read-only: only what a public page actually
+/// needs, filtered to what's meant to be discoverable (active leagues,
+/// published events) the same way [SearchEndpoint] filters its results.
+/// Doesn't reuse [OrganizationEndpoint]/[LeagueEndpoint]/[EventEndpoint]
+/// directly so those classes' authenticated writes never have to reason
+/// about being called anonymously.
+/// {@category Endpoint}
+class EndpointPublic extends _i2.EndpointRef {
+  EndpointPublic(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'public';
+
+  /// Returns an organization by its public URL slug.
+  _i3.Future<_i14.Organization?> organizationBySlug(String slug) =>
+      caller.callServerEndpoint<_i14.Organization?>(
+        'public',
+        'organizationBySlug',
+        {'slug': slug},
+      );
+
+  /// Returns an organization's *active* leagues, newest first. Draft
+  /// leagues aren't announced yet, so they're excluded here even though an
+  /// organizer sees them on their own dashboard.
+  _i3.Future<List<_i13.League>> activeLeaguesByOrganization(
+    _i2.UuidValue organizationId,
+  ) => caller.callServerEndpoint<List<_i13.League>>(
+    'public',
+    'activeLeaguesByOrganization',
+    {'organizationId': organizationId},
+  );
+
+  /// Returns an organization's *published* events, newest first. Same
+  /// rationale as [activeLeaguesByOrganization] -- drafts aren't public yet.
+  _i3.Future<List<_i8.Event>> publishedEventsByOrganization(
+    _i2.UuidValue organizationId,
+  ) => caller.callServerEndpoint<List<_i8.Event>>(
+    'public',
+    'publishedEventsByOrganization',
+    {'organizationId': organizationId},
+  );
+}
+
 /// A single scheduled game between two teams within a [League]. Manual
 /// scheduling only for Phase 1 -- no auto-scheduling algorithm yet. See
 /// BUILD_PLAN.md for the domain model.
@@ -983,6 +1032,7 @@ class Client extends _i2.ServerpodClientShared {
     league = EndpointLeague(this);
     organization = EndpointOrganization(this);
     profile = EndpointProfile(this);
+    public = EndpointPublic(this);
     scheduledMatch = EndpointScheduledMatch(this);
     search = EndpointSearch(this);
     standing = EndpointStanding(this);
@@ -1006,6 +1056,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointProfile profile;
 
+  late final EndpointPublic public;
+
   late final EndpointScheduledMatch scheduledMatch;
 
   late final EndpointSearch search;
@@ -1026,6 +1078,7 @@ class Client extends _i2.ServerpodClientShared {
     'league': league,
     'organization': organization,
     'profile': profile,
+    'public': public,
     'scheduledMatch': scheduledMatch,
     'search': search,
     'standing': standing,

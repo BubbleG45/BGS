@@ -43,6 +43,10 @@ profile:
   - changeUserName:
   - changeFullName:
   - get:
+public:
+  - organizationBySlug:
+  - activeLeaguesByOrganization:
+  - publishedEventsByOrganization:
 scheduledMatch:
   - create:
   - getById:

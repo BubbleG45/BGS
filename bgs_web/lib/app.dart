@@ -5,6 +5,7 @@ import 'package:jaspr_router/jaspr_router.dart';
 import 'components/header.dart';
 import 'pages/about.dart';
 import 'pages/home.dart';
+import 'pages/org_home_page.dart';
 
 // The main component of your application.
 //
@@ -23,6 +24,11 @@ class App extends StatelessComponent {
       Router(routes: [
         Route(path: '/', title: 'Home', builder: (context, state) => const Home()),
         Route(path: '/about', title: 'About', builder: (context, state) => const About()),
+        Route(
+          path: '/org/:slug',
+          title: 'Organization',
+          builder: (context, state) => OrgHomePage(slug: state.params['slug']!),
+        ),
       ]),
     ]);
   }

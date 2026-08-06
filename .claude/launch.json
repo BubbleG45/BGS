@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "-d", "web-server", "--web-port", "19200"],
       "cwd": "bgs_flutter",
       "port": 19200
+    },
+    {
+      "name": "bgs-web",
+      "runtimeExecutable": "jaspr",
+      "runtimeArgs": ["serve", "--port", "18280"],
+      "cwd": "bgs_web",
+      "port": 18280
     }
   ]
 }
