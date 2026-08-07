@@ -5,6 +5,9 @@ import '../../main.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import '../../widgets/team_crest.dart';
+import 'match_detail_screen.dart';
+import 'team_detail_screen.dart';
 
 StatusTone _leagueTone(LeagueStatus status) => switch (status) {
       LeagueStatus.active => StatusTone.positive,
@@ -35,6 +38,11 @@ class _LeagueDetailData {
 
 /// Read-only public league page: info, standings, schedule, and team list.
 /// Reached from an org homepage or search results.
+///
+/// The mockups' "Register Now" CTA isn't built -- there's no self-serve
+/// league join path today (team membership is invite-only; see
+/// BUILD_PLAN.md Phase 4 for the deferred fair/transparent captain
+/// registration feature).
 class LeagueDetailScreen extends StatefulWidget {
   final UuidValue leagueId;
 
@@ -76,6 +84,8 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('League')),
       body: FutureBuilder<_LeagueDetailData>(
@@ -105,7 +115,7 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                         Expanded(
                           child: Text(
                             data.league.name,
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            style: theme.textTheme.headlineLarge,
                           ),
                         ),
                         StatusChip(
@@ -122,7 +132,7 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                           formatEnumLabel(data.league.skillLevel!.name),
                         if (data.league.location != null) data.league.location!,
                       ].join(' · '),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium,
                     ),
                     if (data.league.description != null) ...[
                       const SizedBox(height: 8),
@@ -135,15 +145,79 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                 title: 'Standings',
                 emptyMessage: 'No results recorded yet.',
                 children: [
-                  for (final standing in data.standings)
+                  if (data.standings.isNotEmpty)
                     Card(
-                      child: ListTile(
-                        title: Text(teamNames[standing.teamId] ?? 'Unknown team'),
-                        subtitle: Text('PF ${standing.pointsFor} · PA ${standing.pointsAgainst}'),
-                        trailing: Text(
-                          '${standing.wins}-${standing.losses}-${standing.ties}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Text('TEAM', style: theme.textTheme.labelMedium),
+                                ),
+                                Expanded(
+                                  child: Text('W', textAlign: TextAlign.center, style: theme.textTheme.labelMedium),
+                                ),
+                                Expanded(
+                                  child: Text('L', textAlign: TextAlign.center, style: theme.textTheme.labelMedium),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text('PTS', textAlign: TextAlign.end, style: theme.textTheme.labelMedium),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 1),
+                          for (final standing in data.standings)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              child: Row(
+                                children: [
+                                  TeamCrest(
+                                    name: teamNames[standing.teamId] ?? '?',
+                                    size: 32,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      teamNames[standing.teamId] ?? 'Unknown team',
+                                      style: theme.textTheme.bodyLarge,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${standing.wins}',
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.bodyLarge,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${standing.losses}',
+                                      textAlign: TextAlign.center,
+                                      style: theme.textTheme.bodyLarge,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      '${standing.wins * 2 + standing.ties}',
+                                      textAlign: TextAlign.end,
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        color: theme.colorScheme.secondary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                 ],
@@ -154,20 +228,37 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                 children: [
                   for (final match in data.matches)
                     Card(
-                      child: ListTile(
-                        title: Text(
-                          '${teamNames[match.homeTeamId] ?? 'TBD'} vs '
-                          '${teamNames[match.awayTeamId] ?? 'TBD'}',
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MatchDetailScreen(
+                              match: match,
+                              homeTeamName: teamNames[match.homeTeamId] ?? 'TBD',
+                              awayTeamName: teamNames[match.awayTeamId] ?? 'TBD',
+                            ),
+                          ),
                         ),
-                        subtitle: Text([
-                          formatDateTime(match.scheduledAt),
-                          if (match.location != null) match.location!,
-                          if (match.status == MatchStatus.completed)
-                            '${match.homeScore}-${match.awayScore}',
-                        ].join(' · ')),
-                        trailing: StatusChip(
-                          formatEnumLabel(match.status.name),
-                          tone: _matchTone(match.status),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              '${teamNames[match.homeTeamId] ?? 'TBD'} vs '
+                              '${teamNames[match.awayTeamId] ?? 'TBD'}',
+                            ),
+                            subtitle: Text([
+                              formatDateTime(match.scheduledAt),
+                              if (match.location != null) match.location!,
+                              if (match.status == MatchStatus.completed)
+                                '${match.homeScore}-${match.awayScore}',
+                            ].join(' · ')),
+                            trailing: StatusChip(
+                              formatEnumLabel(match.status.name),
+                              tone: _matchTone(match.status),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -178,7 +269,16 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                 emptyMessage: 'No teams yet.',
                 children: [
                   for (final team in data.teams)
-                    Card(child: ListTile(title: Text(team.name))),
+                    Card(
+                      child: ListTile(
+                        leading: TeamCrest(name: team.name, size: 40),
+                        title: Text(team.name),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => TeamDetailScreen(teamId: team.id!)),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ],

@@ -12,6 +12,13 @@ import '../main.dart';
 /// and Apple Sign-In are a v1 goal (BUILD_PLAN.md §1) but need OAuth
 /// credentials and server-side provider registration before they can show
 /// up, so they're deferred rather than half-wired.
+///
+/// Chrome (logo, headline) matches the `bgs_onboarding` mockup; the sign-in
+/// form itself is [SignInWidget]'s own layout, which already picks up
+/// [AppTheme]'s button/input styling. The mockup's "Guest Access" button
+/// isn't built -- there's no anonymous-session concept in the app, only the
+/// truly public Jaspr site and the logged-in Flutter app (see the plan's
+/// feature audit).
 class SignInScreen extends StatefulWidget {
   final Widget child;
   const SignInScreen({super.key, required this.child});
@@ -59,37 +66,67 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Better Group Sports',
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 120,
+                      height: 120,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Text(
-                    'Simple, fair league management for adult rec sports.',
+                    'BGS',
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.primary),
+                  ),
+                  Text(
+                    'BETTER GROUP SPORTS',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.secondary),
                   ),
                   const SizedBox(height: 32),
-                  SignInWidget(
-                    client: client,
-                    onAuthenticated: () {
-                      context.showSnackBar(
-                        message: 'Signed in.',
-                        backgroundColor: theme.colorScheme.primary,
-                      );
-                    },
-                    onError: (error) {
-                      context.showSnackBar(
-                        message: 'Authentication failed: $error',
-                        backgroundColor: theme.colorScheme.error,
-                      );
-                    },
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: theme.colorScheme.outlineVariant),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Get in the Game',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign in or create an account to manage your leagues.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SignInWidget(
+                          client: client,
+                          onAuthenticated: () {
+                            context.showSnackBar(
+                              message: 'Signed in.',
+                              backgroundColor: theme.colorScheme.primary,
+                            );
+                          },
+                          onError: (error) {
+                            context.showSnackBar(
+                              message: 'Authentication failed: $error',
+                              backgroundColor: theme.colorScheme.error,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

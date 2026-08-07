@@ -5,6 +5,7 @@ import '../../main.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import '../../widgets/team_crest.dart';
 import '../browse/event_detail_screen.dart';
 import '../browse/org_home_screen.dart';
 import 'create_event_screen.dart';
@@ -118,6 +119,7 @@ class _OrganizationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        leading: TeamCrest(name: membership.organization.name, size: 44),
         title: Text(membership.organization.name),
         subtitle: membership.organization.description == null
             ? null
@@ -185,6 +187,7 @@ class _LeagueTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        leading: TeamCrest(name: league.name, size: 44),
         title: Text(league.name),
         subtitle: Text([
           formatEnumLabel(league.sport.name),
@@ -245,6 +248,7 @@ class _EventTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        leading: TeamCrest(name: event.name, size: 44),
         title: Text(event.name),
         subtitle: Text([
           formatEnumLabel(event.sport.name),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
+import '../../widgets/team_crest.dart';
 import 'event_detail_screen.dart';
 import 'league_detail_screen.dart';
 import 'org_home_screen.dart';
@@ -57,26 +58,35 @@ class _SearchScreenState extends State<SearchScreen> {
                   onSubmitted: (_) => _search(),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<Sport?>(
-                        initialValue: _sport,
-                        decoration: const InputDecoration(labelText: 'Sport'),
-                        items: [
-                          const DropdownMenuItem(value: null, child: Text('Any sport')),
-                          for (final sport in Sport.values)
-                            DropdownMenuItem(
-                              value: sport,
-                              child: Text(formatEnumLabel(sport.name)),
-                            ),
-                        ],
-                        onChanged: (v) => setState(() => _sport = v),
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: const Text('Any sport'),
+                          selected: _sport == null,
+                          onSelected: (_) => setState(() => _sport = null),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton(onPressed: _search, child: const Text('Search')),
-                  ],
+                      for (final sport in Sport.values)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(formatEnumLabel(sport.name)),
+                            selected: _sport == sport,
+                            onSelected: (_) => setState(() => _sport = sport),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(onPressed: _search, child: const Text('Search')),
                 ),
               ],
             ),
@@ -111,6 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               for (final org in results.organizations)
                                 Card(
                                   child: ListTile(
+                                    leading: TeamCrest(name: org.name, size: 44),
                                     title: Text(org.name),
                                     subtitle: org.description == null
                                         ? null
@@ -133,6 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               for (final league in results.leagues)
                                 Card(
                                   child: ListTile(
+                                    leading: TeamCrest(name: league.name, size: 44),
                                     title: Text(league.name),
                                     subtitle: Text(formatEnumLabel(league.sport.name)),
                                     onTap: () => Navigator.push(
@@ -153,6 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               for (final event in results.events)
                                 Card(
                                   child: ListTile(
+                                    leading: TeamCrest(name: event.name, size: 44),
                                     title: Text(event.name),
                                     subtitle: Text([
                                       formatEnumLabel(event.sport.name),

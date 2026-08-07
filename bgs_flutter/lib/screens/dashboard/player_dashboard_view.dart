@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
+import '../../widgets/team_crest.dart';
 import '../browse/event_detail_screen.dart';
 import '../browse/league_detail_screen.dart';
+import '../browse/match_detail_screen.dart';
 
 StatusTone _membershipTone(MembershipStatus status) => switch (status) {
       MembershipStatus.active => StatusTone.positive,
@@ -18,7 +20,13 @@ StatusTone _registrationTone(EventRegistrationStatus status) => switch (status) 
       EventRegistrationStatus.cancelled => StatusTone.negative,
     };
 
-/// "My teams/events" -- backs the Player tab of [DashboardScreen].
+/// "My teams/events" -- backs the Player role of [HomeDestination].
+///
+/// Match cards are informational only -- no Going/Decline RSVP, since
+/// there's no per-player attendance model (`ScheduledMatch` is team-vs-team
+/// only; see BUILD_PLAN.md Phase 4 for the deferred RSVP feature). "My
+/// Teams" has no "Join Team" add-card either, since membership stays
+/// invite-only.
 class PlayerDashboardView extends StatelessWidget {
   final PlayerDashboard dashboard;
 
@@ -30,11 +38,10 @@ class PlayerDashboardView extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         DashboardSection(
-          title: 'My Teams',
-          emptyMessage: "You haven't joined any teams yet.",
+          title: 'Upcoming Games',
+          emptyMessage: 'No upcoming matches scheduled.',
           children: [
-            for (final membership in dashboard.teamMemberships)
-              _TeamMembershipTile(membership: membership),
+            for (final match in dashboard.upcomingMatches) _GameCard(match: match),
           ],
         ),
         DashboardSection(
@@ -45,57 +52,91 @@ class PlayerDashboardView extends StatelessWidget {
               _EventRegistrationTile(registration: registration),
           ],
         ),
-        DashboardSection(
-          title: 'Upcoming Matches',
-          emptyMessage: 'No upcoming matches scheduled.',
-          children: [
-            for (final match in dashboard.upcomingMatches) _MatchTile(match: match),
-          ],
-        ),
+        _MyTeamsSection(memberships: dashboard.teamMemberships),
       ],
     );
   }
 }
 
-class _TeamMembershipTile extends StatelessWidget {
-  final TeamMembership membership;
+class _GameCard extends StatelessWidget {
+  final ScheduledMatch match;
 
-  const _TeamMembershipTile({required this.membership});
+  const _GameCard({required this.match});
 
   @override
   Widget build(BuildContext context) {
-    final team = membership.team;
-    final league = team?.league;
-    final subtitleParts = [
-      if (league != null) league.name,
-      if (league?.organization != null) league!.organization!.name,
-    ];
+    final theme = Theme.of(context);
+    final homeName = match.homeTeam?.name ?? 'TBD';
+    final awayName = match.awayTeam?.name ?? 'TBD';
 
     return Card(
-      child: ListTile(
-        title: Text(team?.name ?? 'Unknown team'),
-        subtitle: subtitleParts.isEmpty ? null : Text(subtitleParts.join(' · ')),
-        trailing: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            StatusChip(
-              formatEnumLabel(membership.status.name),
-              tone: _membershipTone(membership.status),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MatchDetailScreen(
+              match: match,
+              homeTeamName: homeName,
+              awayTeamName: awayName,
             ),
-            const SizedBox(height: 4),
-            Text(
-              formatEnumLabel(membership.role.name),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+          ),
         ),
-        onTap: league == null
-            ? null
-            : () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => LeagueDetailScreen(leagueId: league.id!)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        TeamCrest(name: homeName, size: 56),
+                        const SizedBox(height: 8),
+                        Text(homeName, textAlign: TextAlign.center, style: theme.textTheme.labelMedium),
+                      ],
+                    ),
+                  ),
+                  Text('VS', style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        TeamCrest(name: awayName, size: 56),
+                        const SizedBox(height: 8),
+                        Text(awayName, textAlign: TextAlign.center, style: theme.textTheme.labelMedium),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(formatDateTime(match.scheduledAt), style: theme.textTheme.bodyMedium),
+                    if (match.location != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        match.location!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -132,23 +173,96 @@ class _EventRegistrationTile extends StatelessWidget {
   }
 }
 
-class _MatchTile extends StatelessWidget {
-  final ScheduledMatch match;
+class _MyTeamsSection extends StatelessWidget {
+  final List<TeamMembership> memberships;
 
-  const _MatchTile({required this.match});
+  const _MyTeamsSection({required this.memberships});
 
   @override
   Widget build(BuildContext context) {
-    final homeName = match.homeTeam?.name ?? 'TBD';
-    final awayName = match.awayTeam?.name ?? 'TBD';
+    final theme = Theme.of(context);
 
-    return Card(
-      child: ListTile(
-        title: Text('$homeName vs $awayName'),
-        subtitle: Text([
-          formatDateTime(match.scheduledAt),
-          if (match.location != null) match.location!,
-        ].join(' · ')),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('My Teams', style: theme.textTheme.headlineSmall),
+          const SizedBox(height: 8),
+          if (memberships.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                "You haven't joined any teams yet.",
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            )
+          else
+            SizedBox(
+              height: 150,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: memberships.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) => _TeamMembershipCard(membership: memberships[index]),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TeamMembershipCard extends StatelessWidget {
+  final TeamMembership membership;
+
+  const _TeamMembershipCard({required this.membership});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final team = membership.team;
+    final league = team?.league;
+
+    return SizedBox(
+      width: 140,
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: league == null
+              ? null
+              : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => LeagueDetailScreen(leagueId: league.id!)),
+                  ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TeamCrest(name: team?.name ?? '?', size: 56),
+                const SizedBox(height: 8),
+                Text(
+                  team?.name ?? 'Unknown team',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleSmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (league != null)
+                  Text(
+                    formatEnumLabel(league.sport.name),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                StatusChip(
+                  formatEnumLabel(membership.status.name),
+                  tone: _membershipTone(membership.status),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

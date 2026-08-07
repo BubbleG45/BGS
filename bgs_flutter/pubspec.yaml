@@ -34,6 +34,8 @@ dependencies:
   serverpod_flutter: 3.4.11
   serverpod_auth_idp_flutter: 3.4.11
   serverpod_auth_core_flutter: 3.4.11
+  google_fonts: ^8.2.1
+  material_symbols_icons: ^4.2960.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -63,6 +65,7 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
   assets:
     - assets/config.json
+    - assets/logo.png
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
 
