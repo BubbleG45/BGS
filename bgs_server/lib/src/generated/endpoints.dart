@@ -1063,6 +1063,131 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['organizationId'],
                   ),
         ),
+        'leagueBySlug': _i1.MethodConnector(
+          name: 'leagueBySlug',
+          params: {
+            'organizationSlug': _i1.ParameterDescription(
+              name: 'organizationSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'leagueSlug': _i1.ParameterDescription(
+              name: 'leagueSlug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['public'] as _i10.PublicEndpoint).leagueBySlug(
+                    session,
+                    organizationSlug: params['organizationSlug'],
+                    leagueSlug: params['leagueSlug'],
+                  ),
+        ),
+        'teamsByLeague': _i1.MethodConnector(
+          name: 'teamsByLeague',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['public'] as _i10.PublicEndpoint).teamsByLeague(
+                    session,
+                    params['leagueId'],
+                  ),
+        ),
+        'standingsByLeague': _i1.MethodConnector(
+          name: 'standingsByLeague',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['public'] as _i10.PublicEndpoint)
+                  .standingsByLeague(
+                    session,
+                    params['leagueId'],
+                  ),
+        ),
+        'matchesByLeague': _i1.MethodConnector(
+          name: 'matchesByLeague',
+          params: {
+            'leagueId': _i1.ParameterDescription(
+              name: 'leagueId',
+              type: _i1.getType<_i1.UuidValue>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['public'] as _i10.PublicEndpoint).matchesByLeague(
+                    session,
+                    params['leagueId'],
+                  ),
+        ),
+        'eventBySlug': _i1.MethodConnector(
+          name: 'eventBySlug',
+          params: {
+            'slug': _i1.ParameterDescription(
+              name: 'slug',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['public'] as _i10.PublicEndpoint).eventBySlug(
+                    session,
+                    params['slug'],
+                  ),
+        ),
+        'search': _i1.MethodConnector(
+          name: 'search',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'sport': _i1.ParameterDescription(
+              name: 'sport',
+              type: _i1.getType<_i15.Sport?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['public'] as _i10.PublicEndpoint).search(
+                session,
+                query: params['query'],
+                sport: params['sport'],
+              ),
+        ),
       },
     );
     connectors['scheduledMatch'] = _i1.EndpointConnector(

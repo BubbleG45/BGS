@@ -4,8 +4,11 @@ import 'package:jaspr_router/jaspr_router.dart';
 
 import 'components/header.dart';
 import 'pages/about.dart';
+import 'pages/event_page.dart';
 import 'pages/home.dart';
+import 'pages/league_page.dart';
 import 'pages/org_home_page.dart';
+import 'pages/search_page.dart';
 
 // The main component of your application.
 //
@@ -28,6 +31,27 @@ class App extends StatelessComponent {
           path: '/org/:slug',
           title: 'Organization',
           builder: (context, state) => OrgHomePage(slug: state.params['slug']!),
+        ),
+        Route(
+          path: '/org/:orgSlug/league/:leagueSlug',
+          title: 'League',
+          builder: (context, state) => LeaguePage(
+            organizationSlug: state.params['orgSlug']!,
+            leagueSlug: state.params['leagueSlug']!,
+          ),
+        ),
+        Route(
+          path: '/e/:slug',
+          title: 'Event',
+          builder: (context, state) => EventPage(slug: state.params['slug']!),
+        ),
+        Route(
+          path: '/search',
+          title: 'Search',
+          builder: (context, state) => SearchPage(
+            query: state.queryParams['q'],
+            sportName: state.queryParams['sport'],
+          ),
         ),
       ]),
     ]);

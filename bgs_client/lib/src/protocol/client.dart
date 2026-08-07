@@ -34,12 +34,12 @@ import 'package:bgs_client/src/protocol/organizations/models/organization.dart'
 import 'package:bgs_client/src/protocol/organizations/models/organization_membership.dart'
     as _i15;
 import 'dart:typed_data' as _i16;
+import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i17;
+import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i18;
 import 'package:bgs_client/src/protocol/scheduling/models/scheduled_match.dart'
-    as _i17;
+    as _i19;
 import 'package:bgs_client/src/protocol/search/models/search_results.dart'
-    as _i18;
-import 'package:bgs_client/src/protocol/standings/models/standing.dart' as _i19;
-import 'package:bgs_client/src/protocol/teams/models/team.dart' as _i20;
+    as _i20;
 import 'package:bgs_client/src/protocol/teams/models/team_membership.dart'
     as _i21;
 import 'package:bgs_client/src/protocol/teams/models/team_member_role.dart'
@@ -730,6 +730,74 @@ class EndpointPublic extends _i2.EndpointRef {
     'publishedEventsByOrganization',
     {'organizationId': organizationId},
   );
+
+  /// Returns a single *active* league by its org slug + league slug (league
+  /// slugs are only unique within an organization, not globally, so both
+  /// are needed). Returns null if the org doesn't exist, the league doesn't
+  /// exist, or the league isn't active yet -- a draft league has no public
+  /// page.
+  _i3.Future<_i13.League?> leagueBySlug({
+    required String organizationSlug,
+    required String leagueSlug,
+  }) => caller.callServerEndpoint<_i13.League?>(
+    'public',
+    'leagueBySlug',
+    {
+      'organizationSlug': organizationSlug,
+      'leagueSlug': leagueSlug,
+    },
+  );
+
+  /// Returns all teams for a league. Same read [TeamEndpoint.listByLeague]
+  /// already exposes to logged-in callers -- team rosters are public by
+  /// design, this just makes that reachable anonymously too.
+  _i3.Future<List<_i17.Team>> teamsByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i17.Team>>(
+        'public',
+        'teamsByLeague',
+        {'leagueId': leagueId},
+      );
+
+  /// Returns a league's standings, best record first.
+  _i3.Future<List<_i18.Standing>> standingsByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i18.Standing>>(
+        'public',
+        'standingsByLeague',
+        {'leagueId': leagueId},
+      );
+
+  /// Returns all matches for a league, soonest first.
+  _i3.Future<List<_i19.ScheduledMatch>> matchesByLeague(
+    _i2.UuidValue leagueId,
+  ) => caller.callServerEndpoint<List<_i19.ScheduledMatch>>(
+    'public',
+    'matchesByLeague',
+    {'leagueId': leagueId},
+  );
+
+  /// Returns a single *published* event by its globally-unique slug -- what
+  /// backs the shareable event link, e.g. `/e/<slug>`. Returns null if the
+  /// event doesn't exist or isn't published yet.
+  _i3.Future<_i8.Event?> eventBySlug(String slug) =>
+      caller.callServerEndpoint<_i8.Event?>(
+        'public',
+        'eventBySlug',
+        {'slug': slug},
+      );
+
+  /// Same search as [SearchEndpoint.search], reachable anonymously. See
+  /// [performSearch] for the shared query/discoverability logic.
+  _i3.Future<_i20.SearchResults> search({
+    String? query,
+    _i9.Sport? sport,
+  }) => caller.callServerEndpoint<_i20.SearchResults>(
+    'public',
+    'search',
+    {
+      'query': query,
+      'sport': sport,
+    },
+  );
 }
 
 /// A single scheduled game between two teams within a [League]. Manual
@@ -749,13 +817,13 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// Schedules a match between two teams within a league. Requires at
   /// least `admin` on the league's organization. Both teams must already
   /// belong to the league.
-  _i3.Future<_i17.ScheduledMatch> create({
+  _i3.Future<_i19.ScheduledMatch> create({
     required _i2.UuidValue leagueId,
     required _i2.UuidValue homeTeamId,
     required _i2.UuidValue awayTeamId,
     required DateTime scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i19.ScheduledMatch>(
     'scheduledMatch',
     'create',
     {
@@ -768,8 +836,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   );
 
   /// Returns a single match by id. Public -- schedules are public.
-  _i3.Future<_i17.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i17.ScheduledMatch?>(
+  _i3.Future<_i19.ScheduledMatch?> getById(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i19.ScheduledMatch?>(
         'scheduledMatch',
         'getById',
         {'matchId': matchId},
@@ -777,8 +845,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Returns all matches for a league, soonest first. Public -- backs the
   /// league schedule page.
-  _i3.Future<List<_i17.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i17.ScheduledMatch>>(
+  _i3.Future<List<_i19.ScheduledMatch>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i19.ScheduledMatch>>(
         'scheduledMatch',
         'listByLeague',
         {'leagueId': leagueId},
@@ -786,11 +854,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Reschedules a match (time and/or location). Requires at least `admin`
   /// on the league's organization.
-  _i3.Future<_i17.ScheduledMatch> update(
+  _i3.Future<_i19.ScheduledMatch> update(
     _i2.UuidValue matchId, {
     DateTime? scheduledAt,
     String? location,
-  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i19.ScheduledMatch>(
     'scheduledMatch',
     'update',
     {
@@ -802,8 +870,8 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 
   /// Cancels a scheduled match. Requires at least `admin` on the league's
   /// organization. Only allowed while the match is still `scheduled`.
-  _i3.Future<_i17.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
-      caller.callServerEndpoint<_i17.ScheduledMatch>(
+  _i3.Future<_i19.ScheduledMatch> cancel(_i2.UuidValue matchId) =>
+      caller.callServerEndpoint<_i19.ScheduledMatch>(
         'scheduledMatch',
         'cancel',
         {'matchId': matchId},
@@ -813,11 +881,11 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
   /// both teams' [Standing] rows for the league. Requires at least `admin`
   /// on the league's organization. Only allowed while the match is still
   /// `scheduled` -- results aren't editable in Phase 1.
-  _i3.Future<_i17.ScheduledMatch> recordResult({
+  _i3.Future<_i19.ScheduledMatch> recordResult({
     required _i2.UuidValue matchId,
     required int homeScore,
     required int awayScore,
-  }) => caller.callServerEndpoint<_i17.ScheduledMatch>(
+  }) => caller.callServerEndpoint<_i19.ScheduledMatch>(
     'scheduledMatch',
     'recordResult',
     {
@@ -837,6 +905,10 @@ class EndpointScheduledMatch extends _i2.EndpointRef {
 /// events must be `published` -- a draft an organizer hasn't published yet
 /// shouldn't show up in search just because its name matches. Organizations
 /// have no such status (an org homepage is public as soon as it exists).
+///
+/// The actual query logic lives in [performSearch], shared with
+/// [PublicEndpoint.search] -- the rules for what's discoverable don't depend
+/// on whether the caller is logged in.
 /// {@category Endpoint}
 class EndpointSearch extends _i2.EndpointRef {
   EndpointSearch(_i2.EndpointCaller caller) : super(caller);
@@ -844,10 +916,10 @@ class EndpointSearch extends _i2.EndpointRef {
   @override
   String get name => 'search';
 
-  _i3.Future<_i18.SearchResults> search({
+  _i3.Future<_i20.SearchResults> search({
     String? query,
     _i9.Sport? sport,
-  }) => caller.callServerEndpoint<_i18.SearchResults>(
+  }) => caller.callServerEndpoint<_i20.SearchResults>(
     'search',
     'search',
     {
@@ -873,8 +945,8 @@ class EndpointStanding extends _i2.EndpointRef {
   /// Sorted by wins only for Phase 1; a smarter sort (win percentage,
   /// point differential as a tiebreaker) is a later enhancement once
   /// leagues have played enough games for it to matter.
-  _i3.Future<List<_i19.Standing>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i19.Standing>>(
+  _i3.Future<List<_i18.Standing>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i18.Standing>>(
         'standing',
         'listByLeague',
         {'leagueId': leagueId},
@@ -899,10 +971,10 @@ class EndpointTeam extends _i2.EndpointRef {
 
   /// Creates a new team within a league. Requires at least `admin` on the
   /// league's organization.
-  _i3.Future<_i20.Team> create({
+  _i3.Future<_i17.Team> create({
     required _i2.UuidValue leagueId,
     required String name,
-  }) => caller.callServerEndpoint<_i20.Team>(
+  }) => caller.callServerEndpoint<_i17.Team>(
     'team',
     'create',
     {
@@ -912,16 +984,16 @@ class EndpointTeam extends _i2.EndpointRef {
   );
 
   /// Returns a single team by id. Public -- team pages are public.
-  _i3.Future<_i20.Team?> getById(_i2.UuidValue teamId) =>
-      caller.callServerEndpoint<_i20.Team?>(
+  _i3.Future<_i17.Team?> getById(_i2.UuidValue teamId) =>
+      caller.callServerEndpoint<_i17.Team?>(
         'team',
         'getById',
         {'teamId': teamId},
       );
 
   /// Returns all teams for a league. Public.
-  _i3.Future<List<_i20.Team>> listByLeague(_i2.UuidValue leagueId) =>
-      caller.callServerEndpoint<List<_i20.Team>>(
+  _i3.Future<List<_i17.Team>> listByLeague(_i2.UuidValue leagueId) =>
+      caller.callServerEndpoint<List<_i17.Team>>(
         'team',
         'listByLeague',
         {'leagueId': leagueId},

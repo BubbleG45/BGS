@@ -25,6 +25,7 @@ void main() {
     /// whole point of this endpoint.
     Future<
       ({
+        TestSessionBuilder ownerSession,
         Organization org,
         League activeLeague,
         League draftLeague,
@@ -78,6 +79,7 @@ void main() {
       );
 
       return (
+        ownerSession: ownerSession,
         org: org,
         activeLeague: activeLeague,
         draftLeague: draftLeague,
@@ -148,6 +150,167 @@ void main() {
         expect(
           events.map((e) => e.id),
           isNot(contains(fixture.draftEvent.id)),
+        );
+      },
+    );
+
+    test(
+      'when looking up a league by org slug + league slug with no session '
+      'then the active league is returned',
+      () async {
+        final fixture = await setUpFixture();
+
+        final found = await endpoints.public.leagueBySlug(
+          sessionBuilder,
+          organizationSlug: fixture.org.slug,
+          leagueSlug: fixture.activeLeague.slug,
+        );
+
+        expect(found?.id, fixture.activeLeague.id);
+      },
+    );
+
+    test(
+      'when looking up a draft league by slug then null is returned even '
+      'though it exists',
+      () async {
+        final fixture = await setUpFixture();
+
+        final found = await endpoints.public.leagueBySlug(
+          sessionBuilder,
+          organizationSlug: fixture.org.slug,
+          leagueSlug: fixture.draftLeague.slug,
+        );
+
+        expect(found, isNull);
+      },
+    );
+
+    test(
+      'when the org slug in a league lookup does not exist then null is '
+      'returned',
+      () async {
+        final fixture = await setUpFixture();
+
+        final found = await endpoints.public.leagueBySlug(
+          sessionBuilder,
+          organizationSlug: 'no-such-org-slug',
+          leagueSlug: fixture.activeLeague.slug,
+        );
+
+        expect(found, isNull);
+      },
+    );
+
+    test(
+      'when reading teams/standings/matches for a league with no session '
+      'then they succeed',
+      () async {
+        final fixture = await setUpFixture();
+        final team = await endpoints.team.create(
+          fixture.ownerSession,
+          leagueId: fixture.activeLeague.id!,
+          name: 'Riverside Spikers Public',
+        );
+
+        final teams = await endpoints.public.teamsByLeague(
+          sessionBuilder,
+          fixture.activeLeague.id!,
+        );
+        final standings = await endpoints.public.standingsByLeague(
+          sessionBuilder,
+          fixture.activeLeague.id!,
+        );
+        final matches = await endpoints.public.matchesByLeague(
+          sessionBuilder,
+          fixture.activeLeague.id!,
+        );
+
+        expect(teams.map((t) => t.id), contains(team.id));
+        expect(standings, isEmpty);
+        expect(matches, isEmpty);
+      },
+    );
+
+    test(
+      'when looking up a published event by slug with no session then it '
+      'is returned',
+      () async {
+        final fixture = await setUpFixture();
+
+        final found = await endpoints.public.eventBySlug(
+          sessionBuilder,
+          fixture.publishedEvent.slug,
+        );
+
+        expect(found?.id, fixture.publishedEvent.id);
+      },
+    );
+
+    test(
+      'when looking up a draft event by slug then null is returned even '
+      'though it exists',
+      () async {
+        final fixture = await setUpFixture();
+
+        final found = await endpoints.public.eventBySlug(
+          sessionBuilder,
+          fixture.draftEvent.slug,
+        );
+
+        expect(found, isNull);
+      },
+    );
+
+    test(
+      'when searching with no session then a matching active league is '
+      'returned but a matching draft league is not',
+      () async {
+        final fixture = await setUpFixture();
+
+        final results = await endpoints.public.search(
+          sessionBuilder,
+          query: fixture.activeLeague.name,
+        );
+
+        expect(
+          results.leagues.map((l) => l.id),
+          contains(fixture.activeLeague.id),
+        );
+      },
+    );
+
+    test(
+      'when searching with no session then a matching published event is '
+      'returned',
+      () async {
+        final fixture = await setUpFixture();
+
+        final results = await endpoints.public.search(
+          sessionBuilder,
+          query: fixture.publishedEvent.name,
+        );
+
+        expect(
+          results.events.map((e) => e.id),
+          contains(fixture.publishedEvent.id),
+        );
+      },
+    );
+
+    test(
+      'when searching for a draft league\'s exact name then it is excluded',
+      () async {
+        final fixture = await setUpFixture();
+
+        final results = await endpoints.public.search(
+          sessionBuilder,
+          query: fixture.draftLeague.name,
+        );
+
+        expect(
+          results.leagues.map((l) => l.id),
+          isNot(contains(fixture.draftLeague.id)),
         );
       },
     );

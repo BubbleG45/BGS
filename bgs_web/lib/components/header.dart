@@ -15,6 +15,7 @@ class Header extends StatelessComponent {
       nav([
         for (var route in [
           (label: 'Home', path: '/'),
+          (label: 'Search', path: '/search'),
           (label: 'About', path: '/about'),
         ])
           div(classes: activePath == route.path ? 'active' : null, [

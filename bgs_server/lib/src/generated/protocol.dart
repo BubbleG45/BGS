@@ -71,11 +71,11 @@ import 'package:bgs_server/src/generated/events/models/event_registration.dart'
 import 'package:bgs_server/src/generated/leagues/models/league.dart' as _i55;
 import 'package:bgs_server/src/generated/organizations/models/organization_membership.dart'
     as _i56;
-import 'package:bgs_server/src/generated/scheduling/models/scheduled_match.dart'
-    as _i57;
+import 'package:bgs_server/src/generated/teams/models/team.dart' as _i57;
 import 'package:bgs_server/src/generated/standings/models/standing.dart'
     as _i58;
-import 'package:bgs_server/src/generated/teams/models/team.dart' as _i59;
+import 'package:bgs_server/src/generated/scheduling/models/scheduled_match.dart'
+    as _i59;
 import 'package:bgs_server/src/generated/teams/models/team_membership.dart'
     as _i60;
 export 'dashboards/models/manager_dashboard.dart';
@@ -1507,18 +1507,18 @@ class Protocol extends _i1.SerializationManagerServer {
               .toList()
           as T;
     }
-    if (t == List<_i57.ScheduledMatch>) {
-      return (data as List)
-              .map((e) => deserialize<_i57.ScheduledMatch>(e))
-              .toList()
-          as T;
+    if (t == List<_i57.Team>) {
+      return (data as List).map((e) => deserialize<_i57.Team>(e)).toList() as T;
     }
     if (t == List<_i58.Standing>) {
       return (data as List).map((e) => deserialize<_i58.Standing>(e)).toList()
           as T;
     }
-    if (t == List<_i59.Team>) {
-      return (data as List).map((e) => deserialize<_i59.Team>(e)).toList() as T;
+    if (t == List<_i59.ScheduledMatch>) {
+      return (data as List)
+              .map((e) => deserialize<_i59.ScheduledMatch>(e))
+              .toList()
+          as T;
     }
     if (t == List<_i60.TeamMembership>) {
       return (data as List)

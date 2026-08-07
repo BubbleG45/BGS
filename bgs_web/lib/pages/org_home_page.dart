@@ -1,6 +1,7 @@
 import 'package:bgs_client/bgs_client.dart';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
+import 'package:jaspr_router/jaspr_router.dart';
 
 import '../services/bgs_client.dart';
 import '../utils/format.dart';
@@ -44,9 +45,12 @@ class OrgHomePage extends AsyncStatelessComponent {
           : ul([
               for (final league in leagues)
                 li([
-                  .text(
-                    '${league.name} -- ${formatEnumLabel(league.sport.name)}'
-                    '${league.location == null ? '' : ' · ${league.location}'}',
+                  Link(
+                    to: '/org/$slug/league/${league.slug}',
+                    child: .text(
+                      '${league.name} -- ${formatEnumLabel(league.sport.name)}'
+                      '${league.location == null ? '' : ' · ${league.location}'}',
+                    ),
                   ),
                 ]),
             ]),
@@ -56,9 +60,12 @@ class OrgHomePage extends AsyncStatelessComponent {
           : ul([
               for (final event in events)
                 li([
-                  .text(
-                    '${event.name} -- ${formatEnumLabel(event.sport.name)} · '
-                    '${formatDateTime(event.startAt)}',
+                  Link(
+                    to: '/e/${event.slug}',
+                    child: .text(
+                      '${event.name} -- ${formatEnumLabel(event.sport.name)} · '
+                      '${formatDateTime(event.startAt)}',
+                    ),
                   ),
                 ]),
             ]),
