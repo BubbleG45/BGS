@@ -3,6 +3,7 @@ import 'package:jaspr/jaspr.dart';
 import 'package:jaspr_router/jaspr_router.dart';
 
 import 'components/header.dart';
+import 'constants/theme.dart';
 import 'pages/about.dart';
 import 'pages/event_page.dart';
 import 'pages/home.dart';
@@ -65,18 +66,20 @@ class App extends StatelessComponent {
   static List<StyleRule> get styles => [
     css('.main', [
       // The '&' refers to the parent selector of a nested style rules.
-      css('&').styles(
-        display: .flex,
-        height: 100.vh,
-        flexDirection: .column,
-        flexWrap: .wrap,
-      ),
+      css('&').styles(display: .flex, minHeight: 100.vh, flexDirection: .column),
+      // Every page component returns a single root `section` -- styled here
+      // as the shared wide content container (mockups' `max-w-7xl mx-auto`)
+      // rather than the old vh-locked, centered single-item layout, which
+      // only worked for the placeholder text-only pages.
       css('section').styles(
         display: .flex,
         flexDirection: .column,
-        justifyContent: .center,
-        alignItems: .center,
-        flex: Flex(grow: 1),
+        gap: Gap.row(BgsSpacing.sectionGap),
+        width: 100.percent,
+        maxWidth: 1200.px,
+        margin: .symmetric(horizontal: Unit.auto),
+        padding: .symmetric(horizontal: BgsSpacing.containerMargin, vertical: BgsSpacing.sectionGap),
+        boxSizing: .borderBox,
       ),
     ]),
   ];
