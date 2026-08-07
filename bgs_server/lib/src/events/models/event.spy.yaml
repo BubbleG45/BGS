@@ -36,6 +36,14 @@ fields:
   ### League.teamFeeCents -- see League_Platform_Pricing_Model.md.
   teamFeeCents: int
 
+  ### Registration window, both optional. Display-only for now -- same
+  ### rationale as League.registrationOpensAt/registrationClosesAt.
+  registrationOpensAt: DateTime?
+  registrationClosesAt: DateTime?
+
+  ### Link to an external rules doc/page. Display-only, no validation.
+  rulesUrl: String?
+
   createdAt: DateTime, defaultModel=now
 
 indexes:

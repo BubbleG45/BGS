@@ -1,0 +1,5 @@
+### Thrown when trying to complete a league that isn't currently `active`.
+exception: LeagueCompletionNotAllowedException
+fields:
+  leagueId: UuidValue
+  currentStatus: LeagueStatus

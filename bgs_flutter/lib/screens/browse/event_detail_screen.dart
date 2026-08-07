@@ -2,7 +2,9 @@ import 'package:bgs_client/bgs_client.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
+import '../../theme/app_theme.dart';
 import '../../utils/format.dart';
+import '../../widgets/registration_info_card.dart';
 import '../../widgets/status_chip.dart';
 
 StatusTone _eventTone(EventStatus status) => switch (status) {
@@ -14,8 +16,13 @@ StatusTone _eventTone(EventStatus status) => switch (status) {
 class _EventDetailData {
   final Event event;
   final EventRegistration? myRegistration;
+  final List<EventRegistration> registrations;
 
-  _EventDetailData({required this.event, required this.myRegistration});
+  _EventDetailData({
+    required this.event,
+    required this.myRegistration,
+    required this.registrations,
+  });
 }
 
 /// Read-only public event page, plus register/cancel-registration for the
@@ -51,6 +58,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     final results = await Future.wait([
       client.event.getById(widget.eventId),
       client.event.listMyRegistrations(),
+      client.public.registrationsByEvent(widget.eventId),
     ]);
 
     final event = results[0] as Event?;
@@ -67,7 +75,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       }
     }
 
-    return _EventDetailData(event: event, myRegistration: myRegistration);
+    return _EventDetailData(
+      event: event,
+      myRegistration: myRegistration,
+      registrations: results[2] as List<EventRegistration>,
+    );
   }
 
   Future<void> _refresh() async {
@@ -159,8 +171,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 const SizedBox(height: 4),
                 Text(event.location!),
               ],
-              const SizedBox(height: 4),
-              Text('Team fee: \$${(event.teamFeeCents / 100).toStringAsFixed(2)}'),
               if (event.isTournament) ...[
                 const SizedBox(height: 4),
                 const Text('Tournament (bracket-based)'),
@@ -169,7 +179,35 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 const SizedBox(height: 12),
                 Text(event.description!),
               ],
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
+              RegistrationInfoCard(
+                teamFeeCents: event.teamFeeCents,
+                registrationOpensAt: event.registrationOpensAt,
+                registrationClosesAt: event.registrationClosesAt,
+                rulesUrl: event.rulesUrl,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                "Who's signed up (${data.registrations.length})",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              data.registrations.isEmpty
+                  ? Text(
+                      'No one has registered yet.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    )
+                  : Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
+                      children: [
+                        for (final registration in data.registrations)
+                          Chip(label: Text(registration.teamName ?? 'A player')),
+                      ],
+                    ),
+              const SizedBox(height: AppSpacing.xl),
               if (event.status != EventStatus.published)
                 const Text('Registration is not open for this event.')
               else if (data.myRegistration != null) ...[

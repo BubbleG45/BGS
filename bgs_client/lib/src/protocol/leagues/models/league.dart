@@ -31,6 +31,11 @@ abstract class League implements _i1.SerializableModel {
     this.location,
     _i2.LeagueStatus? status,
     required this.teamFeeCents,
+    this.seasonStartAt,
+    this.seasonEndAt,
+    this.registrationOpensAt,
+    this.registrationClosesAt,
+    this.rulesUrl,
     DateTime? createdAt,
   }) : status = status ?? _i2.LeagueStatus.draft,
        createdAt = createdAt ?? DateTime.now();
@@ -47,6 +52,11 @@ abstract class League implements _i1.SerializableModel {
     String? location,
     _i2.LeagueStatus? status,
     required int teamFeeCents,
+    DateTime? seasonStartAt,
+    DateTime? seasonEndAt,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   }) = _LeagueImpl;
 
@@ -77,6 +87,27 @@ abstract class League implements _i1.SerializableModel {
           ? null
           : _i2.LeagueStatus.fromJson((jsonSerialization['status'] as String)),
       teamFeeCents: jsonSerialization['teamFeeCents'] as int,
+      seasonStartAt: jsonSerialization['seasonStartAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['seasonStartAt'],
+            ),
+      seasonEndAt: jsonSerialization['seasonEndAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['seasonEndAt'],
+            ),
+      registrationOpensAt: jsonSerialization['registrationOpensAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['registrationOpensAt'],
+            ),
+      registrationClosesAt: jsonSerialization['registrationClosesAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['registrationClosesAt'],
+            ),
+      rulesUrl: jsonSerialization['rulesUrl'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -116,6 +147,23 @@ abstract class League implements _i1.SerializableModel {
   /// computed from this in the payments phase; this field just captures it.
   int teamFeeCents;
 
+  /// Season window, both optional. Distinguishes an `active` league whose
+  /// season hasn't started yet ("upcoming") from one actually in progress,
+  /// for org-page grouping. Not used for any scheduling logic.
+  DateTime? seasonStartAt;
+
+  DateTime? seasonEndAt;
+
+  /// Registration window, both optional. Display-only for now -- shown on
+  /// the public league page for transparency; not enforced against actual
+  /// registration attempts yet (see BUILD_PLAN.md Phase B).
+  DateTime? registrationOpensAt;
+
+  DateTime? registrationClosesAt;
+
+  /// Link to an external rules doc/page. Display-only, no validation.
+  String? rulesUrl;
+
   DateTime createdAt;
 
   /// Returns a shallow copy of this [League]
@@ -133,6 +181,11 @@ abstract class League implements _i1.SerializableModel {
     String? location,
     _i2.LeagueStatus? status,
     int? teamFeeCents,
+    DateTime? seasonStartAt,
+    DateTime? seasonEndAt,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   });
   @override
@@ -150,6 +203,13 @@ abstract class League implements _i1.SerializableModel {
       if (location != null) 'location': location,
       'status': status.toJson(),
       'teamFeeCents': teamFeeCents,
+      if (seasonStartAt != null) 'seasonStartAt': seasonStartAt?.toJson(),
+      if (seasonEndAt != null) 'seasonEndAt': seasonEndAt?.toJson(),
+      if (registrationOpensAt != null)
+        'registrationOpensAt': registrationOpensAt?.toJson(),
+      if (registrationClosesAt != null)
+        'registrationClosesAt': registrationClosesAt?.toJson(),
+      if (rulesUrl != null) 'rulesUrl': rulesUrl,
       'createdAt': createdAt.toJson(),
     };
   }
@@ -175,6 +235,11 @@ class _LeagueImpl extends League {
     String? location,
     _i2.LeagueStatus? status,
     required int teamFeeCents,
+    DateTime? seasonStartAt,
+    DateTime? seasonEndAt,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   }) : super._(
          id: id,
@@ -188,6 +253,11 @@ class _LeagueImpl extends League {
          location: location,
          status: status,
          teamFeeCents: teamFeeCents,
+         seasonStartAt: seasonStartAt,
+         seasonEndAt: seasonEndAt,
+         registrationOpensAt: registrationOpensAt,
+         registrationClosesAt: registrationClosesAt,
+         rulesUrl: rulesUrl,
          createdAt: createdAt,
        );
 
@@ -207,6 +277,11 @@ class _LeagueImpl extends League {
     Object? location = _Undefined,
     _i2.LeagueStatus? status,
     int? teamFeeCents,
+    Object? seasonStartAt = _Undefined,
+    Object? seasonEndAt = _Undefined,
+    Object? registrationOpensAt = _Undefined,
+    Object? registrationClosesAt = _Undefined,
+    Object? rulesUrl = _Undefined,
     DateTime? createdAt,
   }) {
     return League(
@@ -223,6 +298,17 @@ class _LeagueImpl extends League {
       location: location is String? ? location : this.location,
       status: status ?? this.status,
       teamFeeCents: teamFeeCents ?? this.teamFeeCents,
+      seasonStartAt: seasonStartAt is DateTime?
+          ? seasonStartAt
+          : this.seasonStartAt,
+      seasonEndAt: seasonEndAt is DateTime? ? seasonEndAt : this.seasonEndAt,
+      registrationOpensAt: registrationOpensAt is DateTime?
+          ? registrationOpensAt
+          : this.registrationOpensAt,
+      registrationClosesAt: registrationClosesAt is DateTime?
+          ? registrationClosesAt
+          : this.registrationClosesAt,
+      rulesUrl: rulesUrl is String? ? rulesUrl : this.rulesUrl,
       createdAt: createdAt ?? this.createdAt,
     );
   }

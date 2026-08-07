@@ -26,6 +26,8 @@ class EventPage extends AsyncStatelessComponent {
       ]);
     }
 
+    final registrations = await bgsClient.public.registrationsByEvent(event.id!);
+
     return section([
       div(classes: 'card', [
         div(classes: 'card-top', [
@@ -52,12 +54,36 @@ class EventPage extends AsyncStatelessComponent {
           const MaterialSymbol('payments'),
           span([.text('Team fee: \$${(event.teamFeeCents / 100).toStringAsFixed(2)}')]),
         ]),
+        if (event.registrationOpensAt != null)
+          div(classes: 'detail-row', [
+            const MaterialSymbol('how_to_reg'),
+            span([
+              .text(
+                'Registration opens ${formatDateTime(event.registrationOpensAt!)}'
+                '${event.registrationClosesAt != null ? ', closes ${formatDateTime(event.registrationClosesAt!)}' : ''}',
+              ),
+            ]),
+          ]),
+        if (event.rulesUrl != null)
+          div(classes: 'detail-row', [
+            const MaterialSymbol('gavel'),
+            a(href: event.rulesUrl!, [.text('Event rules')]),
+          ]),
         if (event.isTournament)
           div(classes: 'detail-row', [
             const MaterialSymbol('emoji_events'),
             span([.text('Tournament (bracket-based)')]),
           ]),
         if (event.description != null) p(classes: 'description', [.text(event.description!)]),
+        div(classes: 'registrants', [
+          h2([.text('Who\'s signed up (${registrations.length})')]),
+          registrations.isEmpty
+              ? p(classes: 'empty', [.text('No one has registered yet.')])
+              : div(classes: 'chip-row', [
+                  for (final registration in registrations)
+                    span(classes: 'chip', [.text(registration.teamName ?? 'A player')]),
+                ]),
+        ]),
         p(classes: 'cta', [.text('Register for this event in the Better Group Sports app.')]),
       ]),
     ]);
@@ -90,13 +116,35 @@ class EventPage extends AsyncStatelessComponent {
         fontWeight: .w700,
         textTransform: .upperCase,
       ),
-      css('.detail-row').styles(
-        display: .flex,
-        alignItems: .center,
-        gap: Gap.all(8.px),
-        color: BgsColors.onSurfaceVariant,
-      ),
+      css('.detail-row', [
+        css('&').styles(
+          display: .flex,
+          alignItems: .center,
+          gap: Gap.all(8.px),
+          color: BgsColors.onSurfaceVariant,
+        ),
+        css('a').styles(color: BgsColors.primary, fontWeight: .w600),
+      ]),
       css('.description').styles(color: BgsColors.onSurface),
+      css('.registrants', [
+        css('&').styles(
+          display: .flex,
+          flexDirection: .column,
+          gap: Gap.row(8.px),
+          border: .only(top: BorderSide(width: 1.px, color: BgsColors.outlineVariant)),
+          padding: .only(top: 12.px),
+        ),
+        css('h2').styles(fontSize: 16.px, color: BgsColors.onSurface),
+        css('.empty').styles(color: BgsColors.onSurfaceVariant, fontSize: 14.px),
+      ]),
+      css('.chip-row').styles(display: .flex, flexWrap: .wrap, gap: Gap.all(8.px)),
+      css('.chip').styles(
+        backgroundColor: BgsColors.surfaceContainerHigh,
+        color: BgsColors.onSurfaceVariant,
+        padding: .symmetric(vertical: 6.px, horizontal: 12.px),
+        radius: .all(.circular(999.px)),
+        fontSize: 13.px,
+      ),
       css('.cta').styles(
         color: BgsColors.primary,
         fontWeight: .w600,

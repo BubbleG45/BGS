@@ -204,6 +204,32 @@ void main() {
     );
 
     test(
+      'when creating an event with registration dates and a rules link '
+      'then they are stored',
+      () async {
+        final creatorSession = await authedSessionFor(sessionBuilder);
+        final regOpens = DateTime.now().toUtc().add(const Duration(days: 1));
+        final regCloses = DateTime.now().toUtc().add(const Duration(days: 5));
+
+        final event = await endpoints.event.create(
+          creatorSession,
+          name: 'Dated Event',
+          slug: uniqueSlug('dated-event'),
+          sport: Sport.pickleball,
+          startAt: DateTime.now().add(const Duration(days: 10)),
+          teamFeeCents: 0,
+          registrationOpensAt: regOpens,
+          registrationClosesAt: regCloses,
+          rulesUrl: 'https://example.com/event-rules',
+        );
+
+        expect(event.registrationOpensAt, regOpens);
+        expect(event.registrationClosesAt, regCloses);
+        expect(event.rulesUrl, 'https://example.com/event-rules');
+      },
+    );
+
+    test(
       'when a user registers for a published event then their registration '
       'starts as registered',
       () async {

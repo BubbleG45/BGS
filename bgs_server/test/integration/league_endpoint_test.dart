@@ -171,6 +171,85 @@ void main() {
     );
 
     test(
+      'when creating a league with season/registration dates and a rules '
+      'link then they are stored',
+      () async {
+        final ownerSession = await authedSessionFor(sessionBuilder);
+        final org = await createOrg(ownerSession);
+        final seasonStart = DateTime.now().toUtc().add(const Duration(days: 14));
+        final seasonEnd = DateTime.now().toUtc().add(const Duration(days: 90));
+        final regOpens = DateTime.now().toUtc().add(const Duration(days: 1));
+        final regCloses = DateTime.now().toUtc().add(const Duration(days: 10));
+
+        final league = await endpoints.league.create(
+          ownerSession,
+          organizationId: org.id!,
+          name: 'Dated League',
+          slug: 'dated-league',
+          sport: Sport.volleyballIndoor,
+          teamFeeCents: 15000,
+          seasonStartAt: seasonStart,
+          seasonEndAt: seasonEnd,
+          registrationOpensAt: regOpens,
+          registrationClosesAt: regCloses,
+          rulesUrl: 'https://example.com/rules',
+        );
+
+        expect(league.seasonStartAt, seasonStart);
+        expect(league.seasonEndAt, seasonEnd);
+        expect(league.registrationOpensAt, regOpens);
+        expect(league.registrationClosesAt, regCloses);
+        expect(league.rulesUrl, 'https://example.com/rules');
+      },
+    );
+
+    test(
+      'when an org admin completes an active league then its status '
+      'becomes completed',
+      () async {
+        final ownerSession = await authedSessionFor(sessionBuilder);
+        final org = await createOrg(ownerSession);
+        final league = await endpoints.league.create(
+          ownerSession,
+          organizationId: org.id!,
+          name: 'Season To Complete',
+          slug: 'season-to-complete',
+          sport: Sport.volleyballIndoor,
+          teamFeeCents: 15000,
+        );
+        await endpoints.league.activate(ownerSession, league.id!);
+
+        final completed = await endpoints.league.complete(
+          ownerSession,
+          league.id!,
+        );
+
+        expect(completed.status, LeagueStatus.completed);
+      },
+    );
+
+    test(
+      'when completing a league that is still draft then it throws',
+      () async {
+        final ownerSession = await authedSessionFor(sessionBuilder);
+        final org = await createOrg(ownerSession);
+        final league = await endpoints.league.create(
+          ownerSession,
+          organizationId: org.id!,
+          name: 'Still Draft',
+          slug: 'still-draft',
+          sport: Sport.volleyballIndoor,
+          teamFeeCents: 15000,
+        );
+
+        expect(
+          () => endpoints.league.complete(ownerSession, league.id!),
+          throwsA(isA<LeagueCompletionNotAllowedException>()),
+        );
+      },
+    );
+
+    test(
       'when anyone (even non-members) reads a league then it succeeds',
       () async {
         final ownerSession = await authedSessionFor(sessionBuilder);

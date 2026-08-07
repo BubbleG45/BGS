@@ -27,10 +27,15 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
   final _teamFeeController = TextEditingController();
+  final _rulesUrlController = TextEditingController();
   bool _slugEdited = false;
   bool _submitting = false;
   Sport _sport = Sport.values.first;
   SkillLevel? _skillLevel;
+  DateTime? _seasonStartAt;
+  DateTime? _seasonEndAt;
+  DateTime? _registrationOpensAt;
+  DateTime? _registrationClosesAt;
 
   @override
   void dispose() {
@@ -39,7 +44,24 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
     _descriptionController.dispose();
     _locationController.dispose();
     _teamFeeController.dispose();
+    _rulesUrlController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickDateTime(DateTime? current, ValueChanged<DateTime?> onPicked) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: current ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: current == null ? TimeOfDay.now() : TimeOfDay.fromDateTime(current),
+    );
+    if (time == null) return;
+    onPicked(DateTime(date.year, date.month, date.day, time.hour, time.minute));
   }
 
   void _onNameChanged(String value) {
@@ -71,6 +93,11 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
         location: _locationController.text.trim().isEmpty
             ? null
             : _locationController.text.trim(),
+        seasonStartAt: _seasonStartAt,
+        seasonEndAt: _seasonEndAt,
+        registrationOpensAt: _registrationOpensAt,
+        registrationClosesAt: _registrationClosesAt,
+        rulesUrl: _rulesUrlController.text.trim().isEmpty ? null : _rulesUrlController.text.trim(),
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -151,6 +178,35 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
               decoration: const InputDecoration(labelText: 'Description (optional)'),
               maxLines: 3,
             ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _rulesUrlController,
+              decoration: const InputDecoration(labelText: 'Rules link (optional)'),
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 16),
+            _DateTimeTile(
+              label: 'Season starts (optional)',
+              value: _seasonStartAt,
+              onTap: () => _pickDateTime(_seasonStartAt, (v) => setState(() => _seasonStartAt = v)),
+            ),
+            _DateTimeTile(
+              label: 'Season ends (optional)',
+              value: _seasonEndAt,
+              onTap: () => _pickDateTime(_seasonEndAt, (v) => setState(() => _seasonEndAt = v)),
+            ),
+            _DateTimeTile(
+              label: 'Registration opens (optional)',
+              value: _registrationOpensAt,
+              onTap: () =>
+                  _pickDateTime(_registrationOpensAt, (v) => setState(() => _registrationOpensAt = v)),
+            ),
+            _DateTimeTile(
+              label: 'Registration closes (optional)',
+              value: _registrationClosesAt,
+              onTap: () =>
+                  _pickDateTime(_registrationClosesAt, (v) => setState(() => _registrationClosesAt = v)),
+            ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _submitting ? null : _submit,
@@ -165,6 +221,28 @@ class _CreateLeagueScreenState extends State<CreateLeagueScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A tappable "pick a date/time" row -- shared shape used by both the
+/// league and event creation forms for the new season/registration date
+/// fields.
+class _DateTimeTile extends StatelessWidget {
+  final String label;
+  final DateTime? value;
+  final VoidCallback onTap;
+
+  const _DateTimeTile({required this.label, required this.value, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      subtitle: Text(value == null ? 'Not set' : formatDateTime(value!)),
+      trailing: const Icon(Icons.calendar_today),
+      onTap: onTap,
     );
   }
 }

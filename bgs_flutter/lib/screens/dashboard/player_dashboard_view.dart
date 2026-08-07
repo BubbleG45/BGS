@@ -1,6 +1,7 @@
 import 'package:bgs_client/bgs_client.dart';
 import 'package:flutter/material.dart';
 
+import '../../theme/app_theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
 import '../../widgets/status_chip.dart';
@@ -23,10 +24,15 @@ StatusTone _registrationTone(EventRegistrationStatus status) => switch (status) 
 /// "My teams/events" -- backs the Player role of [HomeDestination].
 ///
 /// Match cards are informational only -- no Going/Decline RSVP, since
-/// there's no per-player attendance model (`ScheduledMatch` is team-vs-team
-/// only; see BUILD_PLAN.md Phase 4 for the deferred RSVP feature). "My
-/// Teams" has no "Join Team" add-card either, since membership stays
-/// invite-only.
+/// there's no per-player attendance model for RSVP purposes (`ScheduledMatch`
+/// is team-vs-team only; see BUILD_PLAN.md Phase C for the deferred RSVP
+/// feature -- lightweight manager-recorded attendance is a separate, already
+/// -shipped thing, see the Manager dashboard). "My Teams" has no "Join Team"
+/// add-card either, since membership stays invite-only.
+///
+/// Upcoming games are filtered to the next 7 days, and "My Teams" is split
+/// into current vs. past based on the team's league status (`completed`
+/// leagues are past).
 class PlayerDashboardView extends StatelessWidget {
   final PlayerDashboard dashboard;
 
@@ -34,25 +40,43 @@ class PlayerDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final weekFromNow = now.add(const Duration(days: 7));
+    final upcomingWithinWeek = dashboard.upcomingMatches
+        .where((m) => m.scheduledAt.isBefore(weekFromNow))
+        .toList();
+    final upcomingEventRegistrations = dashboard.eventRegistrations.where((r) {
+      final startAt = r.event?.startAt;
+      return startAt != null && startAt.isAfter(now) && startAt.isBefore(weekFromNow);
+    }).toList();
+
+    final currentTeams = dashboard.teamMemberships
+        .where((m) => m.team?.league?.status != LeagueStatus.completed)
+        .toList();
+    final pastTeams = dashboard.teamMemberships
+        .where((m) => m.team?.league?.status == LeagueStatus.completed)
+        .toList();
+
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         DashboardSection(
-          title: 'Upcoming Games',
-          emptyMessage: 'No upcoming matches scheduled.',
+          title: 'Upcoming Games (Next 7 Days)',
+          emptyMessage: 'No games scheduled in the next week.',
           children: [
-            for (final match in dashboard.upcomingMatches) _GameCard(match: match),
+            for (final match in upcomingWithinWeek) _GameCard(match: match),
           ],
         ),
         DashboardSection(
-          title: 'My Event Registrations',
-          emptyMessage: "You haven't registered for any events yet.",
+          title: 'Upcoming Events (Next 7 Days)',
+          emptyMessage: 'No registered events in the next week.',
           children: [
-            for (final registration in dashboard.eventRegistrations)
+            for (final registration in upcomingEventRegistrations)
               _EventRegistrationTile(registration: registration),
           ],
         ),
-        _MyTeamsSection(memberships: dashboard.teamMemberships),
+        _MyTeamsSection(title: 'My Teams', memberships: currentTeams),
+        _MyTeamsSection(title: 'Past Teams', memberships: pastTeams),
       ],
     );
   }
@@ -174,9 +198,10 @@ class _EventRegistrationTile extends StatelessWidget {
 }
 
 class _MyTeamsSection extends StatelessWidget {
+  final String title;
   final List<TeamMembership> memberships;
 
-  const _MyTeamsSection({required this.memberships});
+  const _MyTeamsSection({required this.title, required this.memberships});
 
   @override
   Widget build(BuildContext context) {
@@ -187,13 +212,13 @@ class _MyTeamsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('My Teams', style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
+          Text(title, style: theme.textTheme.headlineSmall),
+          const SizedBox(height: AppSpacing.sm),
           if (memberships.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               child: Text(
-                "You haven't joined any teams yet.",
+                "No teams here yet.",
                 style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
             )

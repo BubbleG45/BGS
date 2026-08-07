@@ -1,9 +1,8 @@
 import 'package:bgs_client/bgs_client.dart';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
-import 'package:jaspr_router/jaspr_router.dart';
 
-import '../components/material_symbol.dart';
+import '../components/entity_card.dart';
 import '../constants/theme.dart';
 import '../services/bgs_client.dart';
 import '../utils/format.dart';
@@ -17,11 +16,13 @@ import '../utils/format.dart';
 /// [FutureBuilder] -- is explicitly allowed to await work during server
 /// pre-rendering.
 ///
-/// Styled per the Stitch `public_homepage` mockup's hero + card-grid layout.
-/// No hero photo (no per-org image data) and no "Join a League"/"Learn
-/// More" CTA buttons -- there's nothing real for them to do yet (no
-/// self-serve join/register flow), same omission logic as the Flutter
-/// sign-in screen's dropped "Guest Access" button.
+/// Leagues and events are grouped into Active/Upcoming/Past sections
+/// (mirroring the Flutter org home screen): leagues bucket by `status` +
+/// `seasonStartAt`, events bucket by `startAt` vs. now. No hero photo (no
+/// per-org image data) and no "Join a League"/"Learn More" CTA buttons --
+/// there's nothing real for them to do yet (no self-serve join/register
+/// flow), same omission logic as the Flutter sign-in screen's dropped
+/// "Guest Access" button.
 class OrgHomePage extends AsyncStatelessComponent {
   final String slug;
 
@@ -38,68 +39,62 @@ class OrgHomePage extends AsyncStatelessComponent {
     }
 
     final results = await Future.wait([
-      bgsClient.public.activeLeaguesByOrganization(org.id!),
+      bgsClient.public.leaguesByOrganization(org.id!),
       bgsClient.public.publishedEventsByOrganization(org.id!),
     ]);
     final leagues = results[0] as List<League>;
     final events = results[1] as List<Event>;
+    final now = DateTime.now();
+
+    final pastLeagues = leagues.where((l) => l.status == LeagueStatus.completed).toList();
+    final upcomingLeagues = leagues.where(
+      (l) => l.status == LeagueStatus.active && l.seasonStartAt != null && l.seasonStartAt!.isAfter(now),
+    ).toList();
+    final activeLeagues = leagues.where(
+      (l) => l.status == LeagueStatus.active && !upcomingLeagues.contains(l),
+    ).toList();
+
+    final pastEvents = events.where((e) => e.startAt.isBefore(now)).toList();
+    final upcomingEvents = events.where((e) => e.startAt.isAfter(now)).toList();
+
+    Component leagueCard(League league) => EntityCard(
+          to: '/org/$slug/league/${league.slug}',
+          title: league.name,
+          topIcon: 'emoji_events',
+          meta: [
+            ('sports', formatEnumLabel(league.sport.name)),
+            if (league.location != null) ('location_on', league.location!),
+          ],
+        );
+
+    Component eventCard(Event event) => EntityCard(
+          to: '/e/${event.slug}',
+          title: event.name,
+          topIcon: 'event',
+          meta: [
+            ('sports', formatEnumLabel(event.sport.name)),
+            ('calendar_today', formatDateTime(event.startAt)),
+          ],
+        );
+
+    Component group(String title, List<Component> cards, String emptyMessage) => div(
+          classes: 'group',
+          [
+            h2([.text(title)]),
+            cards.isEmpty ? p(classes: 'empty', [.text(emptyMessage)]) : CardGrid(cards),
+          ],
+        );
 
     return section([
       div(classes: 'hero', [
         h1([.text(org.name)]),
         if (org.description != null) p(classes: 'tagline', [.text(org.description!)]),
       ]),
-      div(classes: 'group', [
-        h2([.text('Active Leagues')]),
-        leagues.isEmpty
-            ? p(classes: 'empty', [.text('No active leagues yet.')])
-            : div(classes: 'grid', [
-                for (final league in leagues)
-                  Link(
-                    to: '/org/$slug/league/${league.slug}',
-                    child: div(classes: 'card', [
-                      div(classes: 'card-top', [
-                        h3([.text(league.name)]),
-                        const MaterialSymbol('emoji_events'),
-                      ]),
-                      div(classes: 'card-meta', [
-                        const MaterialSymbol('sports'),
-                        span([.text(formatEnumLabel(league.sport.name))]),
-                      ]),
-                      if (league.location != null)
-                        div(classes: 'card-meta', [
-                          const MaterialSymbol('location_on'),
-                          span([.text(league.location!)]),
-                        ]),
-                    ]),
-                  ),
-              ]),
-      ]),
-      div(classes: 'group', [
-        h2([.text('Events')]),
-        events.isEmpty
-            ? p(classes: 'empty', [.text('No upcoming events yet.')])
-            : div(classes: 'grid', [
-                for (final event in events)
-                  Link(
-                    to: '/e/${event.slug}',
-                    child: div(classes: 'card', [
-                      div(classes: 'card-top', [
-                        h3([.text(event.name)]),
-                        const MaterialSymbol('event'),
-                      ]),
-                      div(classes: 'card-meta', [
-                        const MaterialSymbol('sports'),
-                        span([.text(formatEnumLabel(event.sport.name))]),
-                      ]),
-                      div(classes: 'card-meta', [
-                        const MaterialSymbol('calendar_today'),
-                        span([.text(formatDateTime(event.startAt))]),
-                      ]),
-                    ]),
-                  ),
-              ]),
-      ]),
+      group('Active Leagues', activeLeagues.map(leagueCard).toList(), 'No active leagues right now.'),
+      group('Upcoming Leagues', upcomingLeagues.map(leagueCard).toList(), 'No upcoming leagues.'),
+      group('Past Leagues', pastLeagues.map(leagueCard).toList(), 'No past leagues yet.'),
+      group('Upcoming Events', upcomingEvents.map(eventCard).toList(), 'No upcoming events.'),
+      group('Past Events', pastEvents.map(eventCard).toList(), 'No past events yet.'),
     ]);
   }
 
@@ -118,50 +113,6 @@ class OrgHomePage extends AsyncStatelessComponent {
       css('&').styles(display: .flex, flexDirection: .column, gap: Gap.row(BgsSpacing.base)),
       css('h2').styles(fontSize: 24.px, color: BgsColors.onSurface),
       css('.empty').styles(color: BgsColors.onSurfaceVariant),
-    ]),
-    css('.grid').styles(
-      display: .flex,
-      flexWrap: .wrap,
-      gap: Gap.all(BgsSpacing.gutter),
-    ),
-    css('.card', [
-      css('&').styles(
-        display: .flex,
-        flexDirection: .column,
-        gap: Gap.all(8.px),
-        flex: const Flex(grow: 1, shrink: 1, basis: Unit.pixels(280)),
-        backgroundColor: BgsColors.surfaceContainerLowest,
-        padding: .all(BgsSpacing.cardPadding),
-        radius: .all(.circular(BgsRadius.card)),
-        border: .all(color: BgsColors.outlineVariant, width: 1.px),
-        transition: Transition('border-color', duration: Duration(milliseconds: 150)),
-      ),
-      css('&:hover').styles(
-        border: .all(color: BgsColors.primaryContainer, width: 1.px),
-        shadow: BoxShadow(
-          offsetX: 0.px,
-          offsetY: 8.px,
-          blur: 24.px,
-          color: Color.rgba(20, 184, 166, 0.16),
-        ),
-      ),
-      css('.card-top', [
-        css('&').styles(
-          display: .flex,
-          justifyContent: .spaceBetween,
-          alignItems: .start,
-        ),
-        css('h3').styles(fontSize: 20.px, color: BgsColors.onSurface),
-      ]),
-      css('.card-meta', [
-        css('&').styles(
-          display: .flex,
-          alignItems: .center,
-          gap: Gap.all(6.px),
-          color: BgsColors.onSurfaceVariant,
-          fontSize: 14.px,
-        ),
-      ]),
     ]),
   ];
 }

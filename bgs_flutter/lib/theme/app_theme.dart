@@ -215,3 +215,34 @@ abstract final class AppTheme {
     );
   }
 }
+
+/// Spacing scale -- single source of truth replacing the ad-hoc 4/8/12/16/
+/// 20/24 [EdgeInsets]/[SizedBox] literals scattered across every screen.
+abstract final class AppSpacing {
+  static const xs = 4.0;
+  static const sm = 8.0;
+  static const md = 12.0;
+  static const lg = 16.0;
+  static const xl = 24.0;
+  static const xxl = 32.0;
+}
+
+/// Corner radii -- single source of truth replacing the hardcoded 8/16/20/
+/// 24/999 [BorderRadius.circular] literals scattered across every screen.
+abstract final class AppRadius {
+  static const sm = 8.0;
+  static const md = 16.0;
+  static const lg = 20.0;
+  static const pill = 999.0;
+}
+
+/// Width breakpoints for mobile/tablet/desktop-shaped layouts. Extracted
+/// from what used to be a private constant on [AppShell] so any screen
+/// (e.g. a card grid) can branch on the same values.
+abstract final class AppBreakpoints {
+  static const tablet = 600.0;
+  static const desktop = 900.0;
+
+  static bool isDesktop(double width) => width >= desktop;
+  static bool isTablet(double width) => width >= tablet && width < desktop;
+}

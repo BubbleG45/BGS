@@ -24,6 +24,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
   final _teamFeeController = TextEditingController();
+  final _rulesUrlController = TextEditingController();
   bool _slugEdited = false;
   bool _submitting = false;
   bool _isTournament = false;
@@ -31,6 +32,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Sport _sport = Sport.values.first;
   SkillLevel? _skillLevel;
   DateTime? _startAt;
+  DateTime? _registrationOpensAt;
+  DateTime? _registrationClosesAt;
 
   @override
   void dispose() {
@@ -39,7 +42,28 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     _descriptionController.dispose();
     _locationController.dispose();
     _teamFeeController.dispose();
+    _rulesUrlController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickOptionalDateTime(
+    DateTime? current,
+    ValueChanged<DateTime?> onPicked,
+  ) async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: current ?? now,
+      firstDate: now.subtract(const Duration(days: 365)),
+      lastDate: now.add(const Duration(days: 730)),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: current == null ? TimeOfDay.now() : TimeOfDay.fromDateTime(current),
+    );
+    if (time == null) return;
+    onPicked(DateTime(date.year, date.month, date.day, time.hour, time.minute));
   }
 
   void _onNameChanged(String value) {
@@ -100,6 +124,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         location: _locationController.text.trim().isEmpty
             ? null
             : _locationController.text.trim(),
+        registrationOpensAt: _registrationOpensAt,
+        registrationClosesAt: _registrationClosesAt,
+        rulesUrl: _rulesUrlController.text.trim().isEmpty ? null : _rulesUrlController.text.trim(),
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -200,6 +227,38 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               controller: _descriptionController,
               decoration: const InputDecoration(labelText: 'Description (optional)'),
               maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _rulesUrlController,
+              decoration: const InputDecoration(labelText: 'Rules link (optional)'),
+              keyboardType: TextInputType.url,
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                _registrationOpensAt == null
+                    ? 'Registration opens (optional)'
+                    : formatDateTime(_registrationOpensAt!),
+              ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _pickOptionalDateTime(
+                _registrationOpensAt,
+                (v) => setState(() => _registrationOpensAt = v),
+              ),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                _registrationClosesAt == null
+                    ? 'Registration closes (optional)'
+                    : formatDateTime(_registrationClosesAt!),
+              ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: () => _pickOptionalDateTime(
+                _registrationClosesAt,
+                (v) => setState(() => _registrationClosesAt = v),
+              ),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,

@@ -30,6 +30,21 @@ fields:
   ### computed from this in the payments phase; this field just captures it.
   teamFeeCents: int
 
+  ### Season window, both optional. Distinguishes an `active` league whose
+  ### season hasn't started yet ("upcoming") from one actually in progress,
+  ### for org-page grouping. Not used for any scheduling logic.
+  seasonStartAt: DateTime?
+  seasonEndAt: DateTime?
+
+  ### Registration window, both optional. Display-only for now -- shown on
+  ### the public league page for transparency; not enforced against actual
+  ### registration attempts yet (see BUILD_PLAN.md Phase B).
+  registrationOpensAt: DateTime?
+  registrationClosesAt: DateTime?
+
+  ### Link to an external rules doc/page. Display-only, no validation.
+  rulesUrl: String?
+
   createdAt: DateTime, defaultModel=now
 
 indexes:

@@ -1,30 +1,30 @@
 import 'package:bgs_client/bgs_client.dart';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
-import 'package:jaspr_router/jaspr_router.dart';
 
-import '../components/material_symbol.dart';
+import '../components/entity_card.dart';
 import '../constants/theme.dart';
 import '../services/bgs_client.dart';
 import '../utils/format.dart';
 
-/// Public search page at `/search?q=...&sport=...` -- anonymous and
-/// server-rendered. Deliberately a plain GET `<form>` rather than a
-/// client-side search box: no JS needed, so this isn't `@client`-annotated
-/// (see [OrgHomePage]) -- the browser's normal form submission does all the
-/// "interactivity" via a full page navigation.
+/// Public search page at `/search?q=...&sport=...&location=...` --
+/// anonymous and server-rendered. Deliberately a plain GET `<form>` rather
+/// than a client-side search box: no JS needed, so this isn't
+/// `@client`-annotated (see [OrgHomePage]) -- the browser's normal form
+/// submission does all the "interactivity" via a full page navigation.
 ///
 /// Styled per the Stitch `search_results` mockup's card grid, restricted to
 /// organizations/leagues/events -- the mockup also shows team/player result
 /// cards with star ratings and a day-of-week/skill-level filter sidebar,
 /// neither of which `SearchEndpoint` supports today (same audit as the
-/// Flutter search screen: no ratings, no team/player search, no extra
-/// filters -- see BUILD_PLAN.md Phase 4).
+/// Flutter search screen: no ratings, no team/player search -- day-of-week/
+/// skill filters are Phase B; see BUILD_PLAN.md).
 class SearchPage extends AsyncStatelessComponent {
   final String? query;
   final String? sportName;
+  final String? location;
 
-  const SearchPage({this.query, this.sportName, super.key});
+  const SearchPage({this.query, this.sportName, this.location, super.key});
 
   Sport? get _sport {
     for (final sport in Sport.values) {
@@ -35,9 +35,10 @@ class SearchPage extends AsyncStatelessComponent {
 
   @override
   Future<Component> build(BuildContext context) async {
-    final hasSearched = (query != null && query!.isNotEmpty) || sportName != null;
+    final hasSearched =
+        (query != null && query!.isNotEmpty) || sportName != null || (location != null && location!.isNotEmpty);
     final results = hasSearched
-        ? await bgsClient.public.search(query: query, sport: _sport)
+        ? await bgsClient.public.search(query: query, sport: _sport, location: location)
         : null;
 
     return section([
@@ -49,6 +50,13 @@ class SearchPage extends AsyncStatelessComponent {
           value: query ?? '',
           classes: 'search-input',
           attributes: const {'placeholder': 'Search organizations, leagues, events'},
+        ),
+        input<String>(
+          type: InputType.search,
+          name: 'location',
+          value: location ?? '',
+          classes: 'search-input',
+          attributes: const {'placeholder': 'Location'},
         ),
         select(
           [
@@ -64,31 +72,24 @@ class SearchPage extends AsyncStatelessComponent {
       if (results == null)
         p(classes: 'empty', [.text('Search for an organization, league, or event.')])
       else
-        div(classes: 'grid', [
+        CardGrid([
           for (final org in results.organizations)
-            Link(
-              to: '/org/${org.slug}',
-              child: div(classes: 'card', [
-                span(classes: 'badge', [.text('Organization')]),
-                h3([.text(org.name)]),
-              ]),
-            ),
+            EntityCard(to: '/org/${org.slug}', title: org.name, topIcon: 'corporate_fare'),
           for (final league in results.leagues)
-            div(classes: 'card', [
-              span(classes: 'badge', [.text('League')]),
-              h3([.text(league.name)]),
-              div(classes: 'card-meta', [
-                const MaterialSymbol('sports'),
-                span([.text(formatEnumLabel(league.sport.name))]),
-              ]),
-            ]),
+            EntityCard(
+              // Not linked -- performSearch doesn't join in the
+              // organization slug a league URL needs. Known gap, not new
+              // to this pass.
+              title: league.name,
+              topIcon: 'emoji_events',
+              meta: [('sports', formatEnumLabel(league.sport.name))],
+            ),
           for (final event in results.events)
-            Link(
+            EntityCard(
               to: '/e/${event.slug}',
-              child: div(classes: 'card', [
-                span(classes: 'badge', [.text('Event')]),
-                h3([.text(event.name)]),
-              ]),
+              title: event.name,
+              topIcon: 'event',
+              meta: [('sports', formatEnumLabel(event.sport.name))],
             ),
           if (results.organizations.isEmpty && results.leagues.isEmpty && results.events.isEmpty)
             p(classes: 'empty', [.text('No matching results.')]),
@@ -106,7 +107,7 @@ class SearchPage extends AsyncStatelessComponent {
         margin: .only(top: BgsSpacing.base, bottom: BgsSpacing.sectionGap),
       ),
       css('.search-input').styles(
-        flex: const Flex(grow: 1, shrink: 1, basis: Unit.pixels(240)),
+        flex: const Flex(grow: 1, shrink: 1, basis: Unit.pixels(200)),
         padding: .symmetric(vertical: 10.px, horizontal: 14.px),
         radius: .all(.circular(BgsRadius.button)),
         border: .all(color: BgsColors.outlineVariant, width: 1.px),
@@ -132,38 +133,5 @@ class SearchPage extends AsyncStatelessComponent {
       ),
     ]),
     css('.empty').styles(color: BgsColors.onSurfaceVariant),
-    css('.grid').styles(display: .flex, flexWrap: .wrap, gap: Gap.all(BgsSpacing.gutter)),
-    css('.card', [
-      css('&').styles(
-        display: .flex,
-        flexDirection: .column,
-        gap: Gap.row(8.px),
-        flex: const Flex(grow: 1, shrink: 1, basis: Unit.pixels(260)),
-        backgroundColor: BgsColors.surfaceContainerLowest,
-        padding: .all(BgsSpacing.cardPadding),
-        radius: .all(.circular(BgsRadius.card)),
-        border: .all(color: BgsColors.outlineVariant, width: 1.px),
-        transition: Transition('border-color', duration: Duration(milliseconds: 150)),
-      ),
-      css('&:hover').styles(border: .all(color: BgsColors.primaryContainer, width: 1.px)),
-      css('h3').styles(fontSize: 20.px, color: BgsColors.onSurface),
-      css('.card-meta').styles(
-        display: .flex,
-        alignItems: .center,
-        gap: Gap.all(6.px),
-        color: BgsColors.onSurfaceVariant,
-        fontSize: 14.px,
-      ),
-    ]),
-    css('.badge').styles(
-      alignSelf: .start,
-      backgroundColor: BgsColors.surfaceContainerHigh,
-      color: BgsColors.onSurfaceVariant,
-      padding: .symmetric(vertical: 4.px, horizontal: 10.px),
-      radius: .all(.circular(999.px)),
-      fontSize: 11.px,
-      fontWeight: .w700,
-      textTransform: .upperCase,
-    ),
   ];
 }

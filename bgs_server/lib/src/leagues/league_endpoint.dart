@@ -21,6 +21,11 @@ class LeagueEndpoint extends Endpoint {
     SkillLevel? skillLevel,
     String? description,
     String? location,
+    DateTime? seasonStartAt,
+    DateTime? seasonEndAt,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
   }) async {
     await requireOrgRole(
       session,
@@ -56,6 +61,11 @@ class LeagueEndpoint extends Endpoint {
           description: description,
           location: location,
           teamFeeCents: teamFeeCents,
+          seasonStartAt: seasonStartAt,
+          seasonEndAt: seasonEndAt,
+          registrationOpensAt: registrationOpensAt,
+          registrationClosesAt: registrationClosesAt,
+          rulesUrl: rulesUrl,
         ),
         transaction: transaction,
       );
@@ -104,6 +114,11 @@ class LeagueEndpoint extends Endpoint {
     String? location,
     SkillLevel? skillLevel,
     int? teamFeeCents,
+    DateTime? seasonStartAt,
+    DateTime? seasonEndAt,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
   }) async {
     final league = await _findLeagueOrThrow(session, leagueId);
 
@@ -121,6 +136,11 @@ class LeagueEndpoint extends Endpoint {
         location: location ?? league.location,
         skillLevel: skillLevel ?? league.skillLevel,
         teamFeeCents: teamFeeCents ?? league.teamFeeCents,
+        seasonStartAt: seasonStartAt ?? league.seasonStartAt,
+        seasonEndAt: seasonEndAt ?? league.seasonEndAt,
+        registrationOpensAt: registrationOpensAt ?? league.registrationOpensAt,
+        registrationClosesAt: registrationClosesAt ?? league.registrationClosesAt,
+        rulesUrl: rulesUrl ?? league.rulesUrl,
       ),
     );
   }
@@ -146,6 +166,33 @@ class LeagueEndpoint extends Endpoint {
     return League.db.updateRow(
       session,
       league.copyWith(status: LeagueStatus.active),
+    );
+  }
+
+  /// Marks an active league's season as finished. Requires at least `admin`
+  /// on the league's organization. This is the only way a league ever
+  /// reaches `completed` -- without it, the org page's "Past" bucket and
+  /// Phase B's non-bracket winner determination would have nothing to work
+  /// with.
+  Future<League> complete(Session session, UuidValue leagueId) async {
+    final league = await _findLeagueOrThrow(session, leagueId);
+
+    await requireOrgRole(
+      session,
+      league.organizationId,
+      minRole: OrgMemberRole.admin,
+    );
+
+    if (league.status != LeagueStatus.active) {
+      throw LeagueCompletionNotAllowedException(
+        leagueId: leagueId,
+        currentStatus: league.status,
+      );
+    }
+
+    return League.db.updateRow(
+      session,
+      league.copyWith(status: LeagueStatus.completed),
     );
   }
 

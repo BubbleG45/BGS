@@ -24,17 +24,21 @@ class PublicEndpoint extends Endpoint {
     return Organization.db.findFirstRow(session, where: (t) => t.slug.equals(slug));
   }
 
-  /// Returns an organization's *active* leagues, newest first. Draft
-  /// leagues aren't announced yet, so they're excluded here even though an
-  /// organizer sees them on their own dashboard.
-  Future<List<League>> activeLeaguesByOrganization(
+  /// Returns an organization's `active` and `completed` leagues, newest
+  /// first -- everything a visitor should be able to see, letting the
+  /// caller bucket into Active/Upcoming (by `seasonStartAt`) and Past (by
+  /// `status == completed`) client-side. Draft/cancelled leagues aren't
+  /// announced yet, so they stay excluded even though an organizer sees
+  /// them on their own dashboard.
+  Future<List<League>> leaguesByOrganization(
     Session session,
     UuidValue organizationId,
   ) async {
     return League.db.find(
       session,
       where: (t) =>
-          t.organizationId.equals(organizationId) & t.status.equals(LeagueStatus.active),
+          t.organizationId.equals(organizationId) &
+          (t.status.equals(LeagueStatus.active) | t.status.equals(LeagueStatus.completed)),
       orderBy: (t) => t.createdAt,
       orderDescending: true,
     );
@@ -115,9 +119,38 @@ class PublicEndpoint extends Endpoint {
     return event;
   }
 
+  /// Returns a *published* event's active registrations, newest first --
+  /// backs the public event page's "who's signed up" section. Only
+  /// `registeredByAuthUserId` and `teamName` are meaningful to show
+  /// publicly; the UI should prefer `teamName` and fall back to something
+  /// generic rather than exposing raw user identity. Returns an empty list
+  /// (not an error) if the event doesn't exist or isn't published.
+  Future<List<EventRegistration>> registrationsByEvent(
+    Session session,
+    UuidValue eventId,
+  ) async {
+    final event = await Event.db.findById(session, eventId);
+    if (event == null || event.status != EventStatus.published) {
+      return [];
+    }
+
+    return EventRegistration.db.find(
+      session,
+      where: (t) =>
+          t.eventId.equals(eventId) & t.status.equals(EventRegistrationStatus.registered),
+      orderBy: (t) => t.createdAt,
+      orderDescending: true,
+    );
+  }
+
   /// Same search as [SearchEndpoint.search], reachable anonymously. See
   /// [performSearch] for the shared query/discoverability logic.
-  Future<SearchResults> search(Session session, {String? query, Sport? sport}) {
-    return performSearch(session, query: query, sport: sport);
+  Future<SearchResults> search(
+    Session session, {
+    String? query,
+    Sport? sport,
+    String? location,
+  }) {
+    return performSearch(session, query: query, sport: sport, location: location);
   }
 }

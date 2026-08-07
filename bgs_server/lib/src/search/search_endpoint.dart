@@ -20,7 +20,12 @@ class SearchEndpoint extends Endpoint {
   @override
   bool get requireLogin => true;
 
-  Future<SearchResults> search(Session session, {String? query, Sport? sport}) {
-    return performSearch(session, query: query, sport: sport);
+  Future<SearchResults> search(
+    Session session, {
+    String? query,
+    Sport? sport,
+    String? location,
+  }) {
+    return performSearch(session, query: query, sport: sport, location: location);
   }
 }

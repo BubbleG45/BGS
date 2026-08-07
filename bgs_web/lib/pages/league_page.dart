@@ -2,6 +2,7 @@ import 'package:bgs_client/bgs_client.dart';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/server.dart';
 
+import '../components/material_symbol.dart';
 import '../constants/theme.dart';
 import '../services/bgs_client.dart';
 import '../utils/format.dart';
@@ -15,7 +16,9 @@ import '../utils/format.dart';
 /// Styled per the Stitch `league_standings` mockup: a real table for
 /// standings, match cards for the schedule. No team crests (Jaspr has no
 /// asset pipeline for that, unlike the Flutter `TeamCrest` widget) -- team
-/// names are plain text here.
+/// names are plain text here. Registration info (fee, dates, rules link)
+/// shown for transparency, per the org registration-transparency ask --
+/// display-only, no enforcement yet (see BUILD_PLAN.md Phase B).
 class LeaguePage extends AsyncStatelessComponent {
   final String organizationSlug;
   final String leagueSlug;
@@ -59,6 +62,37 @@ class LeaguePage extends AsyncStatelessComponent {
           ]),
         ]),
         if (league.description != null) p(classes: 'tagline', [.text(league.description!)]),
+      ]),
+      div(classes: 'info-card', [
+        div(classes: 'info-row', [
+          const MaterialSymbol('payments'),
+          span([.text('Team fee: \$${(league.teamFeeCents / 100).toStringAsFixed(2)}')]),
+        ]),
+        if (league.seasonStartAt != null)
+          div(classes: 'info-row', [
+            const MaterialSymbol('calendar_today'),
+            span([
+              .text(
+                'Season: ${formatDateTime(league.seasonStartAt!)}'
+                '${league.seasonEndAt != null ? ' -- ${formatDateTime(league.seasonEndAt!)}' : ''}',
+              ),
+            ]),
+          ]),
+        if (league.registrationOpensAt != null)
+          div(classes: 'info-row', [
+            const MaterialSymbol('how_to_reg'),
+            span([
+              .text(
+                'Registration opens ${formatDateTime(league.registrationOpensAt!)}'
+                '${league.registrationClosesAt != null ? ', closes ${formatDateTime(league.registrationClosesAt!)}' : ''}',
+              ),
+            ]),
+          ]),
+        if (league.rulesUrl != null)
+          div(classes: 'info-row', [
+            const MaterialSymbol('gavel'),
+            a(href: league.rulesUrl!, [.text('League rules')]),
+          ]),
       ]),
       div(classes: 'group', [
         h2([.text('Standings')]),
@@ -126,6 +160,25 @@ class LeaguePage extends AsyncStatelessComponent {
       css('h1').styles(fontSize: 40.px, color: BgsColors.onSurface),
       css('.meta-row').styles(color: BgsColors.onSurfaceVariant, fontSize: 14.px),
       css('.tagline').styles(color: BgsColors.onSurfaceVariant, maxWidth: 640.px),
+    ]),
+    css('.info-card', [
+      css('&').styles(
+        display: .flex,
+        flexDirection: .column,
+        gap: Gap.row(8.px),
+        backgroundColor: BgsColors.surfaceContainerLowest,
+        padding: .all(BgsSpacing.cardPadding),
+        radius: .all(.circular(BgsRadius.card)),
+        border: .all(color: BgsColors.outlineVariant, width: 1.px),
+        maxWidth: 480.px,
+      ),
+      css('.info-row').styles(
+        display: .flex,
+        alignItems: .center,
+        gap: Gap.all(8.px),
+        color: BgsColors.onSurfaceVariant,
+      ),
+      css('a').styles(color: BgsColors.primary, fontWeight: .w600),
     ]),
     css('.group', [
       css('&').styles(display: .flex, flexDirection: .column, gap: Gap.row(BgsSpacing.base)),

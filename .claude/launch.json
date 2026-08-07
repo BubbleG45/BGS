@@ -14,6 +14,13 @@
       "runtimeArgs": ["serve", "--port", "18280"],
       "cwd": "bgs_web",
       "port": 18280
+    },
+    {
+      "name": "bgs-server",
+      "runtimeExecutable": "dart",
+      "runtimeArgs": ["bin/main.dart", "--apply-migrations"],
+      "cwd": "bgs_server",
+      "port": 18080
     }
   ]
 }

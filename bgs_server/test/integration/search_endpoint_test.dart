@@ -223,5 +223,37 @@ void main() {
         );
       },
     );
+
+    test(
+      'when filtering by location then only leagues at a matching location '
+      'are returned',
+      () async {
+        final ownerSession = await authedSessionFor(sessionBuilder);
+        final unique = DateTime.now().microsecondsSinceEpoch;
+        final org = await endpoints.organization.create(
+          ownerSession,
+          name: 'Riverside Location Search Co $unique',
+          slug: 'riverside-location-search-$unique',
+        );
+        final league = await endpoints.league.create(
+          ownerSession,
+          organizationId: org.id!,
+          name: 'Courts League $unique',
+          slug: 'courts-league-$unique',
+          sport: Sport.volleyballIndoor,
+          teamFeeCents: 15000,
+          location: 'Downtown Rec Center',
+        );
+        await endpoints.league.activate(ownerSession, league.id!);
+
+        final results = await endpoints.search.search(
+          ownerSession,
+          location: 'Downtown',
+        );
+
+        expect(results.leagues.map((l) => l.id), contains(league.id));
+        expect(results.organizations, isEmpty);
+      },
+    );
   });
 }

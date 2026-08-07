@@ -2,16 +2,19 @@ import 'package:bgs_client/bgs_client.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
+import '../../theme/app_theme.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
+import '../../widgets/entity_card.dart';
+import '../../widgets/filter_bar.dart';
 import '../../widgets/team_crest.dart';
 import 'event_detail_screen.dart';
 import 'league_detail_screen.dart';
 import 'org_home_screen.dart';
 
 /// Basic search across organizations, active leagues, and published events,
-/// by name and/or sport. Results link through to the read-only detail
-/// screens.
+/// by name, sport, and/or location. Results link through to the read-only
+/// detail screens.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -21,12 +24,14 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _queryController = TextEditingController();
+  final _locationController = TextEditingController();
   Sport? _sport;
   Future<SearchResults>? _future;
 
   @override
   void dispose() {
     _queryController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -35,6 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
       _future = client.search.search(
         query: _queryController.text.trim().isEmpty ? null : _queryController.text.trim(),
         sport: _sport,
+        location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
       );
     });
   }
@@ -46,49 +52,14 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _queryController,
-                  decoration: const InputDecoration(
-                    labelText: 'Search organizations, leagues, events',
-                  ),
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => _search(),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 40,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ChoiceChip(
-                          label: const Text('Any sport'),
-                          selected: _sport == null,
-                          onSelected: (_) => setState(() => _sport = null),
-                        ),
-                      ),
-                      for (final sport in Sport.values)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(formatEnumLabel(sport.name)),
-                            selected: _sport == sport,
-                            onSelected: (_) => setState(() => _sport = sport),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(onPressed: _search, child: const Text('Search')),
-                ),
-              ],
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: FilterBar(
+              queryController: _queryController,
+              queryHint: 'Search organizations, leagues, events',
+              locationController: _locationController,
+              selectedSport: _sport,
+              onSportChanged: (sport) => setState(() => _sport = sport),
+              onSearch: _search,
             ),
           ),
           Expanded(
@@ -119,19 +90,14 @@ class _SearchScreenState extends State<SearchScreen> {
                             emptyMessage: 'No matching organizations.',
                             children: [
                               for (final org in results.organizations)
-                                Card(
-                                  child: ListTile(
-                                    leading: TeamCrest(name: org.name, size: 44),
-                                    title: Text(org.name),
-                                    subtitle: org.description == null
-                                        ? null
-                                        : Text(org.description!),
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            OrgHomeScreen(organizationId: org.id!),
-                                      ),
+                                EntityCard(
+                                  leading: TeamCrest(name: org.name, size: 44),
+                                  title: org.name,
+                                  subtitle: org.description,
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => OrgHomeScreen(organizationId: org.id!),
                                     ),
                                   ),
                                 ),
@@ -142,17 +108,14 @@ class _SearchScreenState extends State<SearchScreen> {
                             emptyMessage: 'No matching leagues.',
                             children: [
                               for (final league in results.leagues)
-                                Card(
-                                  child: ListTile(
-                                    leading: TeamCrest(name: league.name, size: 44),
-                                    title: Text(league.name),
-                                    subtitle: Text(formatEnumLabel(league.sport.name)),
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            LeagueDetailScreen(leagueId: league.id!),
-                                      ),
+                                EntityCard(
+                                  leading: TeamCrest(name: league.name, size: 44),
+                                  title: league.name,
+                                  subtitle: formatEnumLabel(league.sport.name),
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => LeagueDetailScreen(leagueId: league.id!),
                                     ),
                                   ),
                                 ),
@@ -163,19 +126,17 @@ class _SearchScreenState extends State<SearchScreen> {
                             emptyMessage: 'No matching events.',
                             children: [
                               for (final event in results.events)
-                                Card(
-                                  child: ListTile(
-                                    leading: TeamCrest(name: event.name, size: 44),
-                                    title: Text(event.name),
-                                    subtitle: Text([
-                                      formatEnumLabel(event.sport.name),
-                                      formatDateTime(event.startAt),
-                                    ].join(' · ')),
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => EventDetailScreen(eventId: event.id!),
-                                      ),
+                                EntityCard(
+                                  leading: TeamCrest(name: event.name, size: 44),
+                                  title: event.name,
+                                  subtitle: [
+                                    formatEnumLabel(event.sport.name),
+                                    formatDateTime(event.startAt),
+                                  ].join(' · '),
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EventDetailScreen(eventId: event.id!),
                                     ),
                                   ),
                                 ),

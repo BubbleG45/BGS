@@ -32,11 +32,16 @@ league:
   - listByOrganization:
   - update:
   - activate:
+  - complete:
 organization:
   - create:
   - getById:
   - getBySlug:
   - listMine:
+playerProfile:
+  - getMine:
+  - updateBio:
+  - stats:
 profile:
   - removeUserImage:
   - setUserImage:
@@ -45,14 +50,18 @@ profile:
   - get:
 public:
   - organizationBySlug:
-  - activeLeaguesByOrganization:
+  - leaguesByOrganization:
   - publishedEventsByOrganization:
   - leagueBySlug:
   - teamsByLeague:
   - standingsByLeague:
   - matchesByLeague:
   - eventBySlug:
+  - registrationsByEvent:
   - search:
+attendance:
+  - record:
+  - listForMatch:
 scheduledMatch:
   - create:
   - getById:

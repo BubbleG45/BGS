@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../generated/protocol.dart';
 import '../organizations/organization_access.dart';
+import '../teams/team_access.dart';
 
 /// A single scheduled game between two teams within a [League]. Manual
 /// scheduling only for Phase 1 -- no auto-scheduling algorithm yet. See
@@ -110,7 +111,10 @@ class ScheduledMatchEndpoint extends Endpoint {
 
   /// Records a final score, marking the match `completed` and updating
   /// both teams' [Standing] rows for the league. Requires at least `admin`
-  /// on the league's organization. Only allowed while the match is still
+  /// on the league's organization, OR an active `manager` membership on
+  /// either the home or away team -- this is what makes the Manager
+  /// Dashboard's "Record score" action usable by an actual team manager,
+  /// not just an org admin. Only allowed while the match is still
   /// `scheduled` -- results aren't editable in Phase 1.
   Future<ScheduledMatch> recordResult(
     Session session, {
@@ -119,7 +123,7 @@ class ScheduledMatchEndpoint extends Endpoint {
     required int awayScore,
   }) async {
     final match = await _findMatchOrThrow(session, matchId);
-    await _requireMatchManagePermission(session, match);
+    await _requireRecordResultPermission(session, match);
 
     if (match.status != MatchStatus.scheduled) {
       throw MatchActionNotAllowedException(
@@ -221,6 +225,21 @@ class ScheduledMatchEndpoint extends Endpoint {
       league.organizationId,
       minRole: OrgMemberRole.admin,
     );
+  }
+
+  /// Org admin, or an active manager of either side of the match -- see
+  /// [recordResult]'s doc comment.
+  Future<void> _requireRecordResultPermission(
+    Session session,
+    ScheduledMatch match,
+  ) async {
+    try {
+      await requireTeamManageAccess(session, match.homeTeamId);
+      return;
+    } on TeamAccessDeniedException {
+      // Fall through to check the away team below.
+    }
+    await requireTeamManageAccess(session, match.awayTeamId);
   }
 
   Future<void> _requireTeamInLeague(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'responsive_grid.dart';
+
 /// A titled group of dashboard rows, with a consistent empty-state message
 /// when [children] is empty. Used identically across the Player, Organizer,
-/// and Manager dashboard tabs.
+/// and Manager dashboard tabs. Non-empty [children] are laid out via
+/// [ResponsiveGrid] -- 1 column on mobile, more on wider screens.
 class DashboardSection extends StatelessWidget {
   final String title;
   final String emptyMessage;
@@ -50,7 +53,7 @@ class DashboardSection extends StatelessWidget {
               ),
             )
           else
-            ...children,
+            ResponsiveGrid(children: children),
         ],
       ),
     );

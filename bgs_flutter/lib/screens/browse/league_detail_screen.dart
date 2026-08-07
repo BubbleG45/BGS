@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../../utils/format.dart';
 import '../../widgets/dashboard_section.dart';
+import '../../widgets/entity_card.dart';
+import '../../widgets/registration_info_card.dart';
 import '../../widgets/status_chip.dart';
 import '../../widgets/team_crest.dart';
 import 'match_detail_screen.dart';
@@ -141,6 +143,17 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: RegistrationInfoCard(
+                  teamFeeCents: data.league.teamFeeCents,
+                  seasonStartAt: data.league.seasonStartAt,
+                  seasonEndAt: data.league.seasonEndAt,
+                  registrationOpensAt: data.league.registrationOpensAt,
+                  registrationClosesAt: data.league.registrationClosesAt,
+                  rulesUrl: data.league.rulesUrl,
+                ),
+              ),
               DashboardSection(
                 title: 'Standings',
                 emptyMessage: 'No results recorded yet.',
@@ -269,14 +282,12 @@ class _LeagueDetailScreenState extends State<LeagueDetailScreen> {
                 emptyMessage: 'No teams yet.',
                 children: [
                   for (final team in data.teams)
-                    Card(
-                      child: ListTile(
-                        leading: TeamCrest(name: team.name, size: 40),
-                        title: Text(team.name),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => TeamDetailScreen(teamId: team.id!)),
-                        ),
+                    EntityCard(
+                      leading: TeamCrest(name: team.name, size: 40),
+                      title: team.name,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => TeamDetailScreen(teamId: team.id!)),
                       ),
                     ),
                 ],

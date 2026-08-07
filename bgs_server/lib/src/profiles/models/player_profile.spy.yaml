@@ -1,0 +1,19 @@
+### BGS-owned profile extension -- `UserProfile` itself belongs to the auth
+### module and can't have fields added to it directly. One row per user,
+### created lazily on first write. Also the natural future home for
+### per-sport positions once that gets designed (see BUILD_PLAN.md).
+class: PlayerProfile
+table: bgs_player_profile
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  authUser: module:auth:AuthUser?, relation(onDelete=Cascade)
+
+  bio: String?
+
+  updatedAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_player_profile_auth_user_unique:
+    fields: authUserId
+    unique: true

@@ -5,6 +5,7 @@
 // Generated with jaspr_builder
 
 import 'package:jaspr/server.dart';
+import 'package:bgs_web/components/entity_card.dart' as _entity_card;
 import 'package:bgs_web/components/header.dart' as _header;
 import 'package:bgs_web/pages/about.dart' as _about;
 import 'package:bgs_web/pages/event_page.dart' as _event_page;
@@ -35,6 +36,8 @@ ServerOptions get defaultServerOptions => ServerOptions(
   clients: {_about.About: ClientTarget<_about.About>('about')},
   styles: () => [
     ..._app.App.styles,
+    ..._entity_card.CardGrid.styles,
+    ..._entity_card.EntityCard.styles,
     ..._header.Header.styles,
     ..._about.About.styles,
     ..._event_page.EventPage.styles,

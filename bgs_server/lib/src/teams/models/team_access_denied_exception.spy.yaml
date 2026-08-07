@@ -1,0 +1,5 @@
+### Thrown when the caller has neither org-admin access nor an active
+### `manager` membership on the team in question.
+exception: TeamAccessDeniedException
+fields:
+  teamId: UuidValue

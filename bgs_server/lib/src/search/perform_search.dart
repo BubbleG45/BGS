@@ -14,13 +14,21 @@ Future<SearchResults> performSearch(
   Session session, {
   String? query,
   Sport? sport,
+  String? location,
 }) async {
   final trimmed = query?.trim();
   final pattern = (trimmed == null || trimmed.isEmpty)
       ? null
       : '%${_escapeLikePattern(trimmed)}%';
 
-  final includeOrganizations = pattern != null || sport == null;
+  final trimmedLocation = location?.trim();
+  final locationPattern = (trimmedLocation == null || trimmedLocation.isEmpty)
+      ? null
+      : '%${_escapeLikePattern(trimmedLocation)}%';
+
+  // Organizations have no location field, so a location-only filter (like
+  // a sport-only filter) narrows results away from organizations entirely.
+  final includeOrganizations = pattern != null || (sport == null && locationPattern == null);
 
   final organizations = includeOrganizations
       ? await Organization.db.find(
@@ -37,6 +45,7 @@ Future<SearchResults> performSearch(
       Expression expr = t.status.equals(LeagueStatus.active);
       if (pattern != null) expr = expr & t.name.ilike(pattern);
       if (sport != null) expr = expr & t.sport.equals(sport);
+      if (locationPattern != null) expr = expr & t.location.ilike(locationPattern);
       return expr;
     },
     orderBy: (t) => t.name,
@@ -49,6 +58,7 @@ Future<SearchResults> performSearch(
       Expression expr = t.status.equals(EventStatus.published);
       if (pattern != null) expr = expr & t.name.ilike(pattern);
       if (sport != null) expr = expr & t.sport.equals(sport);
+      if (locationPattern != null) expr = expr & t.location.ilike(locationPattern);
       return expr;
     },
     orderBy: (t) => t.startAt,

@@ -1,0 +1,22 @@
+### Whether a specific roster member (by [TeamMembership], not directly by
+### user -- so a record is naturally scoped to one team's roster) was
+### present or absent for a [ScheduledMatch]. Lightweight v1: recorded
+### after the fact by whoever manages the team, not a player-facing RSVP
+### (see BUILD_PLAN.md for that deferred feature).
+class: MatchAttendance
+table: bgs_match_attendance
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+
+  match: ScheduledMatch?, relation(onDelete=Cascade)
+
+  teamMembership: TeamMembership?, relation(onDelete=Cascade)
+
+  status: AttendanceStatus
+
+  recordedAt: DateTime, defaultModel=now
+
+indexes:
+  bgs_match_attendance_unique:
+    fields: matchId, teamMembershipId
+    unique: true

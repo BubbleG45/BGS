@@ -52,6 +52,7 @@ class App extends StatelessComponent {
           builder: (context, state) => SearchPage(
             query: state.queryParams['q'],
             sportName: state.queryParams['sport'],
+            location: state.queryParams['location'],
           ),
         ),
       ]),

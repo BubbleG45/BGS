@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../theme/app_theme.dart';
+
 /// One destination in [AppShell]'s primary navigation.
 class AppShellDestination {
   final IconData icon;
@@ -38,8 +40,6 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  static const _wideBreakpoint = 900.0;
-
   int _index = 0;
 
   @override
@@ -51,7 +51,7 @@ class _AppShellState extends State<AppShell> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth >= _wideBreakpoint) {
+        if (AppBreakpoints.isDesktop(constraints.maxWidth)) {
           return Scaffold(
             body: Row(
               children: [

@@ -38,6 +38,9 @@ abstract class Event implements _i1.SerializableModel {
     bool? isTournament,
     _i2.EventStatus? status,
     required this.teamFeeCents,
+    this.registrationOpensAt,
+    this.registrationClosesAt,
+    this.rulesUrl,
     DateTime? createdAt,
   }) : isTournament = isTournament ?? false,
        status = status ?? _i2.EventStatus.draft,
@@ -59,6 +62,9 @@ abstract class Event implements _i1.SerializableModel {
     bool? isTournament,
     _i2.EventStatus? status,
     required int teamFeeCents,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   }) = _EventImpl;
 
@@ -103,6 +109,17 @@ abstract class Event implements _i1.SerializableModel {
           ? null
           : _i2.EventStatus.fromJson((jsonSerialization['status'] as String)),
       teamFeeCents: jsonSerialization['teamFeeCents'] as int,
+      registrationOpensAt: jsonSerialization['registrationOpensAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['registrationOpensAt'],
+            ),
+      registrationClosesAt: jsonSerialization['registrationClosesAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['registrationClosesAt'],
+            ),
+      rulesUrl: jsonSerialization['rulesUrl'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
@@ -149,6 +166,15 @@ abstract class Event implements _i1.SerializableModel {
   /// League.teamFeeCents -- see League_Platform_Pricing_Model.md.
   int teamFeeCents;
 
+  /// Registration window, both optional. Display-only for now -- same
+  /// rationale as League.registrationOpensAt/registrationClosesAt.
+  DateTime? registrationOpensAt;
+
+  DateTime? registrationClosesAt;
+
+  /// Link to an external rules doc/page. Display-only, no validation.
+  String? rulesUrl;
+
   DateTime createdAt;
 
   /// Returns a shallow copy of this [Event]
@@ -170,6 +196,9 @@ abstract class Event implements _i1.SerializableModel {
     bool? isTournament,
     _i2.EventStatus? status,
     int? teamFeeCents,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   });
   @override
@@ -192,6 +221,11 @@ abstract class Event implements _i1.SerializableModel {
       'isTournament': isTournament,
       'status': status.toJson(),
       'teamFeeCents': teamFeeCents,
+      if (registrationOpensAt != null)
+        'registrationOpensAt': registrationOpensAt?.toJson(),
+      if (registrationClosesAt != null)
+        'registrationClosesAt': registrationClosesAt?.toJson(),
+      if (rulesUrl != null) 'rulesUrl': rulesUrl,
       'createdAt': createdAt.toJson(),
     };
   }
@@ -221,6 +255,9 @@ class _EventImpl extends Event {
     bool? isTournament,
     _i2.EventStatus? status,
     required int teamFeeCents,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
     DateTime? createdAt,
   }) : super._(
          id: id,
@@ -238,6 +275,9 @@ class _EventImpl extends Event {
          isTournament: isTournament,
          status: status,
          teamFeeCents: teamFeeCents,
+         registrationOpensAt: registrationOpensAt,
+         registrationClosesAt: registrationClosesAt,
+         rulesUrl: rulesUrl,
          createdAt: createdAt,
        );
 
@@ -261,6 +301,9 @@ class _EventImpl extends Event {
     bool? isTournament,
     _i2.EventStatus? status,
     int? teamFeeCents,
+    Object? registrationOpensAt = _Undefined,
+    Object? registrationClosesAt = _Undefined,
+    Object? rulesUrl = _Undefined,
     DateTime? createdAt,
   }) {
     return Event(
@@ -285,6 +328,13 @@ class _EventImpl extends Event {
       isTournament: isTournament ?? this.isTournament,
       status: status ?? this.status,
       teamFeeCents: teamFeeCents ?? this.teamFeeCents,
+      registrationOpensAt: registrationOpensAt is DateTime?
+          ? registrationOpensAt
+          : this.registrationOpensAt,
+      registrationClosesAt: registrationClosesAt is DateTime?
+          ? registrationClosesAt
+          : this.registrationClosesAt,
+      rulesUrl: rulesUrl is String? ? rulesUrl : this.rulesUrl,
       createdAt: createdAt ?? this.createdAt,
     );
   }

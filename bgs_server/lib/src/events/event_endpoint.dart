@@ -29,6 +29,9 @@ class EventEndpoint extends Endpoint {
     String? description,
     String? location,
     bool? isTournament,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
   }) async {
     final authUserId = session.authenticated!.authUserId;
 
@@ -67,6 +70,9 @@ class EventEndpoint extends Endpoint {
           startAt: startAt,
           isTournament: isTournament,
           teamFeeCents: teamFeeCents,
+          registrationOpensAt: registrationOpensAt,
+          registrationClosesAt: registrationClosesAt,
+          rulesUrl: rulesUrl,
         ),
         transaction: transaction,
       );
@@ -110,6 +116,9 @@ class EventEndpoint extends Endpoint {
     SkillLevel? skillLevel,
     DateTime? startAt,
     int? teamFeeCents,
+    DateTime? registrationOpensAt,
+    DateTime? registrationClosesAt,
+    String? rulesUrl,
   }) async {
     final event = await _findEventOrThrow(session, eventId);
     await _requireManagePermission(session, event);
@@ -123,6 +132,9 @@ class EventEndpoint extends Endpoint {
         skillLevel: skillLevel ?? event.skillLevel,
         startAt: startAt ?? event.startAt,
         teamFeeCents: teamFeeCents ?? event.teamFeeCents,
+        registrationOpensAt: registrationOpensAt ?? event.registrationOpensAt,
+        registrationClosesAt: registrationClosesAt ?? event.registrationClosesAt,
+        rulesUrl: rulesUrl ?? event.rulesUrl,
       ),
     );
   }

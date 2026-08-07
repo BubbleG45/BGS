@@ -1,0 +1,11 @@
+### Aggregated wins/losses/ties across every team the caller has been an
+### active member of. Transient (no `table:`) -- computed on read from
+### existing [Standing] rows, not stored. `teamCount` is how many teams
+### fed into the total, so the UI can distinguish "0-0-0, no games played
+### yet" from "0-0-0 across 3 teams".
+class: PlayerStats
+fields:
+  wins: int
+  losses: int
+  ties: int
+  teamCount: int
